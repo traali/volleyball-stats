@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volleyball Stats MCP App Set Breakdown</title>
+  <style>
+    :root {
+      --nv-bg-canvas: #090d16;
+      --nv-bg-surface: #111827;
+      --nv-text-primary: #f9fafb;
+      --nv-text-muted: #9ca3af;
+      --nv-volley: #f97316;
+      --nv-pitch: #10b981;
+      --nv-radar: #f59e0b;
+      --nv-stoppage: #ef4444;
+      --nv-border: rgba(255, 255, 255, 0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--nv-bg-canvas);
+      color: var(--nv-text-primary);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .card {
+      background: rgba(17, 24, 39, 0.8);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--nv-border);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .league-badge {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      background: rgba(249, 115, 22, 0.15);
+      color: #fb923c;
+      border: 1px solid rgba(249, 115, 22, 0.3);
+    }
+    .matchup {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .team-name {
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sets-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+      font-size: 12px;
+    }
+    .sets-table th {
+      color: var(--nv-text-muted);
+      font-size: 10px;
+      padding: 4px 6px;
+      text-align: center;
+      border-bottom: 1px solid var(--nv-border);
+    }
+    .sets-table td {
+      padding: 6px;
+      text-align: center;
+      font-family: monospace;
+      font-weight: 700;
+    }
+    .set-won { color: var(--nv-pitch); }
+    .set-lost { color: var(--nv-text-muted); }
+    footer {
+      font-size: 10px;
+      color: var(--nv-text-muted);
+      display: flex;
+      justify-content: space-between;
+      padding-top: 4px;
+      border-top: 1px solid var(--nv-border);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <span class="league-badge" id="leagueTitle">Lentopallosarja</span>
+      <span style="font-size: 10px; color: var(--nv-text-muted);">Eräkohtainen seuranta</span>
+    </div>
+
+    <div class="matchup">
+      <div style="text-align: left;">
+        <div class="team-name" id="homeName">Kotijoukkue</div>
+      </div>
+      <div style="font-size: 18px; font-weight: 900; color: var(--nv-volley);">3 - 1</div>
+      <div style="text-align: right;">
+        <div class="team-name" id="awayName">Vierasjoukkue</div>
+      </div>
+    </div>
+
+    <!-- 25-Point Set Breakdown Table -->
+    <table class="sets-table">
+      <thead>
+        <tr>
+          <th style="text-align: left;">Joukkue</th>
+          <th>1. Erä</th>
+          <th>2. Erä</th>
+          <th>3. Erä</th>
+          <th>4. Erä</th>
+          <th>Yht.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align: left; font-family: sans-serif;" id="tableHome">Koti</td>
+          <td class="set-won">25</td>
+          <td class="set-lost">22</td>
+          <td class="set-won">25</td>
+          <td class="set-won">25</td>
+          <td class="set-won">97</td>
+        </tr>
+        <tr>
+          <td style="text-align: left; font-family: sans-serif;" id="tableAway">Vieras</td>
+          <td class="set-lost">19</td>
+          <td class="set-won">25</td>
+          <td class="set-lost">18</td>
+          <td class="set-lost">21</td>
+          <td class="set-lost">83</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <footer>
+      <span>Lähde: Lentopalloliitto Torneopal</span>
+      <span>Sopimus: SportStats v1.0.0</span>
+    </footer>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const home = params.get('home') || 'Kotijoukkue';
+    const away = params.get('away') || 'Vierasjoukkue';
+    const league = params.get('league') || 'Lentopallosarja';
+
+    document.getElementById('homeName').textContent = home;
+    document.getElementById('awayName').textContent = away;
+    document.getElementById('tableHome').textContent = home;
+    document.getElementById('tableAway').textContent = away;
+    document.getElementById('leagueTitle').textContent = league;
+
+    // MCP Ext-Apps JSON-RPC postMessage Bridge (2026 Specification)
+    window.addEventListener('message', (event) => {
+      if (event.data?.type === 'mcp:init') {
+        window.parent.postMessage({ type: 'mcp:ready', protocolVersion: '2026-01' }, '*');
+      }
+    });
+  </script>
+</body>
+</html>
