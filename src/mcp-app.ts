@@ -7,7 +7,7 @@
  */
 
 import { formatVolleyballStatsContract } from './types/contracts'
-import type { SportStatsContract } from '../../contracts'
+import type { SportStatsContract } from './types/contracts'
 
 export interface McpToolResponse {
     content: Array<{
