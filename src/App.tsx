@@ -275,7 +275,7 @@ export default function App() {
         )}
 
         {activeTab === 'export' && match && (
-          <VolleyballPreviewExport match={match} />
+          <VolleyballPreviewExport match={match} standings={standings} players={players} />
         )}
 
         {/* Footer */}
