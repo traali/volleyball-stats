@@ -9,7 +9,7 @@ const TORNEOPAL_API_BASE = 'https://lentopallo-api.torneopal.net/taso/rest'
 const TASO_PROXY = 'https://taso-proxy.sakkoja.workers.dev/volley'
 const VOLLEYBALL_PUBLIC_KEY = 'df8e84j9xtdz269euy3h'
 
-async function volleyGet(path: string): Promise<any | null> {
+async function volleyGet(path: string): Promise<Record<string, unknown> | null> {
   const urls = [
     `${TASO_PROXY}/${path}`,
     `${TORNEOPAL_API_BASE}/${path}`,
@@ -28,7 +28,7 @@ async function volleyGet(path: string): Promise<any | null> {
       const text = await res.text()
       const i = text.indexOf('{')
       if (i < 0) continue
-      return JSON.parse(text.slice(i))
+      return JSON.parse(text.slice(i)) as Record<string, unknown>
     } catch {
       /* try next */
     }
@@ -39,8 +39,9 @@ async function volleyGet(path: string): Promise<any | null> {
 export async function fetchVolleyballMatch(matchId: string): Promise<VolleyballMatchDetail | null> {
   try {
     const data = await volleyGet(`getMatch?match_id=${encodeURIComponent(matchId)}&api_key=${VOLLEYBALL_PUBLIC_KEY}`)
-    if (data?.match) {
-      return transformTorneopalMatch(data.match)
+    const match = data?.match
+    if (match && typeof match === 'object') {
+      return transformTorneopalMatch(match as Record<string, unknown>)
     }
   } catch (err) {
     console.warn('[Volleyball API] Network fetch failed, using fallback data:', err)
