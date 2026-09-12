@@ -1,0 +1,9 @@
+{
+  "tool": "federation-understand",
+  "compatibleWith": "Egonex-AI/Understand-Anything 1.0.0",
+  "generatedAt": "2026-09-12T10:44:07.716Z",
+  "repo": "volleyball-stats",
+  "commit": "9ce1ba180f4e26a9302e49de6b202d8aefcfcc65",
+  "nodeCount": 67,
+  "edgeCount": 59
+}
