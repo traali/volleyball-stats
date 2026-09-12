@@ -6,21 +6,41 @@ import type {
 } from '../types/volleyball'
 
 const TORNEOPAL_API_BASE = 'https://lentopallo-api.torneopal.net/taso/rest'
+const TASO_PROXY = 'https://taso-proxy.sakkoja.workers.dev/volley'
 const VOLLEYBALL_PUBLIC_KEY = 'df8e84j9xtdz269euy3h'
+
+async function volleyGet(path: string): Promise<any | null> {
+  const urls = [
+    `${TASO_PROXY}/${path}`,
+    `${TORNEOPAL_API_BASE}/${path}`,
+    `${TORNEOPAL_API_BASE}/${path}${path.includes('?') ? '&' : '?'}_cb=${Date.now()}`,
+  ]
+  const headers = {
+    Accept: `json/${VOLLEYBALL_PUBLIC_KEY}`,
+    Referer: 'https://lentopallo.torneopal.net/',
+  }
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, {
+        headers: url.includes('taso-proxy') ? { Accept: 'application/json' } : headers,
+      })
+      if (!res.ok) continue
+      const text = await res.text()
+      const i = text.indexOf('{')
+      if (i < 0) continue
+      return JSON.parse(text.slice(i))
+    } catch {
+      /* try next */
+    }
+  }
+  return null
+}
 
 export async function fetchVolleyballMatch(matchId: string): Promise<VolleyballMatchDetail | null> {
   try {
-    const res = await fetch(`${TORNEOPAL_API_BASE}/getMatch?match_id=${encodeURIComponent(matchId)}&api_key=${VOLLEYBALL_PUBLIC_KEY}`, {
-      headers: {
-        Accept: `json/${VOLLEYBALL_PUBLIC_KEY}`,
-        Referer: 'https://lentopallo.torneopal.net/',
-      },
-    })
-    if (res.ok) {
-      const data = await res.json()
-      if (data && data.match) {
-        return transformTorneopalMatch(data.match)
-      }
+    const data = await volleyGet(`getMatch?match_id=${encodeURIComponent(matchId)}&api_key=${VOLLEYBALL_PUBLIC_KEY}`)
+    if (data?.match) {
+      return transformTorneopalMatch(data.match)
     }
   } catch (err) {
     console.warn('[Volleyball API] Network fetch failed, using fallback data:', err)

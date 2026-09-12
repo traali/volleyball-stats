@@ -25,3 +25,8 @@ Append-only record of architectural decisions, dispensations, rule amendments, a
 - **Verdict:** PASS | PASS WITH FINDINGS | BLOCK
 - **Summary:** <1-2 sentences on what was decided or changed>
 ```
+
+## 2026-09-12 — Torneopal Cloudflare cache (house)
+- **Office / Author:** Master of Works
+- **Verdict:** PASS (code). Cellarer must deploy taso-proxy.
+- **Summary:** Origin `spl.torneopal.net` caches empty 403s (`cf-cache-status: HIT`). Clients now retry via `taso-proxy.sakkoja.workers.dev/{spl,ssbl,basket,volley}` then origin with `_cb` cache-bust. Worker no longer stores 4xx (`Cache-Control: no-store`) and bypasses origin 403 TTL. Played matches stay immutable in Cache API.
