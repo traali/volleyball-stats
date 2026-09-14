@@ -65,7 +65,7 @@ export function formatVolleyballStatsContract(data: {
   topAttacker?: string
   baseUrl?: string
 }): SportStatsContract {
-  const base = data.baseUrl || 'https://volleyball-stats.pages.dev'
+  const base = data.baseUrl || 'https://volleyball-stats-7xq.pages.dev'
   return {
     sport: 'volleyball',
     matchOrTeamId: data.matchId,

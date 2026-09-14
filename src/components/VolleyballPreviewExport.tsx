@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { VolleyballMatchDetail, VolleyballPlayerStat, VolleyballStandingRow } from '../types/volleyball'
-import { Share2, Check, Copy, Download } from 'lucide-react'
+import { Check, Copy, Download } from 'lucide-react'
 import { buildVolleyballPreviewMd } from '../utils/buildVolleyballPreviewMd'
 
 interface VolleyballPreviewExportProps {
