@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { currentSeasonId, fetchCompetitions } from '../services/discovery'
+import { fetchCompetitions } from '../services/discovery'
 
 const filters = [
   { id: 'all', label: 'Kaikki' },
@@ -16,7 +16,7 @@ export function BrowsePage() {
   const [err, setErr] = useState('')
 
   useEffect(() => {
-    currentSeasonId().then(fetchCompetitions).then(setRows).catch(() => setErr('Sarjoja ei saatu TASOsta.'))
+    fetchCompetitions().then(setRows).catch(() => setErr('Sarjoja ei saatu TASOsta.'))
   }, [])
 
   const shown = rows.filter((r) => {

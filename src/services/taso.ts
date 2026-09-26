@@ -3,23 +3,31 @@ const ORIGIN = 'https://lentopallo-api.torneopal.net/taso/rest'
 const KEY = 'df8e84j9xtdz269euy3h'
 
 export async function volleyGet(path: string): Promise<Record<string, unknown> | null> {
-  const urls = [`${PROXY}/${path}`, `${ORIGIN}/${path}`]
+  const sep = path.includes('?') ? '&' : '?'
+  const urls = [
+    `${PROXY}/${path}`,
+    `${ORIGIN}/${path}`,
+    `${ORIGIN}/${path}${sep}_cb=${Date.now()}`,
+  ]
   for (const url of urls) {
     try {
-      const headers: Record<string, string> = url.startsWith(PROXY)
-        ? { Accept: 'application/json' }
-        : {
-            Accept: `json/${KEY}`,
-            Referer: 'https://tulospalvelu.lentopallo.fi/',
-          }
-      const res = await fetch(url, { headers })
+      const viaProxy = url.includes('taso-proxy')
+      const res = await fetch(url, {
+        headers: viaProxy
+          ? { Accept: 'application/json' }
+          : { Accept: `json/${KEY}`, Referer: 'https://tulospalvelu.lentopallo.fi/' },
+      })
       if (!res.ok) continue
       const text = await res.text()
       const i = text.indexOf('{')
       if (i < 0) continue
-      const data = JSON.parse(text.slice(i)) as Record<string, unknown>
-      const call = data.call as { status?: string } | undefined
-      if (call?.status && call.status !== 'ok' && call.status !== 'OK') continue
+      const data = JSON.parse(text.slice(i)) as Record<string, unknown> & {
+        call?: { status?: string }
+        error?: string
+      }
+      if (data.error === 'upstream') continue
+      const status = String(data.call?.status || '').toLowerCase()
+      if (status && status !== 'ok') continue
       return data
     } catch {
       /* next */

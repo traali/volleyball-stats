@@ -33,8 +33,11 @@ export async function currentSeasonId(): Promise<string> {
   return s(indoor?.season_id) || '2026-27'
 }
 
-export async function fetchCompetitions(seasonId: string) {
-  const data = await volleyGet(`getCompetitions?season_id=${encodeURIComponent(seasonId)}`)
+export async function fetchCompetitions(seasonId?: string) {
+  const data = await volleyGet('getCompetitions?current=1')
+    || (seasonId
+      ? await volleyGet(`getCompetitions?season_id=${encodeURIComponent(seasonId)}`)
+      : await volleyGet(`getCompetitions?season_id=${encodeURIComponent(await currentSeasonId())}`))
   return asList(data, 'competitions').map((c) => ({
     id: s(c.competition_id),
     name: s(c.competition_name) || s(c.competition_id),
