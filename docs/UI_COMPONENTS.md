@@ -1,40 +1,47 @@
 # Volleyball Stats UI components
 
-Status: **component catalog 2026-09-26**. Every file under `src/components/`. There is no router. `src/App.tsx` is the only screen.
+Status: **catalog updated 2026-09-26**. Live TASO. No hardcoded match.
 
 Live: https://volleyball-stats-7xq.pages.dev
+Shell: hash routes. Etusivu, Selaa, Haku, Suosikit. Same jobs as basketball and floorball.
 
-This is **not** signed as live TASO parity with basketball or floorball. The page boots on match id `987654` and team id `kale-c` unless the URL or a Pelipäivä query says otherwise (`getInitialMatchId` in `App.tsx`). The header pill **Live** is always painted. It is not a live-game detector.
+Data: `taso-proxy` `/volley/` with referer `https://tulospalvelu.lentopallo.fi/`. Empty TASO stays empty. Do not paint KaLe, 987654, or a Live pill.
 
-## Screen (`App.tsx`)
+## What volleyball adds
 
-| Element | Why |
+| Piece | File | Why |
+|---|---|---|
+| Erän kello | `src/pages/MatchPage.tsx` | `pN_start_time`, `pN_end_time`, kesto. Football has no sets |
+| Rotaatiot | `src/components/RotationBoard.tsx` | Six shirts per set from `playing_positions_*`, names from the lineup. Libero if TASO sent one |
+| Pisteaika | `src/components/PointTape.tsx` | Only events with code `piste`. Clock is `wall_time`. A substitution is not a point |
+
+## Shell and pages
+
+| File | Why |
 |---|---|
-| Lentopallo • Torneopal | Federation mark |
-| Live pill | Static. Do not treat it as "this match is in progress" |
-| Lentopallon Ottelukeskus | Title |
-| Lentopalloliitto, or Pelipäivä Embedded when `embed` | Who opened the page |
-| Tabs below | One match, not a search home |
+| `components/Layout.tsx` | Header Lentopallotilastot · Lentopalloliitto. Embed hides chrome |
+| `components/BottomNav.tsx` | Etusivu, Selaa `/browse`, Haku, Suosikit |
+| `pages/Home.tsx` | Search, chips, favorites, open by id. No hero score |
+| `pages/SearchPage.tsx` | Club, competition, or an id from a pasted link |
+| `pages/BrowsePage.tsx` | Current indoor season. Filters Kaikki, Nuoret, Liitto, Alue |
+| `pages/CompetitionPage.tsx` | Categories |
+| `pages/CategoryPage.tsx` | Groups |
+| `pages/GroupPage.tsx` | Table V3 / V2 / H / P and matches. 0–0 is not shown for an unplayed game |
+| `pages/TeamPage.tsx` | Fixtures and the heart. Favorites key `volleyball.favorites.v1` |
+| `pages/MatchPage.tsx` | Ottelu, Rotaatiot, Pisteet, Jaa |
+| `pages/PlayerPage.tsx` | Person and teams |
+| `pages/ClubPage.tsx` | Teams of a club |
+| `pages/FavoritesPage.tsx` | Local list |
+| `components/VolleyballSetGrid.tsx` | Set pills, deuce badge. Fed only with sets TASO scored |
+| `components/VolleyballPreviewExport.tsx` | Markdown share of the real match |
 
-Tabs, in order: **Ottelukeskus**, **Sarjataulukko & Erät**, **Otteluohjelma**, **Pelaajat**, **Lisää joukkue**, **Jaa WhatsAppiin**.
+## Still in the tree, not the home
 
-The match tab also shows home, set wins, away, and the venue. Those labels live in `App.tsx`, not in a component file.
+| File | Why it stays |
+|---|---|
+| `VolleyballStandingsTable.tsx` | Older 3-2-1-0 table. The group page renders the live TASO columns directly |
+| `VolleyballScheduleView.tsx` | Old schedule card. Team page lists `getMatches` |
+| `VolleyballScorersTable.tsx` | Player points table. Not mounted until a player feed returns attack/block/ace |
+| `VolleyballTeamOnboarding.tsx` | Manual add. No longer seeded with KaLe |
 
-## Components
-
-All six are mounted by `App.tsx`. None are dead.
-
-| File | Tab | What the parent sees | Why |
-|---|---|---|---|
-| `VolleyballSetGrid.tsx` | Ottelukeskus | Eräkohtaiset Tulokset. 25-point sets, 5th set to 15, win by 2 | Set lines. Not floorball periods or basketball quarters |
-| `VolleyballStandingsTable.tsx` | Sarjataulukko & Erät | 3-2-1-0 points. Columns V (3p), V (2p), H (1p), H (0p), Erät, Eräsuhde | Volleyball scoring. Do not replace with V/T/H |
-| `VolleyballScheduleView.tsx` | Otteluohjelma | Otteluohjelma & Turnauspelit, court notes | The team's weekend, including which court |
-| `VolleyballScorersTable.tsx` | Pelaajat | Nro, Pelaaja, Rooli, Ottelut, Erät, Hyökk., Torj., Ässät | Attacks, blocks, aces. Not goals |
-| `VolleyballTeamOnboarding.tsx` | Lisää joukkue | Name, series, Torneopal link or team id, saved list | This one **is** mounted. Basketball's copy is not |
-| `VolleyballPreviewExport.tsx` | Jaa WhatsAppiin | Copy a markdown preview. Only numbers from this document | Share text. Do not invent a score |
-
-## What not to "improve"
-
-- Do not add Etusivu / Selaa / Haku until a real TASO search exists. Copying basketball's nav onto `987654` would fake a product.
-- Do not delete the default ids in silence. Replace them only with a real match from the URL or from TASO.
-- Do not read the Live pill as status.
+Parser and tests: `src/domain/rally.ts`, `src/domain/rally.test.ts`.

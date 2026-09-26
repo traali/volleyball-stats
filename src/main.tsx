@@ -1,14 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import './index.css';
-import { registerVolleyballWebMCP } from './mcp-app';
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { RouterProvider } from 'react-router-dom'
+import './index.css'
+import { registerVolleyballWebMCP } from './mcp-app'
+import { router } from './routes'
 
-// Register WebMCP browser tools for AI agents (navigator.modelContext & document.modelContext)
-registerVolleyballWebMCP();
+registerVolleyballWebMCP()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>,
-);
+)

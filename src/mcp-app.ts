@@ -37,20 +37,9 @@ export async function getVolleyballSetsTool(args: {
 }): Promise<McpToolResponse> {
     const stats: SportStatsContract = formatVolleyballStatsContract({
         matchId: `${args.homeTeam}-${args.awayTeam}`,
-        recentForm: ['W', 'W', 'L', 'W', 'W'],
-        rank: 2,
-        totalTeams: 10,
-        points: 24,
-        playedMatches: 9,
-        h2h: { wins: 3, draws: 0, losses: 1, lastResult: '3-1' },
-        setWinRate: '75%',
     })
 
-    const summary = `🏐 Lentopallon eräanalyysi (${args.homeTeam} vs ${args.awayTeam}): Sarjasijoitus #${
-        stats.standingsSummary?.rank || 2
-    }, Viimeisimmät ottelut [${(stats.recentForm || []).join('-')}]. Keskinäiset: ${
-        stats.headToHead?.wins || 0
-    } voittoa.`
+    const summary = `Lentopallo (${args.homeTeam} vs ${args.awayTeam}). Sarjamuotoa ei keksitä ilman TASO-ottelua.`
 
     return {
         content: [

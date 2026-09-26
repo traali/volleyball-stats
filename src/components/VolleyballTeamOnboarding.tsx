@@ -9,11 +9,7 @@ interface VolleyballTeamOnboardingProps {
 
 const STORAGE_KEY = 'volleyball_custom_teams'
 
-const defaultTeams: CustomVolleyballTeam[] = [
-  { id: 'kale-c', name: 'KaLe C-tytöt', tournamentOrCategory: 'C-tytöt SM-sarja', addedAt: new Date().toISOString() },
-  { id: 'ducks-c', name: 'Vantaa Ducks C-pojat', tournamentOrCategory: 'C-pojat Aluesarja', addedAt: new Date().toISOString() },
-  { id: 'puwo-c', name: 'PuWo Kuopio', tournamentOrCategory: 'B-tytöt Aluemestaruus', addedAt: new Date().toISOString() },
-]
+const defaultTeams: CustomVolleyballTeam[] = []
 
 export function VolleyballTeamOnboarding({ onSelectTeam, currentTeamId }: VolleyballTeamOnboardingProps) {
   const [teams, setTeams] = useState<CustomVolleyballTeam[]>(() => {

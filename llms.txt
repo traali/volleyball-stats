@@ -1,7 +1,10 @@
 # Volleyball Stats
 
-UI catalog: `docs/UI_COMPONENTS.md` (2026-09-26). One screen, six components, no router.
+UI catalog: `docs/UI_COMPONENTS.md`.
 
-Not TASO-parity with basketball. Default match id is `987654`, default team is `kale-c`, and the Live pill is static.
+Same discovery shell as basketball: Etusivu, Selaa, Haku, Suosikit. No hardcoded match.
+
+Extra, because volleyball records them: set start and end clocks, six-shirt rotations per set, and a wall-clock time on every `piste` event. Do not invent any of the three when TASO omitted them.
 
 Live: https://volleyball-stats-7xq.pages.dev
+Proxy referer: `https://tulospalvelu.lentopallo.fi/`
