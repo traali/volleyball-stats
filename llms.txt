@@ -1,0 +1,7 @@
+# Volleyball Stats
+
+UI catalog: `docs/UI_COMPONENTS.md` (2026-09-26). One screen, six components, no router.
+
+Not TASO-parity with basketball. Default match id is `987654`, default team is `kale-c`, and the Live pill is static.
+
+Live: https://volleyball-stats-7xq.pages.dev
