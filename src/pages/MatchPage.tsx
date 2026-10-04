@@ -4,7 +4,7 @@ import { PointTape } from '../components/PointTape'
 import { RotationBoard } from '../components/RotationBoard'
 import { VolleyballPreviewExport } from '../components/VolleyballPreviewExport'
 import { VolleyballSetGrid } from '../components/VolleyballSetGrid'
-import { phaseOf, pointsFromEvents, rotationsFromMatch, setsFromMatch } from '../domain/rally'
+import { phaseForDisplay, pointsFromEvents, resultIsTrusted, rotationsFromMatch, setsFromMatch, setWasPlayed } from '../domain/rally'
 import { fetchMatchRaw } from '../services/discovery'
 import type { VolleyballMatchDetail, VolleyballSet } from '../types/volleyball'
 
@@ -56,10 +56,10 @@ function MatchBody({ matchId }: { matchId: string }) {
         {view.detail.scheduledTime} · {view.detail.venue}
         {view.detail.courtName ? ` · ${view.detail.courtName}` : ''}
       </p>
-      {view.phase !== 'upcoming' && (
+      {view.trusted && view.phase !== 'upcoming' && (
         <p className="text-3xl font-black font-mono text-amber-300">{view.detail.setsWonHome}–{view.detail.setsWonAway}</p>
       )}
-      {view.phase === 'upcoming' && <p className="text-sm text-zinc-500">Ei vielä pelattu. Erät ja pisteajat tulevat, kun TASO ne kirjaa.</p>}
+      {!view.trusted && <p className="text-sm text-zinc-500">Ei kirjattua tulosta. Ei näytetä 0–0:aa.</p>}
       <div className="flex flex-wrap gap-1.5">
         {tabs.map((t) => (
           <button key={t.id} type="button" onClick={() => setTab(t.id)} className={`px-3 py-2 rounded-xl text-xs font-bold ${tab === t.id ? 'bg-amber-500/20 text-amber-200' : 'text-zinc-400'}`}>{t.label}</button>
@@ -96,8 +96,9 @@ function MatchBody({ matchId }: { matchId: string }) {
 }
 
 function present(raw: Record<string, unknown>) {
-  const setLines = setsFromMatch(raw)
-  const phase = phaseOf(raw.status)
+  const setLines = setsFromMatch(raw).filter(setWasPlayed)
+  const phase = phaseForDisplay(raw)
+  const trusted = resultIsTrusted(raw)
   const sets: VolleyballSet[] = setLines.map((set) => ({
     number: set.number,
     homeScore: set.home,
@@ -120,8 +121,8 @@ function present(raw: Record<string, unknown>) {
     awayTeamName: s(raw.team_B_name),
     homeTeamId: homeId,
     awayTeamId: awayId,
-    setsWonHome: num(raw.fs_A) || homeWon,
-    setsWonAway: num(raw.fs_B) || awayWon,
+    setsWonHome: trusted ? (num(raw.fs_A) || homeWon) : 0,
+    setsWonAway: trusted ? (num(raw.fs_B) || awayWon) : 0,
     sets,
     totalPointsHome: sets.reduce((n, set) => n + set.homeScore, 0),
     totalPointsAway: sets.reduce((n, set) => n + set.awayScore, 0),
@@ -130,6 +131,7 @@ function present(raw: Record<string, unknown>) {
   return {
     detail,
     phase,
+    trusted,
     setLines: setLines.map((set) => ({
       ...set,
       firstServe: set.firstServeTeamId === homeId ? detail.homeTeamName : set.firstServeTeamId === awayId ? detail.awayTeamName : '',
