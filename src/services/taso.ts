@@ -1,6 +1,6 @@
 const PROXY = 'https://taso-proxy.sakkoja.workers.dev/volley'
 const ORIGIN = 'https://lentopallo-api.torneopal.net/taso/rest'
-const KEY = 'df8e84j9xtdz269euy3h'
+const KEY = import.meta.env.VITE_VOLLEY_ACCEPT || ''
 
 export async function volleyGet(path: string): Promise<Record<string, unknown> | null> {
   const sep = path.includes('?') ? '&' : '?'
