@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { pointsFromEvents, rotationsFromMatch, setsFromMatch } from './rally'
+import { pointsFromEvents, resultIsTrusted, rotationsFromMatch, setsFromMatch } from './rally'
 
 const raw = {
   team_A_id: '1',
@@ -39,5 +39,15 @@ describe('rally tape', () => {
     expect(rot).toHaveLength(1)
     expect(rot[0].names[0]).toBe('Aada Korhonen')
     expect(rot[0].shirts).toHaveLength(6)
+  })
+})
+
+describe('resultIsTrusted', () => {
+  it('does not trust a Played 0-0 with no set', () => {
+    expect(resultIsTrusted({ status: '1', fs_A: '0', fs_B: '0', date: '2099-06-01', time: '18:00' })).toBe(false)
+  })
+
+  it('trusts a set that actually started', () => {
+    expect(resultIsTrusted({ status: '1', fs_A: '3', fs_B: '1', p1s_A: '25', p1s_B: '18' })).toBe(true)
   })
 })

@@ -8,7 +8,7 @@
 
 import { formatVolleyballStatsContract } from './types/contracts'
 import type { SportStatsContract } from './types/contracts'
-import { setsFromMatch } from './domain/rally'
+import { resultIsTrusted, setsFromMatch, setWasPlayed } from './domain/rally'
 import { fetchGroup, fetchMatchRaw, fetchPlayer, searchDiscovery } from './services/discovery'
 
 export interface McpToolResponse {
@@ -77,20 +77,21 @@ export async function getVolleyballMatchTool(args: Record<string, unknown>) {
     if (!matchId) return text('matchId is required. Do not invent a set score.')
     const raw = await fetchMatchRaw(matchId)
     if (!raw) return text(`Ottelua ${matchId} ei löytynyt TASOsta.`)
-    const sets = setsFromMatch(raw)
+    const sets = setsFromMatch(raw).filter(setWasPlayed)
     const home = field(raw, 'team_A_name')
     const away = field(raw, 'team_B_name')
+    const trusted = resultIsTrusted(raw)
     const setText = sets.map((set) => `${set.number}. erä ${set.home}–${set.away}`).join(', ')
-    const summary = sets.length
+    const summary = trusted
         ? `${home} ${field(raw, 'fs_A')}–${field(raw, 'fs_B')} ${away}. ${setText}`
-        : `${home} vs ${away} ${field(raw, 'date')} ${field(raw, 'time')}`.trim()
+        : `${home} vs ${away} ${field(raw, 'date')} ${field(raw, 'time')}. Ei kirjattua tulosta.`.trim()
     return text(summary, {
         match: {
             matchId,
             home,
             away,
-            setsWonHome: field(raw, 'fs_A'),
-            setsWonAway: field(raw, 'fs_B'),
+            setsWonHome: trusted ? field(raw, 'fs_A') : '',
+            setsWonAway: trusted ? field(raw, 'fs_B') : '',
             sets,
             date: field(raw, 'date'),
             time: field(raw, 'time'),

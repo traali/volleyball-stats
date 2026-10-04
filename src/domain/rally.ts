@@ -129,3 +129,23 @@ export function phaseOf(status: unknown): 'upcoming' | 'live' | 'completed' {
   if (s.includes('live') || s === '2' || s === 'started') return 'live'
   return 'upcoming'
 }
+
+export function setWasPlayed(set: SetLine): boolean {
+  return set.home > 0 || set.away > 0 || Boolean(set.start) || Boolean(set.end)
+}
+
+/** A Torneopal 0–0 with status Played is not a result unless a set actually started. */
+export function resultIsTrusted(raw: Record<string, unknown>): boolean {
+  if (setsFromMatch(raw).some(setWasPlayed)) return true
+  if (phaseOf(raw.status) === 'live') return true
+  const a = str(raw.fs_A)
+  const b = str(raw.fs_B)
+  return a !== '' && b !== '' && !(a === '0' && b === '0')
+}
+
+export function phaseForDisplay(raw: Record<string, unknown>): 'upcoming' | 'live' | 'completed' {
+  const statusPhase = phaseOf(raw.status)
+  if (statusPhase === 'live') return 'live'
+  if (!resultIsTrusted(raw)) return 'upcoming'
+  return statusPhase === 'upcoming' ? 'completed' : statusPhase
+}
