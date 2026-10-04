@@ -8,6 +8,8 @@
 
 import { formatVolleyballStatsContract } from './types/contracts'
 import type { SportStatsContract } from './types/contracts'
+import { setsFromMatch } from './domain/rally'
+import { fetchGroup, fetchMatchRaw, fetchPlayer, searchDiscovery } from './services/discovery'
 
 export interface McpToolResponse {
     content: Array<{
@@ -31,39 +33,119 @@ export interface McpToolResponse {
  * Returns structured SportStatsContract data and an interactive UI widget resource URI.
  */
 export async function getVolleyballSetsTool(args: {
-    homeTeam: string
-    awayTeam: string
+    homeTeam?: string
+    awayTeam?: string
     leagueName?: string
+    matchId?: string
 }): Promise<McpToolResponse> {
-    const stats: SportStatsContract = formatVolleyballStatsContract({
-        matchId: `${args.homeTeam}-${args.awayTeam}`,
-    })
-
-    const summary = `Lentopallo (${args.homeTeam} vs ${args.awayTeam}). Sarjamuotoa ei keksitä ilman TASO-ottelua.`
-
-    return {
-        content: [
-            {
+    const matchId = String(args.matchId || '').trim()
+    if (!matchId) {
+        return {
+            content: [{
                 type: 'text',
-                text: summary,
-            },
-            {
-                type: 'resource',
-                resource: {
-                    uri: 'data://volleyball/stats.json',
-                    mimeType: 'application/json',
-                    text: JSON.stringify(stats),
-                },
-            },
-        ],
+                text: 'matchId is required. Set scores are not invented from team names.',
+            }],
+        }
+    }
+    const loaded = await getVolleyballMatchTool({ matchId })
+    const stats: SportStatsContract = formatVolleyballStatsContract({
+        matchId,
+        baseUrl: 'https://volleyball-stats-7xq.pages.dev',
+    })
+    return {
+        content: loaded.content,
         _meta: {
             ui: {
-                resourceUri: `ui://volleyball/sets?home=${encodeURIComponent(args.homeTeam)}&away=${encodeURIComponent(
-                    args.awayTeam
-                )}&league=${encodeURIComponent(args.leagueName || 'Lentopallosarja')}`,
+                resourceUri: `ui://volleyball/sets?matchId=${encodeURIComponent(matchId)}`,
             },
         },
+        ...('match' in loaded ? { match: loaded.match, stats } : { stats }),
     }
+}
+
+function text(message: string, extra?: Record<string, unknown>): McpToolResponse & Record<string, unknown> {
+    return { content: [{ type: 'text', text: message }], ...extra }
+}
+
+function field(row: Record<string, unknown>, key: string): string {
+    const value = row[key]
+    return value == null ? '' : String(value).trim()
+}
+
+export async function getVolleyballMatchTool(args: Record<string, unknown>) {
+    const matchId = String(args.matchId || '').trim()
+    if (!matchId) return text('matchId is required. Do not invent a set score.')
+    const raw = await fetchMatchRaw(matchId)
+    if (!raw) return text(`Ottelua ${matchId} ei löytynyt TASOsta.`)
+    const sets = setsFromMatch(raw)
+    const home = field(raw, 'team_A_name')
+    const away = field(raw, 'team_B_name')
+    const setText = sets.map((set) => `${set.number}. erä ${set.home}–${set.away}`).join(', ')
+    const summary = sets.length
+        ? `${home} ${field(raw, 'fs_A')}–${field(raw, 'fs_B')} ${away}. ${setText}`
+        : `${home} vs ${away} ${field(raw, 'date')} ${field(raw, 'time')}`.trim()
+    return text(summary, {
+        match: {
+            matchId,
+            home,
+            away,
+            setsWonHome: field(raw, 'fs_A'),
+            setsWonAway: field(raw, 'fs_B'),
+            sets,
+            date: field(raw, 'date'),
+            time: field(raw, 'time'),
+            venue: field(raw, 'venue_name'),
+        },
+    })
+}
+
+export async function getVolleyballPlayerTool(args: Record<string, unknown>) {
+    const playerId = String(args.playerId || '').trim()
+    if (!playerId) return text('playerId is required.')
+    const player = await fetchPlayer(playerId)
+    if (!player) return text(`Pelaajaa ${playerId} ei löytynyt.`)
+    const name = field(player, 'player_name')
+        || `${field(player, 'first_name')} ${field(player, 'last_name')}`.trim()
+        || field(player, 'name')
+    return text(`${name || playerId}`, { player: { playerId, name, team: field(player, 'team_name') } })
+}
+
+export async function searchVolleyballTool(args: Record<string, unknown>) {
+    const query = String(args.query || args.q || '').trim()
+    if (query.length < 2) return text('query is required (club, series, or a lentopallo link).')
+    const hits = await searchDiscovery(query)
+    const summary = hits.length === 0
+        ? `Ei osumia haulle «${query}».`
+        : hits.slice(0, 12).map((hit) => `${hit.kind} ${hit.title} (${hit.id})`).join('\n')
+    return text(summary, { hits: hits.slice(0, 20) })
+}
+
+export async function getVolleyballStandingsTool(args: Record<string, unknown>) {
+    const competitionId = String(args.competitionId || '').trim()
+    const categoryId = String(args.categoryId || '').trim()
+    const groupId = String(args.groupId || '').trim()
+    if (!competitionId || !categoryId || !groupId) {
+        return text('Tarvitaan competitionId, categoryId ja groupId. Sarjataulukkoa ei keksitä.')
+    }
+    const group = await fetchGroup(competitionId, categoryId, groupId)
+    const teams = [...group.teams].sort(
+        (a, b) => Number(a.current_standing || 99) - Number(b.current_standing || 99),
+    )
+    const lines = teams.map((team) =>
+        `${field(team, 'current_standing')}. ${field(team, 'team_name')} ${field(team, 'points')} p`,
+    )
+    return text(lines.join('\n') || 'Lohkossa ei ole joukkueita.', {
+        competition: group.competition,
+        category: group.category,
+        group: group.name,
+        teams: teams.map((team) => ({
+            rank: field(team, 'current_standing'),
+            teamId: field(team, 'team_id'),
+            team: field(team, 'team_name'),
+            played: field(team, 'matches_played'),
+            points: field(team, 'points'),
+        })),
+    })
 }
 
 export interface ModelContextTool {
@@ -100,7 +182,7 @@ declare global {
 
 let _volleyballMessageHandler: ((event: MessageEvent) => void) | null = null
 
-export function registerVolleyballWebMCP(): ModelContextRegistry | undefined {
+export async function registerVolleyballWebMCP(): Promise<ModelContextRegistry | undefined> {
     if (typeof window === 'undefined') return
 
     const registeredTools = new Map<string, ModelContextTool>()
@@ -155,7 +237,58 @@ export function registerVolleyballWebMCP(): ModelContextRegistry | undefined {
         },
     }
 
-    if (typeof document !== 'undefined') {
+    const tools: ModelContextTool[] = [
+        {
+            name: 'search_volleyball',
+            description: 'Search Lentopalloliitto clubs and series. Pass a club name or a tulospalvelu link.',
+            inputSchema: { type: 'object', properties: { query: { type: 'string' } }, required: ['query'] },
+            execute: searchVolleyballTool,
+        },
+        {
+            name: 'get_volleyball_match',
+            description: 'Fetch a TASO volleyball match by matchId: set scores and the result. Does not invent a score.',
+            inputSchema: { type: 'object', properties: { matchId: { type: 'string' } }, required: ['matchId'] },
+            execute: getVolleyballMatchTool,
+        },
+        {
+            name: 'get_volleyball_player',
+            description: 'Fetch a volleyball player by playerId.',
+            inputSchema: { type: 'object', properties: { playerId: { type: 'string' } }, required: ['playerId'] },
+            execute: getVolleyballPlayerTool,
+        },
+        {
+            name: 'get_volleyball_sets',
+            description: 'Set scores for one TASO match. Requires matchId. Team names alone are not a result.',
+            inputSchema: { type: 'object', properties: { matchId: { type: 'string' } }, required: ['matchId'] },
+            execute: async (args) => getVolleyballSetsTool(args),
+        },
+        {
+            name: 'get_volleyball_standings',
+            description: 'Live group table from TASO. Requires competitionId, categoryId and groupId. Never invent a table.',
+            inputSchema: {
+                type: 'object',
+                properties: {
+                    competitionId: { type: 'string' },
+                    categoryId: { type: 'string' },
+                    groupId: { type: 'string' },
+                },
+                required: ['competitionId', 'categoryId', 'groupId'],
+            },
+            execute: getVolleyballStandingsTool,
+        },
+    ]
+
+    const host = (typeof document !== 'undefined'
+        ? (document as Document & { modelContext?: { registerTool?: (tool: ModelContextTool) => unknown; callTool?: unknown } }).modelContext
+        : undefined)
+    if (host && typeof host.registerTool === 'function' && typeof host.callTool !== 'function') {
+        for (const tool of tools) {
+            try { await host.registerTool(tool) } catch { /* host already has this name */ }
+        }
+        return undefined
+    }
+
+    if (typeof document !== 'undefined' && !(host && typeof host.registerTool === 'function')) {
         try {
             Object.defineProperty(document, 'modelContext', {
                 value: registry,
@@ -167,7 +300,7 @@ export function registerVolleyballWebMCP(): ModelContextRegistry | undefined {
             ;(document as unknown as { modelContext?: ModelContextRegistry }).modelContext = registry
         }
     }
-    if (typeof navigator !== 'undefined') {
+    if (typeof navigator !== 'undefined' && !(navigator as Navigator & { modelContext?: { registerTool?: unknown } }).modelContext) {
         try {
             Object.defineProperty(navigator, 'modelContext', {
                 value: registry,
@@ -176,11 +309,12 @@ export function registerVolleyballWebMCP(): ModelContextRegistry | undefined {
                 writable: true,
             })
         } catch {
-            ;(navigator as unknown as { modelContext?: ModelContextRegistry }).modelContext = registry
+            /* host getter */
         }
     }
     if (typeof window !== 'undefined') {
-        ;(window as unknown as { modelContext?: ModelContextRegistry }).modelContext = registry
+        const win = window as Window & { modelContext?: ModelContextRegistry }
+        if (!win.modelContext) win.modelContext = registry
 
         if (_volleyballMessageHandler) {
             window.removeEventListener('message', _volleyballMessageHandler)
@@ -210,46 +344,12 @@ export function registerVolleyballWebMCP(): ModelContextRegistry | undefined {
         window.addEventListener('message', messageHandler)
 
         window.dispatchEvent(
-            new CustomEvent('webmcp:ready', { detail: { location: 'navigator.modelContext & document.modelContext' } })
+            new CustomEvent('webmcp:ready', { detail: { location: 'document.modelContext' } })
         )
     }
 
-    // Register get_volleyball_sets tool
-    registry.registerTool({
-        name: 'get_volleyball_sets',
-        description: 'Returns volleyball set breakdowns, point totals, deuce thresholds, and UI widget URI.',
-        inputSchema: {
-            type: 'object',
-            properties: {
-                homeTeam: { type: 'string', description: 'Home team name' },
-                awayTeam: { type: 'string', description: 'Away team name' },
-                leagueName: { type: 'string', description: 'Optional competition name' },
-            },
-            required: ['homeTeam', 'awayTeam'],
-        },
-        execute: async (args) => getVolleyballSetsTool(args as { homeTeam: string; awayTeam: string; leagueName?: string }),
-    })
-
-    // Register get_volleyball_standings tool
-    registry.registerTool({
-        name: 'get_volleyball_standings',
-        description: 'Returns volleyball standings, Lentopalloliitto 3-1-0/3-2-1 table points, set quotients and ball ratios.',
-        inputSchema: {
-            type: 'object',
-            properties: {
-                pool: { type: 'string', description: 'Pool or division identifier' },
-            },
-        },
-        execute: async ({ pool }) => ({
-            pool: (pool as string) || 'B-tytöt SM-sarja',
-            teams: [
-                { rank: 1, team: 'PuMa Volley', played: 6, won3_0_or_3_1: 5, won3_2: 1, lost2_3: 0, lost0_3_or_1_3: 0, points: 17, setRatio: '18/4' },
-                { rank: 2, team: 'LP Viesti Akatemia', played: 6, won3_0_or_3_1: 4, won3_2: 0, lost2_3: 1, lost0_3_or_1_3: 1, points: 13, setRatio: '14/8' },
-            ],
-            pointsRule: '3-0 / 3-1 win: 3p (loser 0p). 3-2 win: 2p (loser 1p).',
-        }),
-    })
-
-    console.log('✨ [WebMCP] Successfully registered Volleyball Stats tools into navigator.modelContext & document.modelContext')
+    for (const tool of tools) {
+        await registry.registerTool(tool)
+    }
     return registry
 }
