@@ -84,7 +84,7 @@ export function formatVolleyballStatsContract(data: {
       ...(data.setWinRate ? { setWinRate: data.setWinRate } : {}),
       ...(data.topAttacker ? { topAttacker: data.topAttacker } : {}),
     },
-    deepLinkUrl: `${base}/match/${data.matchId}?theme=night-captain`,
+    deepLinkUrl: `${base}/#/match/${encodeURIComponent(data.matchId)}`,
   }
 }
 
