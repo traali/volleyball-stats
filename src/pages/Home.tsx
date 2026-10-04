@@ -17,7 +17,7 @@ export function Home() {
     <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
       <div>
         <h1 className="text-2xl font-black">Lentopallotilastot</h1>
-        <p className="text-sm text-zinc-400">Hae seura, sarja tai liitä tulospalvelu-linkki. Ei kovakoodattua ottelua.</p>
+        <p className="text-sm text-zinc-400">Hae seuran nimellä tai liitä tulospalvelu-linkki. Ottelut tulevat lentopallon tulospalvelusta.</p>
       </div>
       <form onSubmit={(e) => { e.preventDefault(); go(q) }} className="flex gap-2">
         <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Hae PuMa, U15 tai liitä lentopallo-linkki" className="flex-1 min-h-12 rounded-2xl bg-zinc-900 border border-zinc-800 px-4 text-sm" />
@@ -51,8 +51,8 @@ export function Home() {
 
 function IdRow({ label, value, setValue, onGo }: { label: string; value: string; setValue: (v: string) => void; onGo: (id: string) => void }) {
   return (
-    <form onSubmit={(e) => { e.preventDefault(); if (value.trim()) onGo(value.trim()) }} className="flex gap-2 items-center">
-      <label className="text-xs text-zinc-400 w-24">{label}</label>
+    <form onSubmit={(e) => { e.preventDefault(); if (value.trim()) onGo(value.trim()) }} className="flex flex-col gap-1.5 sm:flex-row sm:items-center">
+      <label className="text-xs text-zinc-400 sm:w-24">{label}</label>
       <input value={value} onChange={(e) => setValue(e.target.value)} className="flex-1 min-h-11 rounded-xl bg-zinc-950 border border-zinc-800 px-3 text-sm" />
       <button type="submit" className="min-h-11 px-3 rounded-xl bg-zinc-800 text-xs font-bold">Avaa</button>
     </form>
