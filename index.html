@@ -4,6 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lentopallo Tilastot — Volleyball Stats</title>
+    <script>
+      // A shared path link like /match/803471 lands here via _redirects; move it into the hash router before the app loads.
+      (function () {
+        var l = window.location
+        if (l.pathname !== '/' && !l.hash && !/\.[a-z0-9]+$/i.test(l.pathname)) {
+          window.history.replaceState(null, '', '/#' + l.pathname + l.search)
+        }
+      })()
+    </script>
   </head>
   <body class="bg-[#0a0b0e] text-zinc-100 min-h-screen">
     <div id="root"></div>
