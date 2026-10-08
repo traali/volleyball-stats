@@ -79,9 +79,22 @@ export async function fetchTeam(teamId: string) {
   return (data?.team || null) as Record<string, unknown> | null
 }
 
+/** Only games this team actually plays in. TASO can answer team_id with the whole group's list. */
+export function onlyTeamMatches(rows: Record<string, unknown>[], teamId: string) {
+  const id = String(teamId).trim()
+  return rows.filter((m) => String(m.team_A_id ?? '').trim() === id || String(m.team_B_id ?? '').trim() === id)
+}
+
 export async function fetchMatches(teamId: string) {
   const data = await volleyGet(`getMatches?team_id=${encodeURIComponent(teamId)}`)
-  return asList(data, 'matches')
+  return onlyTeamMatches(asList(data, 'matches'), teamId)
+}
+
+export const FEDERATION = 'https://tulospalvelu.lentopallo.fi'
+export const federationUrl = {
+  match: (id: string) => `${FEDERATION}/match/${encodeURIComponent(id)}/info`,
+  team: (id: string) => `${FEDERATION}/team/${encodeURIComponent(id)}/info`,
+  player: (id: string) => `${FEDERATION}/person/${encodeURIComponent(id)}/info`,
 }
 
 export async function fetchMatchRaw(matchId: string) {
