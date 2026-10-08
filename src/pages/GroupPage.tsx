@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { resultIsTrusted } from '../domain/rally'
+import { resultText } from '../domain/rally'
 import { fetchGroup } from '../services/discovery'
 
 function s(v: unknown) { return v == null ? '' : String(v) }
@@ -51,7 +51,7 @@ export function GroupPage() {
             <Link to={`/match/${s(m.match_id)}`} className="block rounded-xl border border-zinc-800 px-3 py-2 text-sm">
               <span className="text-zinc-500">{s(m.date).slice(0, 10)} {s(m.time).slice(0, 5)} </span>
               {s(m.team_A_name)} – {s(m.team_B_name)}
-              {resultIsTrusted(m) && <span className="font-mono"> {s(m.fs_A)}–{s(m.fs_B)}</span>}
+              {resultText(m) && <span className="font-mono"> {resultText(m)}</span>}
             </Link>
           </li>
         ))}

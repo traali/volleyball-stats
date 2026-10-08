@@ -4,7 +4,7 @@ import { PointTape } from '../components/PointTape'
 import { RotationBoard } from '../components/RotationBoard'
 import { VolleyballPreviewExport } from '../components/VolleyballPreviewExport'
 import { VolleyballSetGrid } from '../components/VolleyballSetGrid'
-import { phaseForDisplay, pointsFromEvents, resultIsTrusted, rotationsFromMatch, setsFromMatch, setWasPlayed } from '../domain/rally'
+import { forfeitingSide, isForfeit, phaseForDisplay, pointsFromEvents, resultIsTrusted, rotationsFromMatch, setsFromMatch, setWasPlayed } from '../domain/rally'
 import { fetchMatchRaw } from '../services/discovery'
 import type { VolleyballMatchDetail, VolleyballSet } from '../types/volleyball'
 
@@ -56,7 +56,12 @@ function MatchBody({ matchId }: { matchId: string }) {
         {view.detail.scheduledTime} · {view.detail.venue}
         {view.detail.courtName ? ` · ${view.detail.courtName}` : ''}
       </p>
-      {view.trusted && view.phase !== 'upcoming' && (
+      {view.forfeit && (
+        <p className="text-lg font-black text-amber-300">
+          Luovutus{view.forfeitBy ? `: ${view.forfeitBy} luovutti` : ''}
+        </p>
+      )}
+      {view.trusted && !view.forfeit && view.phase !== 'upcoming' && (
         <p className="text-3xl font-black font-mono text-amber-300">{view.detail.setsWonHome}–{view.detail.setsWonAway}</p>
       )}
       {!view.trusted && <p className="text-sm text-zinc-500">Ei kirjattua tulosta. Ei näytetä 0–0:aa.</p>}
@@ -137,7 +142,9 @@ function present(raw: Record<string, unknown>) {
       firstServe: set.firstServeTeamId === homeId ? detail.homeTeamName : set.firstServeTeamId === awayId ? detail.awayTeamName : '',
     })),
     rotations: rotationsFromMatch(raw),
-    points: pointsFromEvents(raw.events),
+    points: pointsFromEvents(raw.events, homeId),
+    forfeit: isForfeit(raw),
+    forfeitBy: forfeitingSide(raw) === 'A' ? detail.homeTeamName : forfeitingSide(raw) === 'B' ? detail.awayTeamName : '',
   }
 }
 

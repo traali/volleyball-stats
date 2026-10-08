@@ -1,4 +1,4 @@
-import type { RallyPoint } from '../domain/rally'
+import { pointKindLabel, type RallyPoint } from '../domain/rally'
 
 export function PointTape({ points, homeId, home, away }: { points: RallyPoint[]; homeId: string; home: string; away: string }) {
   if (points.length === 0) {
@@ -13,6 +13,7 @@ export function PointTape({ points, homeId, home, away }: { points: RallyPoint[]
           <span className="font-mono text-sm font-bold w-14 shrink-0">{p.score || '—'}</span>
           <span className="text-sm text-zinc-200 truncate">
             {p.shirt ? `#${p.shirt} ` : ''}{p.playerName || (p.teamId === homeId ? home : away)}
+            {p.kind && <span className="text-zinc-500"> · {pointKindLabel(p.kind)}</span>}
           </span>
         </li>
       ))}

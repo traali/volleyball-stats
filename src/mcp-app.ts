@@ -8,7 +8,7 @@
 
 import { formatVolleyballStatsContract } from './types/contracts'
 import type { SportStatsContract } from './types/contracts'
-import { resultIsTrusted, setsFromMatch, setWasPlayed } from './domain/rally'
+import { isForfeit, resultIsTrusted, setsFromMatch, setWasPlayed } from './domain/rally'
 import { fetchGroup, fetchMatchRaw, fetchPlayer, searchDiscovery } from './services/discovery'
 
 export interface McpToolResponse {
@@ -82,7 +82,10 @@ export async function getVolleyballMatchTool(args: Record<string, unknown>) {
     const away = field(raw, 'team_B_name')
     const trusted = resultIsTrusted(raw)
     const setText = sets.map((set) => `${set.number}. erä ${set.home}–${set.away}`).join(', ')
-    const summary = trusted
+    const forfeit = isForfeit(raw)
+    const summary = forfeit
+        ? `${home} – ${away}: luovutus. Ei erätuloksia.`
+        : trusted
         ? `${home} ${field(raw, 'fs_A')}–${field(raw, 'fs_B')} ${away}. ${setText}`
         : `${home} vs ${away} ${field(raw, 'date')} ${field(raw, 'time')}. Ei kirjattua tulosta.`.trim()
     return text(summary, {
@@ -90,8 +93,9 @@ export async function getVolleyballMatchTool(args: Record<string, unknown>) {
             matchId,
             home,
             away,
-            setsWonHome: trusted ? field(raw, 'fs_A') : '',
-            setsWonAway: trusted ? field(raw, 'fs_B') : '',
+            setsWonHome: trusted && !forfeit ? field(raw, 'fs_A') : '',
+            setsWonAway: trusted && !forfeit ? field(raw, 'fs_B') : '',
+            forfeit,
             sets,
             date: field(raw, 'date'),
             time: field(raw, 'time'),

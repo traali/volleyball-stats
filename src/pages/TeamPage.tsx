@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useFavorites } from '../hooks/useFavorites'
-import { resultIsTrusted } from '../domain/rally'
+import { resultIsTrusted, resultText } from '../domain/rally'
 import { fetchMatches, fetchTeam } from '../services/discovery'
 
 function s(v: unknown) { return v == null ? '' : String(v).trim() }
@@ -38,7 +38,7 @@ export function TeamPage() {
               <Link to={`/match/${s(m.match_id)}`} className="block rounded-xl border border-zinc-800 px-3 py-2 text-sm">
                 <span className="text-zinc-500">{s(m.date).slice(0, 10)} {s(m.time).slice(0, 5)} </span>
                 {s(m.team_A_name)} – {s(m.team_B_name)}
-                {trusted && <span className="font-mono"> {s(m.fs_A)}–{s(m.fs_B)}</span>}
+                {trusted && <span className="font-mono"> {resultText(m)}</span>}
                 {s(m.venue_name) && <span className="block text-xs text-zinc-500">{s(m.venue_name)}{s(m.venue_location_name) ? ` · ${s(m.venue_location_name)}` : ''}</span>}
               </Link>
             </li>

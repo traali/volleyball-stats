@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { pointsFromEvents, resultIsTrusted, rotationsFromMatch, setsFromMatch } from './rally'
+import { minutesBetween, phaseForDisplay, pointsFromEvents, resultIsTrusted, resultText, rotationsFromMatch, setsFromMatch } from './rally'
 
 const raw = {
   team_A_id: '1',
@@ -14,7 +14,7 @@ const raw = {
   playing_positions_A: { '1': ['7', '4', '10', '12', '2', '9', '3', ''] },
   playing_positions_B: { '1': [] },
   events: [
-    { code: 'piste', period: '1', wall_time: '10:02:11', description: '1-0', player_name: 'Aada Korhonen', shirt_number: '7', team_id: '1' },
+    { code: 'piste', period: '1', wall_time: '10:02:11', description: 'attack', player_name: 'Aada Korhonen', shirt_number: '7', team_id: '1', team: 'A', ps_A: 1, ps_B: 0 },
     { code: 'vaihto', period: '1', wall_time: '10:03:00', description: 'x' },
     { code: 'pelipaikat', period: '1' },
   ],
@@ -25,7 +25,8 @@ describe('rally tape', () => {
     const points = pointsFromEvents(raw.events)
     expect(points).toHaveLength(1)
     expect(points[0].wallTime).toBe('10:02:11')
-    expect(points[0].score).toBe('1-0')
+    expect(points[0].score).toBe('1–0')
+    expect(points[0].kind).toBe('attack')
   })
 
   it('does not invent a set that has no score', () => {
@@ -49,5 +50,53 @@ describe('resultIsTrusted', () => {
 
   it('trusts a set that actually started', () => {
     expect(resultIsTrusted({ status: '1', fs_A: '3', fs_B: '1', p1s_A: '25', p1s_B: '18' })).toBe(true)
+  })
+})
+
+// Shape copied from real Torneopal getMatch 811783 (4.10.2026): description is the point TYPE,
+// ps_A/ps_B carry the running set score.
+describe('real point tape shape', () => {
+  const ev = [
+    { code: 'pelipaikat', period: '1', description: '7=15,2=6' },
+    { code: 'piste', period: '1', team: 'A', team_id: '63825', description: 'block', ps_A: 1, ps_B: 0, wall_time: '12:00:21' },
+    { code: 'piste', period: '1', team: 'A', team_id: '63825', description: 'error_attack', ps_A: 2, ps_B: 0, wall_time: '12:00:47' },
+    { code: 'piste', period: '1', team: 'B', team_id: '63508', description: 'serve', ps_A: 2, ps_B: 1, wall_time: '12:01:10' },
+    { code: 'piste', period: '2', team: 'B', team_id: '63508', description: 'return', ps_A: 0, ps_B: 1, wall_time: '12:21:30' },
+  ]
+  it('shows the running score, never the point type, in the score column', () => {
+    const p = pointsFromEvents(ev, '63825')
+    expect(p.map((x) => x.score)).toEqual(['1–0', '2–0', '2–1', '0–1'])
+    expect(p.map((x) => x.kind)).toEqual(['block', 'error_attack', 'serve', 'return'])
+  })
+  it('counts the score itself when ps_A/ps_B are missing, restarting each set', () => {
+    const bare = ev.map((e) => ({ ...e, ps_A: undefined, ps_B: undefined }))
+    expect(pointsFromEvents(bare, '63825').map((x) => x.score)).toEqual(['1–0', '2–0', '2–1', '0–1'])
+  })
+})
+
+describe('set duration', () => {
+  it('derives minutes from start and end when p*_duration is blank', () => {
+    expect(minutesBetween('12:00:21', '12:18:19')).toBe('18')
+    const sets = setsFromMatch({ p1s_A: '25', p1s_B: '16', p1_start_time: '12:00:21', p1_end_time: '12:18:19', p1_duration: '' })
+    expect(sets[0].durationMin).toBe('18')
+  })
+  it('stays blank when a clock is missing', () => {
+    expect(minutesBetween('', '12:18:19')).toBe('')
+    expect(minutesBetween('12:18:19', '12:00:00')).toBe('')
+  })
+})
+
+// Real Forfeited row: Wartti/N2 – OsVa/N2, 4.10.2026, no set scores, forfeit_A '1'.
+describe('forfeit', () => {
+  const wo = { status: 'Forfeited', fs_A: '', fs_B: '', p1s_A: '', p1s_B: '', forfeit_A: '1', walkover: 0 }
+  it('is a result, not an upcoming game', () => {
+    expect(resultIsTrusted(wo)).toBe(true)
+    expect(phaseForDisplay(wo)).toBe('completed')
+  })
+  it('is never printed as 0–0', () => {
+    expect(resultText(wo)).toBe('luovutus')
+  })
+  it('a Fixture 0–0 still has no result text', () => {
+    expect(resultText({ status: 'Fixture', fs_A: '0', fs_B: '0' })).toBe('')
   })
 })
