@@ -13,6 +13,9 @@ export function Layout() {
               <p className="text-sm font-black tracking-tight">Lentopallotilastot</p>
               <p className="text-[10px] text-amber-400 font-semibold">Lentopalloliitto · TASO</p>
             </button>
+            <span data-testid="app-version-badge" title={`Rakennettu ${__BUILD_TIME__}`} className="font-mono text-[10px] text-zinc-500">
+              v{__APP_VERSION__} · {__COMMIT_HASH__}
+            </span>
           </div>
         </header>
       )}
