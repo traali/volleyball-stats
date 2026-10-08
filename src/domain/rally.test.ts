@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { onlyTeamMatches } from '../services/discovery'
 import { minutesBetween, phaseForDisplay, pointsFromEvents, resultIsTrusted, resultText, rotationsFromMatch, setsFromMatch } from './rally'
 
 const raw = {
@@ -98,5 +99,16 @@ describe('forfeit', () => {
   })
   it('a Fixture 0–0 still has no result text', () => {
     expect(resultText({ status: 'Fixture', fs_A: '0', fs_B: '0' })).toBe('')
+  })
+})
+
+describe('team match list', () => {
+  it('drops other teams games when TASO answers with the whole group', () => {
+    const rows = [
+      { match_id: '1', team_A_id: '63825', team_B_id: '63508' },
+      { match_id: '2', team_A_id: '111', team_B_id: '222' },
+      { match_id: '3', team_A_id: '333', team_B_id: 63825 },
+    ]
+    expect(onlyTeamMatches(rows, '63825').map((m) => m.match_id)).toEqual(['1', '3'])
   })
 })

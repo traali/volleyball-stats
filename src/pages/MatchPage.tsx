@@ -5,7 +5,7 @@ import { RotationBoard } from '../components/RotationBoard'
 import { VolleyballPreviewExport } from '../components/VolleyballPreviewExport'
 import { VolleyballSetGrid } from '../components/VolleyballSetGrid'
 import { forfeitingSide, isForfeit, phaseForDisplay, pointsFromEvents, resultIsTrusted, rotationsFromMatch, setsFromMatch, setWasPlayed } from '../domain/rally'
-import { fetchMatchRaw } from '../services/discovery'
+import { fetchMatchRaw, federationUrl } from '../services/discovery'
 import type { VolleyballMatchDetail, VolleyballSet } from '../types/volleyball'
 
 type Tab = 'match' | 'rotations' | 'points' | 'share'
@@ -56,6 +56,7 @@ function MatchBody({ matchId }: { matchId: string }) {
         {view.detail.scheduledTime} · {view.detail.venue}
         {view.detail.courtName ? ` · ${view.detail.courtName}` : ''}
       </p>
+      <a href={federationUrl.match(matchId)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center text-xs text-zinc-400 underline">Tulospalvelu ↗</a>
       {view.forfeit && (
         <p className="text-lg font-black text-amber-300">
           Luovutus{view.forfeitBy ? `: ${view.forfeitBy} luovutti` : ''}
