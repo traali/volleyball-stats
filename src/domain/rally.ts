@@ -62,56 +62,92 @@ function num(v: unknown): number {
   return Number.isFinite(n) ? n : 0
 }
 
+function clockSec(t: string): number {
+  const m = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/.exec(t.trim())
+  return m ? Number(m[1]) * 3600 + Number(m[2]) * 60 + Number(m[3] || 0) : NaN
+}
+
+/**
+ * Set clocks can be wrong: the scorer may open set 1 half an hour early, or the clock keeps running
+ * after the last point. When the point times disagree by minutes, trust the points.
+ */
+function setClock(raw: Record<string, unknown>, i: number, points: RallyPoint[]): { start: string; end: string } {
+  let start = str(raw[`p${i}_start_time`])
+  let end = str(raw[`p${i}_end_time`])
+  const times = points.filter((p) => p.period === i).map((p) => p.wallTime).filter((t) => Number.isFinite(clockSec(t)))
+  if (times.length) {
+    const first = times[0]
+    const lastPoint = times[times.length - 1]
+    if (!start || clockSec(first) - clockSec(start) > 300) start = first
+    if (!end || clockSec(end) - clockSec(lastPoint) > 60) end = lastPoint
+  }
+  return { start, end }
+}
+
 export function setsFromMatch(raw: Record<string, unknown>): SetLine[] {
   const out: SetLine[] = []
+  const points = pointsFromEvents(raw.events, str(raw.team_A_id))
   for (let i = 1; i <= 5; i++) {
     const a = str(raw[`p${i}s_A`])
     const b = str(raw[`p${i}s_B`])
     if (!a && !b) continue
+    const clock = setClock(raw, i, points)
     out.push({
       number: i,
       home: num(a),
       away: num(b),
-      start: str(raw[`p${i}_start_time`]) || undefined,
-      end: str(raw[`p${i}_end_time`]) || undefined,
-      durationMin:
-        str(raw[`p${i}_duration`]) ||
-        minutesBetween(str(raw[`p${i}_start_time`]), str(raw[`p${i}_end_time`])) ||
-        undefined,
+      start: clock.start || undefined,
+      end: clock.end || undefined,
+      durationMin: str(raw[`p${i}_duration`]) || minutesBetween(clock.start, clock.end) || undefined,
       firstServeTeamId: str(raw[`p${i}_start_team`]) || undefined,
     })
   }
   return out
 }
 
+const SCORE_TEXT = /^(\d{1,2})\s*[-–]\s*(\d{1,2})$/
+
+/**
+ * Real points only, each with the set score after it.
+ * Torneopal sends two shapes:
+ *  - `description` is the point type (attack, block …) and ps_A/ps_B is the set score.
+ *  - `description` is the set score ("4-1") and ps_A/ps_B is a running total for the whole match.
+ * Rows that don't change the set score (a "0-0" set-start marker, a repeated "25-20" after the set) are not points.
+ */
 export function pointsFromEvents(events: unknown, homeTeamId = ''): RallyPoint[] {
   if (!Array.isArray(events)) return []
   const points: RallyPoint[] = []
-  const tally = new Map<number, [number, number]>()
+  const last = new Map<number, [number, number]>()
   for (const row of events) {
     if (!row || typeof row !== 'object') continue
     const e = row as Record<string, unknown>
     if (str(e.code) !== 'piste') continue
     const period = num(e.period) || 1
     const side = str(e.team) || (homeTeamId && str(e.team_id) === homeTeamId ? 'A' : homeTeamId ? 'B' : '')
-    const t = tally.get(period) || [0, 0]
-    if (side === 'A') t[0] += 1
-    else if (side === 'B') t[1] += 1
-    tally.set(period, t)
-    // Torneopal sends the running set score as ps_A / ps_B. `description` is the point TYPE.
-    const psA = str(e.ps_A)
-    const psB = str(e.ps_B)
-    const score =
-      psA !== '' && psB !== '' && Number.isFinite(Number(psA)) && Number.isFinite(Number(psB))
-        ? `${Number(psA)}–${Number(psB)}`
-        : side
-          ? `${t[0]}–${t[1]}`
-          : ''
+    const prev = last.get(period) || [0, 0]
+    let kind = str(e.description)
+    let next: [number, number] | null = null
+    const text = SCORE_TEXT.exec(kind)
+    if (text) {
+      next = [Number(text[1]), Number(text[2])]
+      kind = ''
+    } else {
+      const psA = str(e.ps_A) === '' ? NaN : Number(e.ps_A)
+      const psB = str(e.ps_B) === '' ? NaN : Number(e.ps_B)
+      const expected: [number, number] | null =
+        side === 'A' ? [prev[0] + 1, prev[1]] : side === 'B' ? [prev[0], prev[1] + 1] : null
+      if (expected) next = expected
+      else if (Number.isFinite(psA) && Number.isFinite(psB)) next = [psA, psB]
+      // ps_A/ps_B wins only when it is the set score; a match-long running total would not match.
+      if (expected && Number.isFinite(psA) && Number.isFinite(psB) && psA === expected[0] && psB === expected[1]) next = [psA, psB]
+    }
+    if (!next || (next[0] === prev[0] && next[1] === prev[1])) continue
+    last.set(period, next)
     points.push({
       period,
       wallTime: str(e.wall_time) || str(e.time) || '—',
-      score,
-      kind: str(e.description),
+      score: `${next[0]}–${next[1]}`,
+      kind,
       playerName: str(e.player_name),
       shirt: str(e.shirt_number),
       teamId: str(e.team_id),
