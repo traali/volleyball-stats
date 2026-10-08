@@ -112,3 +112,34 @@ describe('team match list', () => {
     expect(onlyTeamMatches(rows, '63825').map((m) => m.match_id)).toEqual(['1', '3'])
   })
 })
+
+describe('point tape when description is the set score (match 803471 shape)', () => {
+  // Real rows: a "0-0" set-start marker, ps_A/ps_B counting the whole match, and repeated rows after the set ended.
+  const ev = (period: string, team: string, description: string, ps_A: number, ps_B: number, wall_time: string) => ({
+    code: 'piste', period, team, description, ps_A, ps_B, wall_time, team_id: team === 'A' ? '35560' : '35538',
+  })
+  const events = [
+    ev('1', 'A', '0-0', 1, 0, '17:59:03'),
+    ev('1', 'A', '1-0', 2, 0, '18:30:38'),
+    ev('1', 'B', '1-1', 2, 1, '18:31:10'),
+    ev('1', 'A', '2-1', 3, 1, '18:31:40'),
+    ev('2', 'A', '0-0', 4, 1, '18:52:57'),
+    ev('2', 'B', '0-1', 4, 2, '18:57:23'),
+    ev('2', 'B', '0-2', 4, 3, '18:58:00'),
+    ev('2', 'B', '0-2', 4, 4, '19:00:30'),
+  ]
+  it('uses the set score from description and drops rows that score nothing', () => {
+    const pts = pointsFromEvents(events, '35560')
+    expect(pts.map((p) => `${p.period}:${p.score}`)).toEqual(['1:1–0', '1:1–1', '1:2–1', '2:0–1', '2:0–2'])
+    expect(pts.every((p) => p.kind === '')).toBe(true)
+  })
+  it('takes set length from the points when the set clock opened half an hour early', () => {
+    const sets = setsFromMatch({
+      team_A_id: '35560', events,
+      p1s_A: '2', p1s_B: '1', p1_start_time: '17:59:03', p1_end_time: '18:31:40',
+      p2s_A: '0', p2s_B: '2', p2_start_time: '18:52:57', p2_end_time: '19:00:30',
+    })
+    expect(sets[0].start).toBe('18:30:38')
+    expect(sets[1].end).toBe('18:58:00')
+  })
+})
