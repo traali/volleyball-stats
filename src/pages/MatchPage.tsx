@@ -5,7 +5,7 @@ import { RotationBoard } from '../components/RotationBoard'
 import { VolleyballPreviewExport } from '../components/VolleyballPreviewExport'
 import { VolleyballSetGrid } from '../components/VolleyballSetGrid'
 import { forfeitingSide, isForfeit, phaseForDisplay, pointsFromEvents, resultIsTrusted, rotationsFromMatch, setsFromMatch, setsWonRecorded, setWasPlayed } from '../domain/rally'
-import { formatLabel, isTie, matchFormat, setWentToExtraPoints } from '../domain/tournament'
+import { formatLabel, isTie, setPointsLabel, matchFormat, setWentToExtraPoints } from '../domain/tournament'
 import { LoadFailed } from '../components/LoadState'
 import { useTaso } from '../hooks/useTaso'
 import { fetchMatchRaw, federationUrl } from '../services/discovery'
@@ -116,7 +116,7 @@ function present(raw: Record<string, unknown>) {
     status: 'finished',
   }))
   const recorded = setsWonRecorded(raw)
-  const format = formatLabel(matchFormat(raw))
+  const format = [formatLabel(matchFormat(raw)), setPointsLabel(raw)].filter(Boolean).join(' · ')
   const homeId = s(raw.team_A_id)
   const awayId = s(raw.team_B_id)
   const detail: VolleyballMatchDetail = {
