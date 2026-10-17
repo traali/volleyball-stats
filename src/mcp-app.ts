@@ -10,6 +10,9 @@ import { formatVolleyballStatsContract } from './types/contracts'
 import type { SportStatsContract } from './types/contracts'
 import { isForfeit, resultIsTrusted, setsFromMatch, setWasPlayed } from './domain/rally'
 import { fetchGroup, fetchMatchRaw, fetchPlayer, searchDiscovery } from './services/discovery'
+import { standingsState } from './domain/tournament'
+
+const NO_ANSWER = 'TASO ei vastannut juuri nyt. Yritä uudelleen – tämä ei tarkoita, ettei tietoa ole.'
 
 export interface McpToolResponse {
     content: Array<{
@@ -75,7 +78,12 @@ function field(row: Record<string, unknown>, key: string): string {
 export async function getVolleyballMatchTool(args: Record<string, unknown>) {
     const matchId = String(args.matchId || '').trim()
     if (!matchId) return text('matchId is required. Do not invent a set score.')
-    const raw = await fetchMatchRaw(matchId)
+    let raw: Record<string, unknown> | null
+    try {
+        raw = await fetchMatchRaw(matchId)
+    } catch {
+        return text(NO_ANSWER)
+    }
     if (!raw) return text(`Ottelua ${matchId} ei löytynyt TASOsta.`)
     const sets = setsFromMatch(raw).filter(setWasPlayed)
     const home = field(raw, 'team_A_name')
@@ -107,7 +115,12 @@ export async function getVolleyballMatchTool(args: Record<string, unknown>) {
 export async function getVolleyballPlayerTool(args: Record<string, unknown>) {
     const playerId = String(args.playerId || '').trim()
     if (!playerId) return text('playerId is required.')
-    const player = await fetchPlayer(playerId)
+    let player: Record<string, unknown> | null
+    try {
+        player = await fetchPlayer(playerId)
+    } catch {
+        return text(NO_ANSWER)
+    }
     if (!player) return text(`Pelaajaa ${playerId} ei löytynyt.`)
     const name = field(player, 'player_name')
         || `${field(player, 'first_name')} ${field(player, 'last_name')}`.trim()
@@ -118,7 +131,12 @@ export async function getVolleyballPlayerTool(args: Record<string, unknown>) {
 export async function searchVolleyballTool(args: Record<string, unknown>) {
     const query = String(args.query || args.q || '').trim()
     if (query.length < 2) return text('query is required (club, series, or a lentopallo link).')
-    const hits = await searchDiscovery(query)
+    let hits: Awaited<ReturnType<typeof searchDiscovery>>
+    try {
+        hits = await searchDiscovery(query)
+    } catch {
+        return text(NO_ANSWER)
+    }
     const summary = hits.length === 0
         ? `Ei osumia haulle «${query}».`
         : hits.slice(0, 12).map((hit) => `${hit.kind} ${hit.title} (${hit.id})`).join('\n')
@@ -132,7 +150,23 @@ export async function getVolleyballStandingsTool(args: Record<string, unknown>) 
     if (!competitionId || !categoryId || !groupId) {
         return text('Tarvitaan competitionId, categoryId ja groupId. Sarjataulukkoa ei keksitä.')
     }
-    const group = await fetchGroup(competitionId, categoryId, groupId)
+    let group: Awaited<ReturnType<typeof fetchGroup>>
+    try {
+        group = await fetchGroup(competitionId, categoryId, groupId)
+    } catch {
+        return text(NO_ANSWER)
+    }
+    const state = standingsState(group.groupType, group.teams)
+    if (state !== 'table') {
+        return text(state === 'not-started'
+            ? 'Lohkossa ei ole vielä pelattu. Sarjataulukkoa ei keksitä.'
+            : 'TASO ei anna tälle lohkolle sarjataulukkoa (esim. pudotuspelit). Sarjataulukkoa ei keksitä.', {
+            competition: group.competition,
+            category: group.category,
+            group: group.name,
+            teams: [],
+        })
+    }
     const teams = [...group.teams].sort(
         (a, b) => Number(a.current_standing || 99) - Number(b.current_standing || 99),
     )

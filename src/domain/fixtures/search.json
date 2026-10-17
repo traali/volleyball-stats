@@ -1,0 +1,587 @@
+{
+ "teamsEtelaSuomi": [
+  {
+   "team_id": "63602",
+   "club_id": "127",
+   "team_name": "PuMa/A3p",
+   "competition_id": "vb2026esuomi",
+   "category_id": "MPaik",
+   "category_name": "Miehet paikallissarja"
+  },
+  {
+   "team_id": "63783",
+   "club_id": "127",
+   "team_name": "PuMa/M3",
+   "competition_id": "vb2026esuomi",
+   "category_id": "M-alue",
+   "category_name": "Miehet aluesarja"
+  },
+  {
+   "team_id": "63822",
+   "club_id": "9",
+   "team_name": "EsLe/N1",
+   "competition_id": "vb2026esuomi",
+   "category_id": "N-alue",
+   "category_name": "Naiset aluesarja"
+  },
+  {
+   "team_id": "63913",
+   "club_id": "9",
+   "team_name": "EsLe/N2",
+   "competition_id": "vb2026esuomi",
+   "category_id": "N-alue",
+   "category_name": "Naiset aluesarja"
+  },
+  {
+   "team_id": "64020",
+   "club_id": "127",
+   "team_name": "PuMa/U20/T3",
+   "competition_id": "vb2026esuomi",
+   "category_id": "N-alue",
+   "category_name": "Naiset aluesarja"
+  },
+  {
+   "team_id": "64070",
+   "club_id": "127",
+   "team_name": "PuMa/U20T5",
+   "competition_id": "vb2026esuomi",
+   "category_id": "NPaik",
+   "category_name": "Naiset paikallissarja"
+  },
+  {
+   "team_id": "64116",
+   "club_id": "47",
+   "team_name": "KaPo/Dt",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T",
+   "category_name": "U13-tytöt aluesarja"
+  },
+  {
+   "team_id": "64153",
+   "club_id": "127",
+   "team_name": "PuMa/U13T1",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T",
+   "category_name": "U13-tytöt aluesarja"
+  },
+  {
+   "team_id": "64154",
+   "club_id": "127",
+   "team_name": "PuMa/U13T2",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T",
+   "category_name": "U13-tytöt aluesarja"
+  },
+  {
+   "team_id": "64236",
+   "club_id": "127",
+   "team_name": "PuMa/Puma2",
+   "competition_id": "vb2026esuomi",
+   "category_id": "N-alue",
+   "category_name": "Naiset aluesarja"
+  },
+  {
+   "team_id": "64429",
+   "club_id": "127",
+   "team_name": "PuMa/U11T1",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11T",
+   "category_name": "U11-tytöt aluesarja"
+  },
+  {
+   "team_id": "64430",
+   "club_id": "127",
+   "team_name": "PuMa/U13T6",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T",
+   "category_name": "U13-tytöt aluesarja"
+  },
+  {
+   "team_id": "64431",
+   "club_id": "127",
+   "team_name": "PuMa/U13T7",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T",
+   "category_name": "U13-tytöt aluesarja"
+  },
+  {
+   "team_id": "64637",
+   "club_id": "127",
+   "team_name": "PuMa/Pikkuporkkanat",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11T-TII",
+   "category_name": "U11-tytöt tiikerisarja"
+  },
+  {
+   "team_id": "64646",
+   "club_id": "127",
+   "team_name": "PuMa/Saukot",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11T-TII",
+   "category_name": "U11-tytöt tiikerisarja"
+  },
+  {
+   "team_id": "64678",
+   "club_id": "127",
+   "team_name": "PuMa/A2",
+   "competition_id": "vb2026esuomi",
+   "category_id": "M-alue",
+   "category_name": "Miehet aluesarja"
+  },
+  {
+   "team_id": "64706",
+   "club_id": "127",
+   "team_name": "PuMa/Tikrut",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T",
+   "category_name": "U13-tytöt aluesarja"
+  },
+  {
+   "team_id": "64777",
+   "club_id": "127",
+   "team_name": "PuMa/Auringot ",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T-TII",
+   "category_name": "U13-tytöt tiikerisarja"
+  },
+  {
+   "team_id": "64778",
+   "club_id": "127",
+   "team_name": "PuMa/U11T2",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11T",
+   "category_name": "U11-tytöt aluesarja"
+  },
+  {
+   "team_id": "64779",
+   "club_id": "127",
+   "team_name": "PuMa/U13T8",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T",
+   "category_name": "U13-tytöt aluesarja"
+  },
+  {
+   "team_id": "64793",
+   "club_id": "127",
+   "team_name": "PuMa/Tähdet",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T-TII",
+   "category_name": "U13-tytöt tiikerisarja"
+  },
+  {
+   "team_id": "64828",
+   "club_id": "9",
+   "team_name": "EsLe/B4",
+   "competition_id": "vb2026esuomi",
+   "category_id": "NPaik",
+   "category_name": "Naiset paikallissarja"
+  },
+  {
+   "team_id": "64835",
+   "club_id": "9",
+   "team_name": "EsLe/A2",
+   "competition_id": "vb2026esuomi",
+   "category_id": "N-alue",
+   "category_name": "Naiset aluesarja"
+  },
+  {
+   "team_id": "64850",
+   "club_id": "176",
+   "team_name": "VanLe/N2",
+   "competition_id": "vb2026esuomi",
+   "category_id": "N-alue",
+   "category_name": "Naiset aluesarja"
+  },
+  {
+   "team_id": "64851",
+   "club_id": "9",
+   "team_name": "EsLe/Myrskyt",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T",
+   "category_name": "U13-tytöt aluesarja"
+  },
+  {
+   "team_id": "64852",
+   "club_id": "9",
+   "team_name": "EsLe/Salamat",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T",
+   "category_name": "U13-tytöt aluesarja"
+  },
+  {
+   "team_id": "64853",
+   "club_id": "9",
+   "team_name": "EsLe/Kipinät",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11T-TII",
+   "category_name": "U11-tytöt tiikerisarja"
+  },
+  {
+   "team_id": "64861",
+   "club_id": "9",
+   "team_name": "EsLe/Hurrikaanit",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U14-6vs6",
+   "category_name": "U14-6vs6-sarja"
+  },
+  {
+   "team_id": "64879",
+   "club_id": "47",
+   "team_name": "KaPo/Blue Panthers",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11T",
+   "category_name": "U11-tytöt aluesarja"
+  },
+  {
+   "team_id": "64880",
+   "club_id": "47",
+   "team_name": "KaPo/Lentävät ketut",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11T",
+   "category_name": "U11-tytöt aluesarja"
+  },
+  {
+   "team_id": "64880",
+   "club_id": "47",
+   "team_name": "KaPo/Lentävät ketut",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11P",
+   "category_name": "U11-pojat aluesarja"
+  },
+  {
+   "team_id": "64891",
+   "club_id": "176",
+   "team_name": "VanLe/AFG",
+   "competition_id": "vb2026esuomi",
+   "category_id": "M-alue",
+   "category_name": "Miehet aluesarja"
+  },
+  {
+   "team_id": "64893",
+   "club_id": "176",
+   "team_name": "VanLe/OldStars",
+   "competition_id": "vb2026esuomi",
+   "category_id": "MPaik",
+   "category_name": "Miehet paikallissarja"
+  },
+  {
+   "team_id": "64897",
+   "club_id": "176",
+   "team_name": "VanLe/N1",
+   "competition_id": "vb2026esuomi",
+   "category_id": "N-alue",
+   "category_name": "Naiset aluesarja"
+  },
+  {
+   "team_id": "64908",
+   "club_id": "176",
+   "team_name": "VanLe/valkoinen",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11T-TII",
+   "category_name": "U11-tytöt tiikerisarja"
+  },
+  {
+   "team_id": "64908",
+   "club_id": "176",
+   "team_name": "VanLe/valkoinen",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11Pt",
+   "category_name": "U11-pojat tiikerisarja"
+  },
+  {
+   "team_id": "64909",
+   "club_id": "176",
+   "team_name": "VanLe/sininen",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11T-TII",
+   "category_name": "U11-tytöt tiikerisarja"
+  },
+  {
+   "team_id": "64910",
+   "club_id": "176",
+   "team_name": "VanLe/mustat",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11T",
+   "category_name": "U11-tytöt aluesarja"
+  },
+  {
+   "team_id": "64959",
+   "club_id": "127",
+   "team_name": "PuMa/U13/P1",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T",
+   "category_name": "U13-tytöt aluesarja"
+  },
+  {
+   "team_id": "64959",
+   "club_id": "127",
+   "team_name": "PuMa/U13/P1",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13P",
+   "category_name": "U13-pojat aluesarja"
+  },
+  {
+   "team_id": "64962",
+   "club_id": "127",
+   "team_name": "PuMa/U13/P2",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T",
+   "category_name": "U13-tytöt aluesarja"
+  },
+  {
+   "team_id": "64962",
+   "club_id": "127",
+   "team_name": "PuMa/U13/P2",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13P",
+   "category_name": "U13-pojat aluesarja"
+  },
+  {
+   "team_id": "64963",
+   "club_id": "127",
+   "team_name": "PuMa/U11/Vihreä",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11T",
+   "category_name": "U11-tytöt aluesarja"
+  },
+  {
+   "team_id": "64963",
+   "club_id": "127",
+   "team_name": "PuMa/U11/Vihreä",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11P",
+   "category_name": "U11-pojat aluesarja"
+  },
+  {
+   "team_id": "64964",
+   "club_id": "127",
+   "team_name": "PuMa/U11/Valkoinen",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11T",
+   "category_name": "U11-tytöt aluesarja"
+  },
+  {
+   "team_id": "64964",
+   "club_id": "127",
+   "team_name": "PuMa/U11/Valkoinen",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11P",
+   "category_name": "U11-pojat aluesarja"
+  },
+  {
+   "team_id": "64965",
+   "club_id": "127",
+   "team_name": "PuMa/U11/Musta",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11T",
+   "category_name": "U11-tytöt aluesarja"
+  },
+  {
+   "team_id": "64965",
+   "club_id": "127",
+   "team_name": "PuMa/U11/Musta",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11P",
+   "category_name": "U11-pojat aluesarja"
+  },
+  {
+   "team_id": "64974",
+   "club_id": "176",
+   "team_name": "VanLe/Jäbät 1",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T",
+   "category_name": "U13-tytöt aluesarja"
+  },
+  {
+   "team_id": "64974",
+   "club_id": "176",
+   "team_name": "VanLe/Jäbät 1",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13P",
+   "category_name": "U13-pojat aluesarja"
+  },
+  {
+   "team_id": "64975",
+   "club_id": "176",
+   "team_name": "VanLe/Sudet",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T",
+   "category_name": "U13-tytöt aluesarja"
+  },
+  {
+   "team_id": "64976",
+   "club_id": "176",
+   "team_name": "VanLe/Puumat",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T",
+   "category_name": "U13-tytöt aluesarja"
+  },
+  {
+   "team_id": "64977",
+   "club_id": "176",
+   "team_name": "VanLe/Ilvekset",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T-TII",
+   "category_name": "U13-tytöt tiikerisarja"
+  },
+  {
+   "team_id": "64978",
+   "club_id": "176",
+   "team_name": "VanLe/Jäbät 2",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13P-TII",
+   "category_name": "U13-pojat tiikerisarja"
+  },
+  {
+   "team_id": "64978",
+   "club_id": "176",
+   "team_name": "VanLe/Jäbät 2",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T-TII",
+   "category_name": "U13-tytöt tiikerisarja"
+  },
+  {
+   "team_id": "65001",
+   "club_id": "176",
+   "team_name": "VanLe/vaaleansininen",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U11T-TII",
+   "category_name": "U11-tytöt tiikerisarja"
+  },
+  {
+   "team_id": "65028",
+   "club_id": "176",
+   "team_name": "VanLe/Leijonat",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U13T-TII",
+   "category_name": "U13-tytöt tiikerisarja"
+  },
+  {
+   "team_id": "65087",
+   "club_id": "127",
+   "team_name": "PuMa/ED1",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U14-6vs6",
+   "category_name": "U14-6vs6-sarja"
+  },
+  {
+   "team_id": "65088",
+   "club_id": "127",
+   "team_name": "PuMa/LPK",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U18-4vs4",
+   "category_name": "U18-4vs4-sarja"
+  },
+  {
+   "team_id": "65092",
+   "club_id": "127",
+   "team_name": "PuMa/ED2",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U14-6vs6",
+   "category_name": "U14-6vs6-sarja"
+  },
+  {
+   "team_id": "65096",
+   "club_id": "127",
+   "team_name": "PuMa/Puma Dt",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U14-6vs6",
+   "category_name": "U14-6vs6-sarja"
+  },
+  {
+   "team_id": "65097",
+   "club_id": "127",
+   "team_name": "PuMa/U14/P",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U14-6vs6",
+   "category_name": "U14-6vs6-sarja"
+  },
+  {
+   "team_id": "65112",
+   "club_id": "9",
+   "team_name": "EsLe/C3",
+   "competition_id": "vb2026esuomi",
+   "category_id": "U14-6vs6",
+   "category_name": "U14-6vs6-sarja"
+  }
+ ],
+ "register": [
+  {
+   "player_id": "900001",
+   "first_name": "Ääpeli",
+   "last_name": "Mäkeläinen",
+   "club_id": "127"
+  },
+  {
+   "player_id": "900002",
+   "first_name": "Testi",
+   "last_name": "Mäkeläinen",
+   "club_id": "521"
+  },
+  {
+   "player_id": "900003",
+   "first_name": "Koe",
+   "last_name": "Mäkeläinen",
+   "club_id": "521"
+  },
+  {
+   "player_id": "900004",
+   "first_name": "Malli",
+   "last_name": "Mäkeläinen",
+   "club_id": "127"
+  },
+  {
+   "player_id": "900005",
+   "first_name": "Esimerkki",
+   "last_name": "Mäkeläinen",
+   "club_id": "521"
+  },
+  {
+   "player_id": "900006",
+   "first_name": "Ööpeli",
+   "last_name": "Mäkeläinen",
+   "club_id": "9"
+  },
+  {
+   "player_id": "900007",
+   "first_name": "Kokeilu",
+   "last_name": "Mäkeläinen",
+   "club_id": "127"
+  },
+  {
+   "player_id": "900008",
+   "first_name": "Ääpeli",
+   "last_name": "Mäkeläinen",
+   "club_id": "127"
+  }
+ ],
+ "clubs": [
+  {
+   "club_id": "9",
+   "name": "Espoo Lentis",
+   "abbrevation": "EsLe"
+  },
+  {
+   "club_id": "47",
+   "name": "Karkkilan Pojat",
+   "abbrevation": "KaPo"
+  },
+  {
+   "club_id": "127",
+   "name": "PuMa-Volley",
+   "abbrevation": "PuMa"
+  },
+  {
+   "club_id": "521",
+   "name": "Tapanilan Erä",
+   "abbrevation": "Erä"
+  },
+  {
+   "club_id": "176",
+   "name": "Vantaan Lentopallo",
+   "abbrevation": "VanLe"
+  }
+ ],
+ "registerTotal": 36540,
+ "_note": "Shape and club ids from real TASO getTeams/getClubs/getPlayers answers (2026-10-17). Player names and ids are pseudonymised; the real register had registerTotal rows."
+}

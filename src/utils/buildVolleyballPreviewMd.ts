@@ -26,7 +26,12 @@ export function buildVolleyballPreviewMd(opts: {
     '',
     `${m.scheduledTime || ''} · ${m.venue || ''}${m.courtName ? ` · ${m.courtName}` : ''}`,
     `${m.tournamentName} · ${m.categoryName}`,
-    m.status === 'upcoming' ? 'Vaihe: ennakko' : `Erät: ${m.setsWonHome}–${m.setsWonAway}`,
+    m.status === 'upcoming'
+      ? 'Vaihe: ennakko'
+      : m.resultRecorded === false
+        ? 'Erät: lopputulosta ei kirjattu'
+        : `Erät: ${m.setsWonHome}–${m.setsWonAway}`,
+    m.formatText ? `Pelimuoto: ${m.formatText}` : '',
     '',
     '## Erät',
     sets || '_ei eriä_',
@@ -47,9 +52,9 @@ export function buildVolleyballPreviewMd(opts: {
     `Ottelu: ${m.homeTeamName} vs ${m.awayTeamName}.`,
     '',
     'Tee tämä rakenne:',
-    '1. Ennakko tai eräanalyysi (25 pisteen erät, 5. erä 15).',
+    `1. Ennakko tai eräanalyysi (${m.formatText || 'pelimuoto: katso erät yllä'}).`,
     '2. Avainpelaajat rooleittain (passari, hakkuri, libero) vain jos nimet on dokumentissa.',
-    '3. Ennuste: 3–0 / 3–1 / 3–2 molempiin suuntiin.',
+    '3. Ennuste vain tämän pelimuodon mahdollisilla lopputuloksilla.',
     '4. Valmentajan 4 tekoa: vastaanotto, keskitorjunta, servevuoro, timeout erän lopussa.',
     '',
     'Sävy: asiallinen. Juniorit. Ei jalkapallon maaleja, ei salibandyn jäähyjä.',

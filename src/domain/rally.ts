@@ -247,7 +247,18 @@ export function resultText(raw: Record<string, unknown>): string {
   if (isForfeit(raw)) return 'luovutus'
   const a = str(raw.fs_A)
   const b = str(raw.fs_B)
+  // A set can be on the sheet while TASO still says 0–0 (e.g. Power Cup F-series). Never print 0–0.
+  if (a === '0' && b === '0') return ''
   return a !== '' && b !== '' ? `${a}–${b}` : ''
+}
+
+/** Sets won as TASO recorded them, or null. Not computed from set scores: TASO's fs_A/fs_B is the result. */
+export function setsWonRecorded(raw: Record<string, unknown>): { home: number; away: number } | null {
+  if (isForfeit(raw)) return null
+  const a = str(raw.fs_A)
+  const b = str(raw.fs_B)
+  if (!/^\d+$/.test(a) || !/^\d+$/.test(b) || (a === '0' && b === '0')) return null
+  return { home: Number(a), away: Number(b) }
 }
 
 /** Who gave the game away, as the federation sent it; '' when it did not say. */

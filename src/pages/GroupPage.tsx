@@ -1,61 +1,102 @@
-import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { resultText } from '../domain/rally'
+import { DayScheduleView } from '../components/DayScheduleView'
+import { LoadFailed, Loading } from '../components/LoadState'
+import { MatchRow } from '../components/MatchRow'
+import { stageKind, stageLabel, standingColumns, standingsState } from '../domain/tournament'
+import { useTaso } from '../hooks/useTaso'
 import { fetchGroup } from '../services/discovery'
 
-function s(v: unknown) { return v == null ? '' : String(v) }
+function s(v: unknown) { return v == null ? '' : String(v).trim() }
 
 export function GroupPage() {
   const { compId = '', catId = '', groupId = '' } = useParams()
-  const [data, setData] = useState<Awaited<ReturnType<typeof fetchGroup>> | null>(null)
-  useEffect(() => { fetchGroup(compId, catId, groupId).then(setData) }, [compId, catId, groupId])
-  const teams = [...(data?.teams || [])].sort((a, b) => Number(a.current_standing || 99) - Number(b.current_standing || 99))
+  const load = useTaso(() => fetchGroup(compId, catId, groupId), [compId, catId, groupId])
+  if (load.state === 'loading') return <main className="max-w-3xl mx-auto px-4 py-6"><Loading /></main>
+  if (load.state !== 'ok') {
+    return <main className="max-w-3xl mx-auto px-4 py-6"><LoadFailed what="Lohkoa" onRetry={load.retry} /></main>
+  }
+  const data = load.data
+  const kind = stageKind(data.groupType)
+  const table = standingsState(data.groupType, data.teams)
+  const teams = [...data.teams].sort((a, b) => Number(a.current_standing || 99) - Number(b.current_standing || 99))
+  const cols = standingColumns(data.matchPoints, data.teams)
+  const rounds = new Map<string, Record<string, unknown>[]>()
+  if (kind === 'knockout') {
+    for (const m of data.matches) {
+      const key = s(m.round_name) || (s(m.round_id) ? `${s(m.round_id)}. kierros` : '')
+      if (!rounds.has(key)) rounds.set(key, [])
+      rounds.get(key)!.push(m)
+    }
+  }
+
   return (
     <main className="max-w-3xl mx-auto px-4 py-6 space-y-4">
-      <h1 className="text-2xl font-black">{data?.name || 'Lohko'}</h1>
-      <p className="text-xs text-zinc-500">{data?.competition} / {data?.category}</p>
-      <div className="overflow-x-auto rounded-2xl border border-zinc-800">
-        <table className="w-full text-xs">
-          <thead className="text-zinc-500">
-            <tr>
-              <th className="p-2 text-left">#</th>
-              <th className="p-2 text-left">Joukkue</th>
-              <th className="p-2">O</th>
-              <th className="p-2">V3</th>
-              <th className="p-2">V2</th>
-              <th className="p-2">H</th>
-              <th className="p-2">P</th>
-            </tr>
-          </thead>
-          <tbody>
-            {teams.map((t) => (
-              <tr key={s(t.team_id)} className="border-t border-zinc-800">
-                <td className="p-2">{s(t.current_standing)}</td>
-                <td className="p-2"><Link to={`/team/${s(t.team_id)}`} className="text-amber-300">{s(t.team_name)}</Link></td>
-                <td className="p-2 text-center">{s(t.matches_played)}</td>
-                <td className="p-2 text-center">{s(t.matches_won)}</td>
-                <td className="p-2 text-center">{s(t.matches_tiedwon)}</td>
-                <td className="p-2 text-center">{s(t.matches_lost)}</td>
-                <td className="p-2 text-center font-bold">{s(t.points)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div>
+        <Link to={`/competition/${compId}/category/${catId}`} className="text-[11px] uppercase tracking-wider text-amber-400">{data.competition} · {data.category}</Link>
+        <h1 className="text-2xl font-black">{data.name || 'Lohko'}</h1>
+        <p className="text-xs text-zinc-500">{data.phaseName && data.phaseName !== data.name ? `${data.phaseName} · ` : ''}{stageLabel(data.groupType)}</p>
       </div>
-      <p className="text-[11px] text-zinc-500">V3 on 3–0 ja 3–1 (3 pistettä). V2 on 3–2 (2 pistettä). H on suora tappio. 2–3 antaa yhden pisteen, kun TASO sen kentän palauttaa.</p>
-      <h2 className="text-sm font-bold">Ottelut</h2>
-      {(data?.matches.length || 0) === 0 && <p className="text-sm text-zinc-500">Ei otteluita vielä.</p>}
-      <ul className="space-y-2">
-        {(data?.matches || []).map((m) => (
-          <li key={s(m.match_id)}>
-            <Link to={`/match/${s(m.match_id)}`} className="block rounded-xl border border-zinc-800 px-3 py-2 text-sm">
-              <span className="text-zinc-500">{s(m.date).slice(0, 10)} {s(m.time).slice(0, 5)} </span>
-              {s(m.team_A_name)} – {s(m.team_B_name)}
-              {resultText(m) && <span className="font-mono"> {resultText(m)}</span>}
-            </Link>
-          </li>
-        ))}
-      </ul>
+
+      {table === 'table' && (
+        <section className="space-y-1.5">
+          <div className="overflow-x-auto rounded-2xl border border-zinc-800">
+            <table className="w-full text-xs">
+              <thead className="text-zinc-500">
+                <tr>
+                  <th className="p-2 text-left">#</th>
+                  <th className="p-2 text-left">Joukkue</th>
+                  {cols.map((c) => <th key={c.key} className="p-2" title={c.help}>{c.label}</th>)}
+                  <th className="p-2" title="voitetut–hävityt erät">Erät</th>
+                  <th className="p-2" title="sarjapisteet TASOn mukaan">P</th>
+                </tr>
+              </thead>
+              <tbody>
+                {teams.map((t) => (
+                  <tr key={s(t.team_id)} className="border-t border-zinc-800">
+                    <td className="p-2">{s(t.current_standing)}</td>
+                    <td className="p-2"><Link to={`/team/${s(t.team_id)}`} className="text-amber-300">{s(t.team_name)}</Link></td>
+                    {cols.map((c) => <td key={c.key} className="p-2 text-center">{s(t[c.key])}</td>)}
+                    <td className="p-2 text-center font-mono">{s(t.goals_for) !== '' && s(t.goals_against) !== '' ? `${s(t.goals_for)}–${s(t.goals_against)}` : ''}</td>
+                    <td className="p-2 text-center font-bold">{s(t.points)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-[11px] text-zinc-500">Taulukko on TASOn oma. {cols.filter((c) => c.key !== 'matches_played').map((c) => `${c.label} = ${c.help}`).join(', ')}.</p>
+        </section>
+      )}
+
+      {table === 'not-started' && (
+        <section className="space-y-1.5">
+          <h2 className="text-sm font-bold">Joukkueet</h2>
+          <p className="text-xs text-zinc-500">Lohkossa ei ole vielä pelattu. Taulukko näkyy, kun TASO kirjaa tuloksia.</p>
+          <ul className="flex flex-wrap gap-1.5">
+            {teams.map((t) => (
+              <li key={s(t.team_id)}><Link to={`/team/${s(t.team_id)}`} className="inline-flex min-h-[44px] items-center rounded-xl border border-zinc-800 px-3 text-sm text-amber-300">{s(t.team_name)}</Link></li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {table === 'none' && kind !== 'knockout' && kind !== 'placement' && data.teams.length > 0 && (
+        <p className="text-xs text-zinc-500">TASO ei anna tälle lohkolle sarjataulukkoa, joten sitä ei näytetä.</p>
+      )}
+
+      <h2 className="text-sm font-bold">Ottelut ({data.matches.length})</h2>
+      {data.matches.length === 0 && <p className="text-sm text-zinc-500">TASOssa ei ole vielä otteluita tälle lohkolle.</p>}
+      {kind === 'knockout' && data.matches.length > 0
+        ? (
+          <div className="space-y-4">
+            {[...rounds.entries()].map(([title, list]) => (
+              <section key={title || 'r'} className="space-y-1.5">
+                {title && <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400">{title}</h3>}
+                <ul className="space-y-1.5">{list.map((m) => <li key={s(m.match_id)}><MatchRow m={m} showDate /></li>)}</ul>
+              </section>
+            ))}
+          </div>
+        )
+        : <DayScheduleView matches={data.matches} />}
     </main>
   )
 }
