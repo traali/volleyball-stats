@@ -29,7 +29,12 @@ describe('volleyball WebMCP', () => {
       name: 'Lohko A',
       competition: 'Nuoret',
       category: 'Tytöt',
+      groupType: 'group_stage',
+      phaseName: '',
+      playingMethod: 'normal',
+      matchPoints: '3,2,1,0',
       teams: [{ current_standing: '1', team_id: '9', team_name: 'Testiseura', matches_played: '2', points: '6' }],
+      rounds: [],
       matches: [],
     })
     const result = await getVolleyballStandingsTool({ competitionId: '1', categoryId: '2', groupId: '3' })
@@ -57,5 +62,31 @@ describe('volleyball WebMCP', () => {
     const result = await getVolleyballMatchTool({ matchId: '55' })
     expect(JSON.stringify(result)).toContain('1. erä 25–20')
     expect(JSON.stringify(result)).toContain('3–1')
+  })
+
+  it('gives no table for a knockout stage, even though TASO lists its teams', async () => {
+    vi.mocked(fetchGroup).mockResolvedValue({
+      name: '1-4',
+      competition: 'Power Cup 2025',
+      category: 'D-pojat supersarja',
+      groupType: 'knockout_full',
+      phaseName: '',
+      playingMethod: 'normal',
+      matchPoints: '2,1,1,0',
+      teams: [{ team_id: '52954', team_name: 'RVS/1', matches_played: 0 }],
+      rounds: [],
+      matches: [],
+    })
+    const result = await getVolleyballStandingsTool({ competitionId: 'power2025', categoryId: 'PD', groupId: '11' })
+    const body = JSON.stringify(result)
+    expect(body).toContain('ei keksitä')
+    expect(body).not.toContain('RVS/1 0 p')
+  })
+
+  it('says TASO did not answer instead of "not found" when the call fails', async () => {
+    vi.mocked(fetchMatchRaw).mockRejectedValue(new Error('403'))
+    const body = JSON.stringify(await getVolleyballMatchTool({ matchId: '803471' }))
+    expect(body).toContain('ei vastannut')
+    expect(body).not.toContain('ei löytynyt')
   })
 })

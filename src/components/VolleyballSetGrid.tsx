@@ -4,22 +4,23 @@ interface VolleyballSetGridProps {
   sets: VolleyballSet[]
   homeTeamName: string
   awayTeamName: string
+  /** Format as TASO states it; nothing is printed when TASO does not say. */
+  formatText?: string
 }
 
-export function VolleyballSetGrid({ sets, homeTeamName, awayTeamName }: VolleyballSetGridProps) {
+export function VolleyballSetGrid({ sets, homeTeamName, awayTeamName, formatText }: VolleyballSetGridProps) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="text-xs font-bold uppercase tracking-wider text-amber-400">Eräkohtaiset Tulokset</h3>
-        <span className="text-[11px] text-zinc-400">25p erät (5. erä 15p) • +2p deuce-ero</span>
+        {formatText && <span className="text-[11px] text-zinc-400">{formatText}</span>}
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         {sets.map((set) => {
           const homeWon = set.homeScore > set.awayScore
           const awayWon = set.awayScore > set.homeScore
-          const isDeuce = (set.number <= 4 && (set.homeScore > 25 || set.awayScore > 25)) ||
-                          (set.number === 5 && (set.homeScore > 15 || set.awayScore > 15))
+          const isDeuce = Boolean(set.isDeuce)
 
           return (
             <div

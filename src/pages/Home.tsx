@@ -17,10 +17,10 @@ export function Home() {
     <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
       <div>
         <h1 className="text-2xl font-black">Lentopallotilastot</h1>
-        <p className="text-sm text-zinc-400">Hae seuran nimellä tai liitä tulospalvelu-linkki. Ottelut tulevat lentopallon tulospalvelusta.</p>
+        <p className="text-sm text-zinc-400">Hae joukkueen, pelaajan tai seuran nimellä tai liitä tulospalvelu-linkki. Tiedot tulevat lentopallon tulospalvelusta (TASO).</p>
       </div>
       <form onSubmit={(e) => { e.preventDefault(); go(q) }} className="flex gap-2">
-        <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Hae PuMa, U15 tai liitä lentopallo-linkki" className="flex-1 min-h-12 rounded-2xl bg-zinc-900 border border-zinc-800 px-4 text-sm" />
+        <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Joukkue, pelaaja tai seura" className="flex-1 min-h-12 rounded-2xl bg-zinc-900 border border-zinc-800 px-4 text-sm" />
         <button className="min-h-12 px-4 rounded-2xl bg-amber-500 text-zinc-950 font-bold text-sm" type="submit">Hae</button>
       </form>
       <div className="flex flex-wrap gap-2">

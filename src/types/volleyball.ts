@@ -30,6 +30,10 @@ export interface VolleyballMatchDetail {
   totalPointsAway: number
   status: 'upcoming' | 'live' | 'completed'
   referee?: string
+  /** TASO recorded sets won (fs_A/fs_B). false = do not print a match score. */
+  resultRecorded?: boolean
+  /** Match format in words, from TASO period_count / win_period_count. */
+  formatText?: string
 }
 
 export interface VolleyballStandingRow {

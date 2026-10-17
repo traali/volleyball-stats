@@ -1,12 +1,10 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { toggleFavorite, type Favorite } from '../domain/favorites'
 
-export interface Favorite {
-  kind: 'team' | 'player'
-  id: string
-  name: string
-}
+export type { Favorite }
 
 const KEY = 'volleyball.favorites.v1'
+const EVENT = 'volleyball-favorites'
 
 function read(): Favorite[] {
   try {
@@ -18,17 +16,32 @@ function read(): Favorite[] {
   }
 }
 
+/** Favourites live in this phone's localStorage. Every page sees the same list, also after a toggle elsewhere. */
 export function useFavorites() {
   const [items, setItems] = useState<Favorite[]>(read)
 
-  const toggle = useCallback((item: Favorite) => {
-    setItems((prev) => {
-      const exists = prev.some((p) => p.kind === item.kind && p.id === item.id)
-      const next = exists ? prev.filter((p) => !(p.kind === item.kind && p.id === item.id)) : [item, ...prev].slice(0, 40)
-      localStorage.setItem(KEY, JSON.stringify(next))
-      return next
-    })
+  useEffect(() => {
+    const sync = () => setItems(read())
+    window.addEventListener(EVENT, sync)
+    window.addEventListener('storage', sync)
+    return () => {
+      window.removeEventListener(EVENT, sync)
+      window.removeEventListener('storage', sync)
+    }
   }, [])
 
-  return { items, toggle }
+  const toggle = useCallback((item: Favorite) => {
+    const next = toggleFavorite(read(), item)
+    try {
+      localStorage.setItem(KEY, JSON.stringify(next))
+    } catch {
+      /* storage full or blocked: keep it for this visit */
+    }
+    setItems(next)
+    window.dispatchEvent(new Event(EVENT))
+  }, [])
+
+  const has = useCallback((kind: Favorite['kind'], id: string) => items.some((i) => i.kind === kind && i.id === id), [items])
+
+  return { items, toggle, has }
 }

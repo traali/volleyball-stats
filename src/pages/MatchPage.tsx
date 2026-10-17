@@ -1,10 +1,13 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { PointTape } from '../components/PointTape'
 import { RotationBoard } from '../components/RotationBoard'
 import { VolleyballPreviewExport } from '../components/VolleyballPreviewExport'
 import { VolleyballSetGrid } from '../components/VolleyballSetGrid'
-import { forfeitingSide, isForfeit, phaseForDisplay, pointsFromEvents, resultIsTrusted, rotationsFromMatch, setsFromMatch, setWasPlayed } from '../domain/rally'
+import { forfeitingSide, isForfeit, phaseForDisplay, pointsFromEvents, resultIsTrusted, rotationsFromMatch, setsFromMatch, setsWonRecorded, setWasPlayed } from '../domain/rally'
+import { formatLabel, isTie, matchFormat, setWentToExtraPoints } from '../domain/tournament'
+import { LoadFailed } from '../components/LoadState'
+import { useTaso } from '../hooks/useTaso'
 import { fetchMatchRaw, federationUrl } from '../services/discovery'
 import type { VolleyballMatchDetail, VolleyballSet } from '../types/volleyball'
 
@@ -18,24 +21,16 @@ export function MatchPage() {
 }
 
 function MatchBody({ matchId }: { matchId: string }) {
-  const [raw, setRaw] = useState<Record<string, unknown> | null>(null)
-  const [missing, setMissing] = useState(false)
+  const load = useTaso(() => fetchMatchRaw(matchId), [matchId])
   const [tab, setTab] = useState<Tab>('match')
-
-  useEffect(() => {
-    let cancel = false
-    fetchMatchRaw(matchId).then((m) => {
-      if (cancel) return
-      setRaw(m)
-      setMissing(!m)
-    })
-    return () => { cancel = true }
-  }, [matchId])
-
+  const raw = load.state === 'ok' ? load.data : null
   const view = useMemo(() => (raw ? present(raw) : null), [raw])
 
-  if (missing) {
-    return <main className="max-w-3xl mx-auto px-4 py-10 text-sm text-zinc-400">Ottelua {matchId} ei löytynyt TASOsta. Ei näytetä keksittyä tulosta.</main>
+  if (load.state === 'notfound') {
+    return <main className="max-w-3xl mx-auto px-4 py-10 text-sm text-zinc-400">TASO sanoo, ettei ottelua {matchId} ole (tai sitä ei ole julkaistu). Ei näytetä keksittyä tulosta.</main>
+  }
+  if (load.state === 'failed') {
+    return <main className="max-w-3xl mx-auto px-4 py-10"><LoadFailed what="Ottelua" onRetry={load.retry} /></main>
   }
   if (!view || !raw) {
     return <main className="max-w-3xl mx-auto px-4 py-10 text-sm text-zinc-500">Haetaan ottelua…</main>
@@ -62,10 +57,17 @@ function MatchBody({ matchId }: { matchId: string }) {
           Luovutus{view.forfeitBy ? `: ${view.forfeitBy} luovutti` : ''}
         </p>
       )}
-      {view.trusted && !view.forfeit && view.phase !== 'upcoming' && (
-        <p className="text-3xl font-black font-mono text-amber-300">{view.detail.setsWonHome}–{view.detail.setsWonAway}</p>
+      {view.trusted && !view.forfeit && view.phase !== 'upcoming' && view.recorded && (
+        <p className="text-3xl font-black font-mono text-amber-300">
+          {view.recorded.home}–{view.recorded.away}
+          {view.tie && <span className="ml-2 text-base font-bold text-zinc-300">tasapeli</span>}
+        </p>
+      )}
+      {view.trusted && !view.forfeit && !view.recorded && view.setLines.length > 0 && (
+        <p className="text-sm text-zinc-500">TASO ei ole kirjannut ottelun lopputulosta. Alla erät sellaisina kuin ne on kirjattu.</p>
       )}
       {!view.trusted && <p className="text-sm text-zinc-500">Ei kirjattua tulosta. Ei näytetä 0–0:aa.</p>}
+      {view.format && <p className="text-xs text-zinc-500">Pelimuoto: {view.format}</p>}
       <div className="flex flex-wrap gap-1.5">
         {tabs.map((t) => (
           <button key={t.id} type="button" onClick={() => setTab(t.id)} className={`px-3 py-2 rounded-xl text-xs font-bold ${tab === t.id ? 'bg-amber-500/20 text-amber-200' : 'text-zinc-400'}`}>{t.label}</button>
@@ -74,7 +76,7 @@ function MatchBody({ matchId }: { matchId: string }) {
       {tab === 'match' && (
         <div className="space-y-3">
           {view.detail.sets.length > 0
-            ? <VolleyballSetGrid sets={view.detail.sets} homeTeamName={view.detail.homeTeamName} awayTeamName={view.detail.awayTeamName} />
+            ? <VolleyballSetGrid sets={view.detail.sets} homeTeamName={view.detail.homeTeamName} awayTeamName={view.detail.awayTeamName} formatText={view.format} />
             : <p className="text-sm text-zinc-500">Ei erätuloksia.</p>}
           <ul className="text-xs text-zinc-400 space-y-1">
             {view.setLines.map((set) => (
@@ -86,9 +88,9 @@ function MatchBody({ matchId }: { matchId: string }) {
             ))}
           </ul>
           <p className="text-xs">
-            <Link className="text-amber-300" to={`/team/${view.detail.homeTeamId}`}>{view.detail.homeTeamName}</Link>
+            <TeamLink id={view.detail.homeTeamId} name={view.detail.homeTeamName} />
             {' · '}
-            <Link className="text-amber-300" to={`/team/${view.detail.awayTeamId}`}>{view.detail.awayTeamName}</Link>
+            <TeamLink id={view.detail.awayTeamId} name={view.detail.awayTeamName} />
           </p>
         </div>
       )}
@@ -110,10 +112,11 @@ function present(raw: Record<string, unknown>) {
     homeScore: set.home,
     awayScore: set.away,
     duration: set.durationMin ? `${set.durationMin} min` : undefined,
+    isDeuce: setWentToExtraPoints(set.home, set.away),
     status: 'finished',
   }))
-  const homeWon = sets.filter((set) => set.homeScore > set.awayScore).length
-  const awayWon = sets.filter((set) => set.awayScore > set.homeScore).length
+  const recorded = setsWonRecorded(raw)
+  const format = formatLabel(matchFormat(raw))
   const homeId = s(raw.team_A_id)
   const awayId = s(raw.team_B_id)
   const detail: VolleyballMatchDetail = {
@@ -127,8 +130,10 @@ function present(raw: Record<string, unknown>) {
     awayTeamName: s(raw.team_B_name),
     homeTeamId: homeId,
     awayTeamId: awayId,
-    setsWonHome: trusted ? (num(raw.fs_A) || homeWon) : 0,
-    setsWonAway: trusted ? (num(raw.fs_B) || awayWon) : 0,
+    setsWonHome: trusted && recorded ? recorded.home : 0,
+    setsWonAway: trusted && recorded ? recorded.away : 0,
+    resultRecorded: Boolean(trusted && recorded),
+    formatText: format || undefined,
     sets,
     totalPointsHome: sets.reduce((n, set) => n + set.homeScore, 0),
     totalPointsAway: sets.reduce((n, set) => n + set.awayScore, 0),
@@ -138,6 +143,9 @@ function present(raw: Record<string, unknown>) {
     detail,
     phase,
     trusted,
+    recorded,
+    format,
+    tie: isTie(raw),
     setLines: setLines.map((set) => ({
       ...set,
       firstServe: set.firstServeTeamId === homeId ? detail.homeTeamName : set.firstServeTeamId === awayId ? detail.awayTeamName : '',
@@ -149,7 +157,7 @@ function present(raw: Record<string, unknown>) {
   }
 }
 
-function num(v: unknown) {
-  const n = Number(v)
-  return Number.isFinite(n) ? n : 0
+function TeamLink({ id, name }: { id: string; name: string }) {
+  if (!id || id === '0') return <span>{name}</span>
+  return <Link className="text-amber-300" to={`/team/${id}`}>{name}</Link>
 }
