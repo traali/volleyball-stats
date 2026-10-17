@@ -149,6 +149,17 @@ export function formatLabel(f: MatchFormat): string {
   return ''
 }
 
+/** Set point targets as TASO states them (period_points_notlast / period_points_last), e.g. "erät 25p, 5. erä 15p". '' when TASO doesn't say. */
+export function setPointsLabel(raw: Record<string, unknown>): string {
+  const normal = int(raw.period_points_notlast)
+  const last = int(raw.period_points_last)
+  const f = matchFormat(raw)
+  const maxSets = f.kind === 'fixed' ? f.sets : f.kind === 'best-of' || f.kind === 'max' ? f.maxSets : 0
+  if (!normal) return ''
+  if (last && last !== normal && maxSets > 1) return `erät ${normal}p, ${maxSets}. erä ${last}p`
+  return `erät ${normal}p`
+}
+
 /** TASO says Tie (fixed set count, sets shared). */
 export function isTie(raw: Record<string, unknown>): boolean {
   if (str(raw.winner).toLowerCase() !== 'tie') return false

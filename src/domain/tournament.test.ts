@@ -16,6 +16,7 @@ import {
   standingsState,
   timeOf,
   type GroupRow,
+  setPointsLabel,
 } from './tournament'
 
 type Row = Record<string, unknown>
@@ -187,5 +188,15 @@ describe('category notice', () => {
 
   it('drops javascript links', () => {
     expect(noticeParts('<a href="javascript:alert(1)">x</a>').links).toEqual([])
+  })
+})
+
+describe('setPointsLabel', () => {
+  it('states the deciding set target from TASO (Mestaruusliiga 803471)', () => {
+    const raw = { period_count: '5', win_period_count: 3, period_count_fixed: '0', period_points_notlast: '25', period_points_last: '15' }
+    expect(setPointsLabel(raw)).toBe('erät 25p, 5. erä 15p')
+  })
+  it('says nothing when TASO gives no targets', () => {
+    expect(setPointsLabel({ period_count: '2', period_count_fixed: '1' })).toBe('')
   })
 })
