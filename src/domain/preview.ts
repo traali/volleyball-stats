@@ -172,30 +172,77 @@ export function playerGames(player: Row | null, seasons: string[]): PlayerGame[]
     .sort((a, b) => b.date.localeCompare(a.date))
 }
 
-export interface LikelyRotation { shirts: string[]; libero: string; basedOn: number; games: number }
+export interface LikelyRotation {
+  shirts: string[]; libero: string; basedOn: number; games: number
+  /** 'lineup' = limited to this match's published lineup; 'all' = no lineup published; 'actual' = from this match's pelipaikat. */
+  source: 'lineup' | 'all' | 'actual'
+  replaced: { slot: number; out: string; in: string }[]
+}
 
-/** Most common set-1 starting six (position order I–VI from pelipaikat) over the team's games; ties go to the newest game (raws newest first). */
-export function likelyRotation(raws: Row[], teamId: string): LikelyRotation | null {
-  const counts = new Map<string, number>()
-  const liberos = new Map<string, number>()
-  let games = 0
+function startSixes(raws: Row[], teamId: string, firstSetOnly: boolean): { first: string[][]; all: string[][]; libs: string[] } {
+  const first: string[][] = [], all: string[][] = [], libs: string[] = []
   for (const raw of raws) {
     const side = s(raw.team_A_id) === teamId ? 'A' : s(raw.team_B_id) === teamId ? 'B' : ''
     if (!side) continue
-    const evs = (Array.isArray(raw.events) ? (raw.events as Row[]) : []).filter((e) =>
-      e && s(e.code) === 'pelipaikat' && (Number(e.period) || 1) === 1 && (s(e.team) === side || s(e.team_id) === teamId))
-    const parsed = evs.map((e) => s(e.description).split(',').map((x) => s(x.split('=')[1])).filter(Boolean)).filter((x) => x.length >= 6)
-    if (!parsed.length) continue
-    games++
-    const key = parsed[0].slice(0, 6).join(',')
-    counts.set(key, (counts.get(key) || 0) + 1)
-    const lib = parsed.find((x) => x[6])?.[6]
-    if (lib) liberos.set(lib, (liberos.get(lib) || 0) + 1)
+    const seen = new Set<number>()
+    for (const e of Array.isArray(raw.events) ? (raw.events as Row[]) : []) {
+      if (!e || s(e.code) !== 'pelipaikat' || !(s(e.team) === side || s(e.team_id) === teamId)) continue
+      const period = Number(e.period) || 1
+      if (firstSetOnly && period !== 1) continue
+      const x = s(e.description).split(',').map((y) => s(y.split('=')[1])).filter(Boolean)
+      if (x.length < 6) continue
+      if (x[6]) libs.push(x[6])
+      if (seen.has(period)) continue
+      seen.add(period)
+      all.push(x)
+      if (period === 1) first.push(x)
+    }
   }
-  if (!games) return null
+  return { first, all, libs }
+}
+
+/** Actual set-1 starting six from this match's pelipaikat (once the game has started). */
+export function actualRotation(raw: Row | null, teamId: string): LikelyRotation | null {
+  if (!raw) return null
+  const x = startSixes([raw], teamId, true).first[0]
+  const lib = startSixes([raw], teamId, true).libs[0] || ''
+  return x ? { shirts: x.slice(0, 6), libero: lib, basedOn: 1, games: 1, source: 'actual', replaced: [] } : null
+}
+
+/**
+ * Most common set-1 starting six (I–VI from pelipaikat) over the team's games; ties go to the newest game (raws newest first).
+ * With a published lineup, a usual starter missing from it is replaced by the lineup player who most often started in that slot
+ * (any set) in recent games, else by the lineup player with most starts overall.
+ */
+export function likelyRotation(raws: Row[], teamId: string, lineup?: string[] | null): LikelyRotation | null {
+  const { first, all, libs: libList } = startSixes(raws, teamId, false)
+  if (!first.length) return null
+  const counts = new Map<string, number>()
+  const liberos = new Map<string, number>()
+  for (const x of first) {
+    const key = x.slice(0, 6).join(',')
+    counts.set(key, (counts.get(key) || 0) + 1)
+  }
+  for (const x of libList) liberos.set(x, (liberos.get(x) || 0) + 1)
   let best = ''
   for (const [k, c] of counts) if (!best || c > counts.get(best)!) best = k
-  let libero = ''
-  for (const [k, c] of liberos) if (!libero || c > liberos.get(libero)!) libero = k
-  return { shirts: best.split(','), libero, basedOn: counts.get(best)!, games }
+  const shirts = best.split(',')
+  const replaced: LikelyRotation['replaced'] = []
+  const inL = (x: string) => !lineup || lineup.includes(x)
+  const libs = [...liberos.entries()].sort((a, b) => b[1] - a[1]).map((e) => e[0])
+  const libero = libs.find(inL) || ''
+  if (lineup?.length) {
+    const used = new Set(shirts.filter(inL).concat(libero ? [libero] : []))
+    shirts.forEach((x, slot) => {
+      if (inL(x)) return
+      const score = (y: string, onlySlot: boolean) => all.reduce((n, six) => n + (onlySlot ? (six[slot] === y ? 1 : 0) : six.slice(0, 6).includes(y) ? 1 : 0), 0)
+      const cand = lineup.filter((y) => !used.has(y) && !libs.slice(0, 1).includes(y))
+      const pick = [...cand].sort((a, b) => score(b, true) - score(a, true) || score(b, false) - score(a, false))[0]
+      if (!pick) return
+      used.add(pick)
+      shirts[slot] = pick
+      replaced.push({ slot, out: x, in: pick })
+    })
+  }
+  return { shirts, libero, basedOn: counts.get(best)!, games: first.length, source: lineup?.length ? 'lineup' : 'all', replaced }
 }

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { RotationAnalysisView } from './GameFlow'
 import type { RotationAnalysis } from '../domain/gameFlow'
-import type { GameLine, LikelyRotation, RosterPlayer, TeamSeason } from '../domain/preview'
+import { actualRotation, type GameLine, type LikelyRotation, type RosterPlayer, type TeamSeason } from '../domain/preview'
 
 export interface PreviewData {
   lineupPublished: boolean
@@ -16,7 +16,7 @@ export interface PreviewData {
 
 const NONE = 'text-sm text-zinc-500'
 
-export function MatchPreview({ data }: { data: PreviewData }) {
+export function MatchPreview({ data, raw }: { data: PreviewData; raw?: Record<string, unknown> | null }) {
   const [a, b] = data.teams
   return (
     <div className="space-y-5" data-testid="match-preview">
@@ -41,8 +41,10 @@ export function MatchPreview({ data }: { data: PreviewData }) {
 
       {data.teams.map((t) => (
         <section key={`rot-${t.id}`} className="space-y-2" data-testid={`rotation-${t.id}`}>
-          <h2 className="text-sm font-bold text-white">Todennäköinen aloituskierto: {t.name}</h2>
-          <Rotation r={t.rotation} roster={t.roster} published={data.lineupPublished} />
+          {(() => { const act = actualRotation(raw ?? null, t.id); return <>
+            <h2 className="text-sm font-bold text-white">{act ? 'Aloituskierto (toteutunut 1. erä)' : 'Todennäköinen aloituskierto'}: {t.name}</h2>
+            <Rotation r={act || t.rotation} roster={t.roster} published={data.lineupPublished} />
+          </> })()}
           <RotationAnalysisView title="Kierrot viimeisissä otteluissa" a={t.rotationStats ?? null} />
         </section>
       ))}
@@ -152,11 +154,12 @@ function Rotation({ r, roster, published }: { r?: LikelyRotation | null; roster:
   const who = (shirt: string) => roster?.find((p) => p.number === shirt)
   const cell = (shirt: string, pos: string) => {
     const p = who(shirt)
-    const out = published && (!p || !p.inLineup)
+    const out = r.source !== 'actual' && published && (!p || !p.inLineup)
     return (
       <div key={pos} data-in-lineup={out ? '0' : '1'} className={`rounded border border-zinc-700 p-1.5 text-center ${out ? 'opacity-40' : ''}`}>
         <div className="text-[10px] text-zinc-500">{pos}</div>
         <div className="font-mono font-bold">#{shirt}</div>
+        {r.replaced.find((x) => x.in === shirt) && <div className="text-[9px] text-amber-300">korvaa #{r.replaced.find((x) => x.in === shirt)!.out}</div>}
         <div className="truncate text-[10px] text-zinc-300">{p?.name.split(' ').slice(-1)[0] || '?'}</div>
       </div>
     )
@@ -168,7 +171,9 @@ function Rotation({ r, roster, published }: { r?: LikelyRotation | null; roster:
       {COURT.map((row, i) => <div key={i} className="grid grid-cols-3 gap-1">{row.map((k) => cell(r.shirts[k], roman[k]))}</div>)}
       <p className="text-[11px] text-zinc-500">
         {r.libero ? <>Libero #{r.libero} {who(r.libero)?.name || ''}. </> : 'Libero: ei tietoa. '}
-        Sama 1. erän aloitus {r.basedOn}/{r.games} ottelussa (TASO pelipaikat, viimeiset ottelut). Kierto: {r.shirts.map((x, i) => `${roman[i]} #${x}`).join(', ')}.
+        {r.source === 'actual' ? 'Toteutunut 1. erän aloitus tämän ottelun pelipaikoista. ' : <>Sama 1. erän aloitus {r.basedOn}/{r.games} ottelussa (TASO pelipaikat, viimeiset ottelut). {r.source === 'lineup' ? 'Vain tämän ottelun kokoonpanon pelaajat. ' : 'Kokoonpanoa ei julkaistu: perustuu kaikkiin pelaajiin. '}</>}
+        {r.replaced.map((x) => <span key={x.slot} className="text-amber-300">{roman[x.slot]}: #{x.in} korvaa #{x.out}. </span>)}
+        Kierto: {r.shirts.map((x, i) => `${roman[i]} #${x}`).join(', ')}.
       </p>
     </div>
   )

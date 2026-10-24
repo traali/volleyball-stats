@@ -14,8 +14,8 @@ function rotationMd(team: string, r: LikelyRotation | null | undefined, players:
   const head = `## Todennäköinen aloituskierto: ${team}`
   if (!r) return [head, '_ei tietoa: ei pelipaikkatietoja aiemmista otteluista_', '']
   const roman = ['I', 'II', 'III', 'IV', 'V', 'VI']
-  const name = (x: string) => { const p = players.find((q) => q.number === x); return `#${x} ${p?.name || '?'}${published && (!p || !p.inLineup) ? ' (ei kokoonpanossa)' : ''}` }
-  return [head, `_sama 1. erän aloitus ${r.basedOn}/${r.games} ottelussa_`, ...r.shirts.map((x, i) => `- ${roman[i]}: ${name(x)}`), `- Libero: ${r.libero ? name(r.libero) : 'ei tietoa'}`, '']
+  const name = (x: string) => { const p = players.find((q) => q.number === x); const rep = r.replaced?.find((y) => y.in === x); return `#${x} ${p?.name || '?'}${rep ? ` (korvaa #${rep.out})` : ''}${r.source !== 'actual' && published && (!p || !p.inLineup) ? ' (ei kokoonpanossa)' : ''}` }
+  return [head, r.source === 'actual' ? '_toteutunut 1. erän aloitus tämän ottelun pelipaikoista_' : `_sama 1. erän aloitus ${r.basedOn}/${r.games} ottelussa; ${r.source === 'lineup' ? 'vain tämän ottelun kokoonpanon pelaajat' : 'kokoonpanoa ei julkaistu, kaikki pelaajat'}_`, ...r.shirts.map((x, i) => `- ${roman[i]}: ${name(x)}`), `- Libero: ${r.libero ? name(r.libero) : 'ei tietoa'}`, '']
 }
 
 function prevMd(p: RosterPlayer): string {
