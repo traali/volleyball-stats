@@ -17,7 +17,6 @@ import { fetchPreview } from '../services/preview'
 import { fetchMatchRaw, federationUrl } from '../services/discovery'
 import type { VolleyballMatchDetail, VolleyballSet } from '../types/volleyball'
 
-type Tab = 'match' | 'rotations' | 'points' | 'share'
 
 function s(v: unknown) { return v == null ? '' : String(v).trim() }
 
@@ -28,7 +27,6 @@ export function MatchPage() {
 
 function MatchBody({ matchId }: { matchId: string }) {
   const load = useTaso(() => fetchMatchRaw(matchId), [matchId])
-  const [tab, setTab] = useState<Tab>('match')
   const loaded = load.state === 'ok' ? load.data : null
   const live = useLiveRefresh(matchId, loaded)
   const raw = live.raw ?? loaded
@@ -51,12 +49,7 @@ function MatchBody({ matchId }: { matchId: string }) {
     return <main className="max-w-3xl mx-auto px-4 py-10 text-sm text-zinc-500">Haetaan ottelua…</main>
   }
 
-  const tabs: Array<{ id: Tab; label: string }> = [
-    { id: 'match', label: 'Ottelu' },
-    { id: 'points', label: `Pisteet (${view.points.length})` },
-    { id: 'rotations', label: 'Kenttä' },
-    { id: 'share', label: 'Jaa' },
-  ]
+  const tacTeams = (preview?.teams || [{ id: String(raw.team_A_id), name: view.detail.homeTeamName }, { id: String(raw.team_B_id), name: view.detail.awayTeamName }]).map((t, i) => ({ id: t.id, name: t.name, roster: (t as { roster?: { number: string; name: string }[] }).roster || undefined, games: preview?.previousGames?.[i]?.games || [] }))
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-6 space-y-4">
@@ -84,46 +77,41 @@ function MatchBody({ matchId }: { matchId: string }) {
       )}
       {!view.trusted && <p className="text-sm text-zinc-500">Ei kirjattua tulosta. Ei näytetä 0–0:aa.</p>}
       {view.format && <p className="text-xs text-zinc-500">Pelimuoto: {view.format}</p>}
+      {view.phase !== 'upcoming' && <CourtNowBoard raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} live={view.phase === 'live'} />}
       {view.phase !== 'upcoming' && preview && <Insights preview={preview} raw={raw} phase={view.phase} />}
-      {view.phase !== 'upcoming' && <MatchRotationAnalysis raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />}
-      {view.phase !== 'upcoming' && raw && <InGameTactics raw={raw} teams={(preview?.teams || [{ id: String(raw.team_A_id), name: view.detail.homeTeamName }, { id: String(raw.team_B_id), name: view.detail.awayTeamName }]).map((t, i) => ({ id: t.id, name: t.name, roster: (t as { roster?: { number: string; name: string }[] }).roster, games: preview?.previousGames?.[i]?.games || [] }))} />}
-      <div className="flex flex-wrap gap-1.5">
-        {tabs.map((t) => (
-          <button key={t.id} type="button" onClick={() => setTab(t.id)} className={`min-h-[44px] px-4 py-2 rounded-xl text-sm font-bold ${tab === t.id ? 'bg-amber-500/20 text-amber-200' : 'text-zinc-400'}`}>{t.label}</button>
-        ))}
+      {view.phase !== 'upcoming' && raw && <InGameTactics raw={raw} teams={tacTeams} part="hot" />}
+      {view.phase !== 'upcoming' && <MatchRotationAnalysis raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} usual={preview?.teams.map((t) => t.rotationStats)} />}
+      {view.phase !== 'upcoming' && raw && <InGameTactics raw={raw} teams={tacTeams} part="serve" />}
+      {view.phase !== 'upcoming' && raw && <InGameTactics raw={raw} teams={tacTeams} part="runs" />}
+      {view.phase !== 'upcoming' && <PointTimeline raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />}
+      {view.phase !== 'upcoming' && (
+        <details className="text-xs"><summary className="min-h-[44px] text-zinc-400">Pistetyypit ja pelaajat</summary><PointTape points={view.points} homeId={view.detail.homeTeamId} home={view.detail.homeTeamName} away={view.detail.awayTeamName} /></details>
+      )}
+      <div className="space-y-3">
+        <h2 className="text-sm font-bold text-white">{view.phase === 'upcoming' ? 'Ottelu' : 'Kokoonpanot ja erät'}</h2>
+        {view.phase !== 'upcoming' && <RotationBoard rows={view.rotations} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />}
+        {view.detail.sets.length > 0
+          ? <VolleyballSetGrid sets={view.detail.sets} homeTeamName={view.detail.homeTeamName} awayTeamName={view.detail.awayTeamName} formatText={view.format} />
+          : <p className="text-sm text-zinc-500">{view.phase === 'upcoming' ? 'Ei erätuloksia vielä: ottelua ei ole pelattu.' : 'Ei erätuloksia.'}</p>}
+        <ul className="text-xs text-zinc-400 space-y-1">
+          {view.setLines.map((set) => (
+            <li key={set.number}>
+              {set.number}. erä {set.start || '—'}–{set.end || '—'}
+              {set.durationMin ? ` · ${set.durationMin} min` : ''}
+              {set.firstServe ? ` · aloittaa ${set.firstServe}` : ''}
+            </li>
+          ))}
+        </ul>
+        <p className="text-xs">
+          <TeamLink id={view.detail.homeTeamId} name={view.detail.homeTeamName} />
+          {' · '}
+          <TeamLink id={view.detail.awayTeamId} name={view.detail.awayTeamName} />
+        </p>
+        {view.phase === 'upcoming' && preview && <Insights preview={preview} raw={raw} phase={view.phase} />}
+        {preview ? <MatchPreview data={preview} raw={view.phase !== 'upcoming' ? raw : null} /> : <p className="text-sm text-zinc-500">Haetaan pelaajia, tilastoja ja sarjataulukkoa…</p>}
       </div>
-      {tab === 'match' && (
-        <div className="space-y-3">
-          {view.detail.sets.length > 0
-            ? <VolleyballSetGrid sets={view.detail.sets} homeTeamName={view.detail.homeTeamName} awayTeamName={view.detail.awayTeamName} formatText={view.format} />
-            : <p className="text-sm text-zinc-500">{view.phase === 'upcoming' ? 'Ei erätuloksia vielä: ottelua ei ole pelattu.' : 'Ei erätuloksia.'}</p>}
-          <ul className="text-xs text-zinc-400 space-y-1">
-            {view.setLines.map((set) => (
-              <li key={set.number}>
-                {set.number}. erä {set.start || '—'}–{set.end || '—'}
-                {set.durationMin ? ` · ${set.durationMin} min` : ''}
-                {set.firstServe ? ` · aloittaa ${set.firstServe}` : ''}
-              </li>
-            ))}
-          </ul>
-          <p className="text-xs">
-            <TeamLink id={view.detail.homeTeamId} name={view.detail.homeTeamName} />
-            {' · '}
-            <TeamLink id={view.detail.awayTeamId} name={view.detail.awayTeamName} />
-          </p>
-          {view.phase === 'upcoming' && preview && <Insights preview={preview} raw={raw} phase={view.phase} />}
-          {preview ? <MatchPreview data={preview} raw={view.phase !== 'upcoming' ? raw : null} /> : <p className="text-sm text-zinc-500">Haetaan pelaajia, tilastoja ja sarjataulukkoa…</p>}
-        </div>
-      )}
-      {tab === 'rotations' && <CourtNowBoard raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} live={view.phase === 'live'} />}
-      {tab === 'rotations' && <RotationBoard rows={view.rotations} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />}
-      {tab === 'points' && (
-        <PointTimeline raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />
-      )}
-      {tab === 'points' && (
-        <details className="text-xs"><summary className="text-zinc-400">Pistetyypit ja pelaajat</summary><PointTape points={view.points} homeId={view.detail.homeTeamId} home={view.detail.homeTeamName} away={view.detail.awayTeamName} /></details>
-      )}
-      {tab === 'share' && <VolleyballPreviewExport
+      <h2 className="text-sm font-bold text-white">Jaa (md)</h2>
+      <VolleyballPreviewExport
         match={view.detail}
         previousGames={preview?.previousGames}
         rotations={preview?.teams.map((t) => ({ team: t.name, rotation: (view.phase !== 'upcoming' && actualRotation(raw, t.id)) || t.rotation }))}
@@ -133,7 +121,7 @@ function MatchBody({ matchId }: { matchId: string }) {
         insights={preview ? insightInputs(preview, raw, view.phase) : undefined}
         rotationStats={preview?.teams.map((t) => ({ team: t.name, analysis: t.rotationStats ?? null }))}
         rosters={preview?.teams.filter((x) => x.roster).map((x) => ({ team: x.name, players: x.roster!, lineupPublished: preview.lineupPublished }))}
-      />}
+      />
     </main>
   )
 }
