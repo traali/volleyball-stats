@@ -36,7 +36,7 @@ describe('previous season', () => {
   })
 })
 
-import { likelyRotation, playerGames } from './preview'
+import { actualRotation, likelyRotation, playerGames } from './preview'
 describe('per game + rotation', () => {
   it('lists per-game points newest first with opponent', () => {
     const p = { matches: [g({ match_id: '1', date: '2025-10-01', team_id: '7', team_A_id: '7', team_B_name: 'HSC' }), g({ match_id: '2', date: '2026-10-10', season_id: '2026-27', team_id: '7', team_A_id: '8', team_A_name: 'Keika', player_points: '9' })] }
@@ -50,7 +50,13 @@ describe('per game + rotation', () => {
     const raw = (team: string, ...events: object[]) => ({ team_A_id: team, team_B_id: 'x', events })
     const six = '1=5,2=34,3=17,4=16,5=41,6=8'
     const r = likelyRotation([raw('t', ev('1=1,2=2,3=3,4=4,5=5,6=6')), raw('t', ev(six), ev(six + ',7=10')), raw('t', ev(six), ev(six + ',7=10'), ev('1=9,2=9,3=9,4=9,5=9,6=9', 'A', '2')), raw('other', ev(six))], 't')
-    expect(r).toEqual({ shirts: ['5', '34', '17', '16', '41', '8'], libero: '10', basedOn: 2, games: 3 })
+    expect(r).toEqual({ shirts: ['5', '34', '17', '16', '41', '8'], libero: '10', basedOn: 2, games: 3, source: 'all', replaced: [] })
+    // #34 not in lineup → replaced by the lineup player who most often started slot II (#9 in set 2)
+    const l = likelyRotation([raw('t', ev('1=1,2=2,3=3,4=4,5=5,6=6')), raw('t', ev(six), ev(six + ',7=10')), raw('t', ev(six), ev(six + ',7=10'), ev('1=9,2=9,3=9,4=9,5=9,6=9', 'A', '2')), raw('other', ev(six))], 't', ['5', '17', '16', '41', '8', '10', '9', '2'])
+    expect(l?.source).toBe('lineup')
+    expect(l?.replaced).toEqual([{ slot: 1, out: '34', in: '9' }])
+    expect(l?.shirts).toEqual(['5', '9', '17', '16', '41', '8'])
+    expect(actualRotation(raw('t', ev(six), ev(six + ',7=10')), 't')).toMatchObject({ shirts: ['5', '34', '17', '16', '41', '8'], libero: '10', source: 'actual' })
     expect(likelyRotation([], 't')).toBeNull()
   })
 })

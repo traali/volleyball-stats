@@ -11,6 +11,7 @@ import { forfeitingSide, isForfeit, liveState, phaseForDisplay, pointsFromEvents
 import { formatLabel, isTie, setPointsLabel, matchFormat, setWentToExtraPoints } from '../domain/tournament'
 import { LoadFailed } from '../components/LoadState'
 import { useTaso } from '../hooks/useTaso'
+import { actualRotation } from '../domain/preview'
 import { MatchPreview, type PreviewData } from '../components/MatchPreview'
 import { fetchPreview } from '../services/preview'
 import { fetchMatchRaw, federationUrl } from '../services/discovery'
@@ -111,7 +112,7 @@ function MatchBody({ matchId }: { matchId: string }) {
             <TeamLink id={view.detail.awayTeamId} name={view.detail.awayTeamName} />
           </p>
           {view.phase === 'upcoming' && preview && <Insights preview={preview} raw={raw} phase={view.phase} />}
-          {preview ? <MatchPreview data={preview} /> : <p className="text-sm text-zinc-500">Haetaan pelaajia, tilastoja ja sarjataulukkoa…</p>}
+          {preview ? <MatchPreview data={preview} raw={view.phase !== 'upcoming' ? raw : null} /> : <p className="text-sm text-zinc-500">Haetaan pelaajia, tilastoja ja sarjataulukkoa…</p>}
         </div>
       )}
       {tab === 'rotations' && <CourtNowBoard raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} live={view.phase === 'live'} />}
@@ -125,7 +126,7 @@ function MatchBody({ matchId }: { matchId: string }) {
       {tab === 'share' && <VolleyballPreviewExport
         match={view.detail}
         previousGames={preview?.previousGames}
-        rotations={preview?.teams.map((t) => ({ team: t.name, rotation: t.rotation }))}
+        rotations={preview?.teams.map((t) => ({ team: t.name, rotation: (view.phase !== 'upcoming' && actualRotation(raw, t.id)) || t.rotation }))}
         h2hPrev={preview?.prevSeason ? { season: preview.prevSeason, games: preview.h2hPrev || [] } : undefined}
         teamStats={preview?.standings ?? undefined}
         raw={raw}

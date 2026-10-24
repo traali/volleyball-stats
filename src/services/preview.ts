@@ -49,7 +49,7 @@ export async function fetchPreview(match: Record<string, unknown>): Promise<Prev
       name: names[i],
       roster: rosters[i],
       recent: recent[i],
-      rotation: likelyRotation(previousGames[i].games, id),
+      rotation: likelyRotation(previousGames[i].games, id, lineupPublished(match) ? (rosters[i] || []).filter((p) => p.inLineup).map((p) => p.number) : null),
       rotationStats: rotationAnalysis(previousGames[i].games, id),
       season: standings?.find((r) => r.teamId === id) || null,
     })),
