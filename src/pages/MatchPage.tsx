@@ -8,6 +8,8 @@ import { forfeitingSide, isForfeit, liveState, phaseForDisplay, pointsFromEvents
 import { formatLabel, isTie, setPointsLabel, matchFormat, setWentToExtraPoints } from '../domain/tournament'
 import { LoadFailed } from '../components/LoadState'
 import { useTaso } from '../hooks/useTaso'
+import { MatchPreview, type PreviewData } from '../components/MatchPreview'
+import { fetchPreview } from '../services/preview'
 import { fetchMatchRaw, federationUrl } from '../services/discovery'
 import type { VolleyballMatchDetail, VolleyballSet } from '../types/volleyball'
 
@@ -27,6 +29,13 @@ function MatchBody({ matchId }: { matchId: string }) {
   const live = useLiveRefresh(matchId, loaded)
   const raw = live.raw ?? loaded
   const view = useMemo(() => (raw ? present(raw) : null), [raw])
+  const [preview, setPreview] = useState<PreviewData | null>(null)
+  useEffect(() => {
+    if (!loaded) return
+    let stop = false
+    void fetchPreview(loaded).then((p) => { if (!stop) setPreview(p) })
+    return () => { stop = true }
+  }, [loaded])
 
   if (load.state === 'notfound') {
     return <main className="max-w-3xl mx-auto px-4 py-10 text-sm text-zinc-400">TASO sanoo, ettei ottelua {matchId} ole (tai sitä ei ole julkaistu). Ei näytetä keksittyä tulosta.</main>
@@ -80,7 +89,7 @@ function MatchBody({ matchId }: { matchId: string }) {
         <div className="space-y-3">
           {view.detail.sets.length > 0
             ? <VolleyballSetGrid sets={view.detail.sets} homeTeamName={view.detail.homeTeamName} awayTeamName={view.detail.awayTeamName} formatText={view.format} />
-            : <p className="text-sm text-zinc-500">Ei erätuloksia.</p>}
+            : <p className="text-sm text-zinc-500">{view.phase === 'upcoming' ? 'Ei erätuloksia vielä: ottelua ei ole pelattu.' : 'Ei erätuloksia.'}</p>}
           <ul className="text-xs text-zinc-400 space-y-1">
             {view.setLines.map((set) => (
               <li key={set.number}>
@@ -95,13 +104,19 @@ function MatchBody({ matchId }: { matchId: string }) {
             {' · '}
             <TeamLink id={view.detail.awayTeamId} name={view.detail.awayTeamName} />
           </p>
+          {preview ? <MatchPreview data={preview} /> : <p className="text-sm text-zinc-500">Haetaan pelaajia, tilastoja ja sarjataulukkoa…</p>}
         </div>
       )}
       {tab === 'rotations' && <RotationBoard rows={view.rotations} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />}
       {tab === 'points' && (
         <PointTape points={view.points} homeId={view.detail.homeTeamId} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />
       )}
-      {tab === 'share' && <VolleyballPreviewExport match={view.detail} />}
+      {tab === 'share' && <VolleyballPreviewExport
+        match={view.detail}
+        previousGames={preview?.previousGames}
+        teamStats={preview?.standings ?? undefined}
+        rosters={preview?.teams.filter((x) => x.roster).map((x) => ({ team: x.name, players: x.roster!, lineupPublished: preview.lineupPublished }))}
+      />}
     </main>
   )
 }

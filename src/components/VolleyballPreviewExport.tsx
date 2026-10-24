@@ -7,11 +7,14 @@ interface VolleyballPreviewExportProps {
   match: VolleyballMatchDetail
   standings?: VolleyballStandingRow[]
   players?: VolleyballPlayerStat[]
+  previousGames?: Parameters<typeof buildVolleyballPreviewMd>[0]['previousGames']
+  rosters?: Parameters<typeof buildVolleyballPreviewMd>[0]['rosters']
+  teamStats?: Parameters<typeof buildVolleyballPreviewMd>[0]['teamStats']
 }
 
-export function VolleyballPreviewExport({ match, standings = [], players = [] }: VolleyballPreviewExportProps) {
+export function VolleyballPreviewExport({ match, standings = [], players = [], previousGames, rosters, teamStats }: VolleyballPreviewExportProps) {
   const [copied, setCopied] = useState(false)
-  const md = useMemo(() => buildVolleyballPreviewMd({ match, standings, players }), [match, standings, players])
+  const md = useMemo(() => buildVolleyballPreviewMd({ match, standings, players, previousGames, rosters, teamStats }), [match, standings, players, previousGames, rosters, teamStats])
 
   const copy = async () => {
     await navigator.clipboard.writeText(md)
