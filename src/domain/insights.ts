@@ -3,7 +3,7 @@
  * Pre-game: form, standings, rotation strengths, key scorers, rough win likelihood with its basis.
  * In-game: "Pysyy / Poikkeaa" — live numbers vs recent-game baselines.
  */
-import { hotPlayers, rotationAnalysis, serveStats, setFlows, type RotationAnalysis } from './gameFlow'
+import { hotPlayers, matchups, matchupText, rotationAnalysis, serveStats, setFlows, type RotationAnalysis } from './gameFlow'
 import type { GameLine, RosterPlayer, TeamSeason } from './preview'
 
 type Row = Record<string, unknown>
@@ -167,6 +167,7 @@ export function countedFacts(preview: { teams: TeamFacts[]; previousGames?: Arra
       for (const r of runs) out.push(`${t.name} putki ${r.length} p ${r.period}. erässä (${r.from} → ${r.to}), kierto ${r.rotation}${r.servers.length ? `, syötti ${r.servers.map(nm).join(', ')}` : ''}.`)
     }
   })
+  for (const m of matchups(preview.teams.map((t, i) => ({ id: t.id, name: t.name, games: preview.previousGames?.[i]?.games || [] })), inGame ? raw : null)) for (const l of m.lines) out.push(`Kohtaamisvertailu: ${matchupText(l)}.`)
   if (inGame) for (const f of liveFindings(raw!, preview.teams.map((t, i) => ({ id: t.id, name: t.name, roster: t.roster, games: preview.previousGames?.[i]?.games || [] })))) out.push(`${f.holds ? 'Pysyy' : 'Poikkeaa'}: ${f.text}`)
   else out.push(...pregameInsights(preview.teams[0], preview.teams[1]))
   return out

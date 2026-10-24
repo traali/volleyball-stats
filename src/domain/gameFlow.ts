@@ -203,3 +203,38 @@ export function serveMd(title: string, rows: ServeLine[]): string[] {
   if (!rows.length) return [`### Syötöt: ${title}`, '_ei tietoa: syöttäjiä ei voitu päätellä (pelipaikat puuttuvat)_', '']
   return [`### Syötöt: ${title}`, ...rows.map((r) => `- #${r.shirt}: ${r.serves} syöttöä, ${r.won} pistettä omalla syötöllä, ässät ${r.aces}, syöttövirheet ${r.errors}, pisin syöttöputki ${r.bestRun}`), '']
 }
+
+export interface MatchupLine { team: string; rotation: number; kind: 'vahva' | 'heikko'; base: number; live: number | null; status: 'pysyy' | 'muuttunut' | null }
+export interface Matchup { title: string; lines: MatchupLine[] }
+
+/**
+ * Kohtaamisvertailu: each team's strong rotations (baseline net per game, recent games) paired with the opponent's weak ones,
+ * and vice versa. In-game, each line gets this match's net and 'pysyy' (same sign as baseline) or 'muuttunut'.
+ */
+export function matchups(teams: { id: string; name: string; games: Row[] }[], raw: Row | null): Matchup[] {
+  if (teams.length < 2) return []
+  const base = teams.map((t) => rotationAnalysis(t.games.filter((g) => !raw || s(g.match_id) !== s(raw.match_id)), t.id))
+  const liveA = teams.map((t) => (raw ? rotationAnalysis([raw], t.id) : null))
+  const line = (i: number, r: RotationScore, kind: MatchupLine['kind']): MatchupLine => {
+    const b = Math.round((r.net / (base[i]!.games || 1)) * 10) / 10
+    const l = liveA[i] ? liveA[i]!.lines.find((x) => x.rotation === r.rotation)?.net ?? 0 : null
+    const status = l === null || !liveA[i]!.lines.some((x) => x.rotation === r.rotation && x.won + x.lost > 0) ? null : (Math.sign(l) === Math.sign(b) || (l === 0 && Math.abs(b) < 1)) ? 'pysyy' : 'muuttunut'
+    return { team: teams[i].name, rotation: r.rotation, kind, base: b, live: status ? l : null, status }
+  }
+  const out: Matchup[] = []
+  for (const [x, y] of [[0, 1], [1, 0]]) {
+    if (!base[x] || !base[y]) continue
+    out.push({ title: `${teams[x].name}: vahvat kierrot vs ${teams[y].name}: heikot kierrot`, lines: [...base[x]!.strong.map((r) => line(x, r, 'vahva')), ...base[y]!.weak.map((r) => line(y, r, 'heikko'))] })
+  }
+  return out
+}
+
+export function matchupText(l: MatchupLine): string {
+  const f = (n: number) => `${n >= 0 ? '+' : ''}${n}`
+  return `${l.team} kierto ${l.rotation} (${l.kind}): tavallisesti ${f(l.base)}/ottelu${l.live !== null ? `, nyt ${f(l.live)} → ${l.status}` : ''}`
+}
+
+export function matchupMd(m: Matchup[]): string[] {
+  if (!m.length) return []
+  return ['## Kohtaamisvertailu', ...m.flatMap((x) => [`### ${x.title}`, ...x.lines.map((l) => `- ${matchupText(l)}`), '']), '']
+}
