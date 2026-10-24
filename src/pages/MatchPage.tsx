@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { CourtNowBoard, InGameTactics, MatchRotationAnalysis, PointTimeline } from '../components/GameFlow'
+import { CourtNowBoard, InGameTactics, Matchups, MatchRotationAnalysis, PointTimeline } from '../components/GameFlow'
 import { Insights } from '../components/Insights'
 import { insightInputs } from '../domain/insights'
 import { PointTape } from '../components/PointTape'
@@ -12,6 +12,7 @@ import { formatLabel, isTie, setPointsLabel, matchFormat, setWentToExtraPoints }
 import { LoadFailed } from '../components/LoadState'
 import { useTaso } from '../hooks/useTaso'
 import { actualRotation } from '../domain/preview'
+import { matchups } from '../domain/gameFlow'
 import { MatchPreview, type PreviewData } from '../components/MatchPreview'
 import { fetchPreview } from '../services/preview'
 import { fetchMatchRaw, federationUrl } from '../services/discovery'
@@ -80,6 +81,7 @@ function MatchBody({ matchId }: { matchId: string }) {
       {view.phase !== 'upcoming' && <CourtNowBoard raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} live={view.phase === 'live'} />}
       {view.phase !== 'upcoming' && preview && <Insights preview={preview} raw={raw} phase={view.phase} />}
       {view.phase !== 'upcoming' && raw && <InGameTactics raw={raw} teams={tacTeams} part="hot" />}
+      {view.phase !== 'upcoming' && preview && <Matchups teams={tacTeams} raw={raw} />}
       {view.phase !== 'upcoming' && <MatchRotationAnalysis raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} usual={preview?.teams.map((t) => t.rotationStats)} />}
       {view.phase !== 'upcoming' && raw && <InGameTactics raw={raw} teams={tacTeams} part="serve" />}
       {view.phase !== 'upcoming' && raw && <InGameTactics raw={raw} teams={tacTeams} part="runs" />}
@@ -108,6 +110,7 @@ function MatchBody({ matchId }: { matchId: string }) {
           <TeamLink id={view.detail.awayTeamId} name={view.detail.awayTeamName} />
         </p>
         {view.phase === 'upcoming' && preview && <Insights preview={preview} raw={raw} phase={view.phase} />}
+        {view.phase === 'upcoming' && preview && <Matchups teams={tacTeams} raw={null} />}
         {preview ? <MatchPreview data={preview} raw={view.phase !== 'upcoming' ? raw : null} /> : <p className="text-sm text-zinc-500">Haetaan pelaajia, tilastoja ja sarjataulukkoa…</p>}
       </div>
       <h2 className="text-sm font-bold text-white">Jaa (md)</h2>
@@ -119,6 +122,7 @@ function MatchBody({ matchId }: { matchId: string }) {
         teamStats={preview?.standings ?? undefined}
         raw={raw}
         insights={preview ? insightInputs(preview, raw, view.phase) : undefined}
+        matchups={preview ? matchups(tacTeams, view.phase !== 'upcoming' ? raw : null) : undefined}
         rotationStats={preview?.teams.map((t) => ({ team: t.name, analysis: t.rotationStats ?? null }))}
         rosters={preview?.teams.filter((x) => x.roster).map((x) => ({ team: x.name, players: x.roster!, lineupPublished: preview.lineupPublished }))}
       />

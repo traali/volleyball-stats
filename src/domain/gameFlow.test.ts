@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import m816600 from './fixtures/match-816600.json'
-import { courtNow, flowMd, rotationAnalysis, setFlows, hotPlayers, serveStats } from './gameFlow'
+import { courtNow, flowMd, rotationAnalysis, setFlows, hotPlayers, serveStats, matchups } from './gameFlow'
 
 const pt = (team: string, a: number, b: number, t = '18:00:00', period = '1') => ({ code: 'piste', team, ps_A: a, ps_B: b, wall_time: t, period })
 const raw = {
@@ -62,5 +62,17 @@ describe('serve / hot / annotated runs', () => {
     const h = hotPlayers(raw, String(raw.team_B_id), [])
     expect(h.length).toBeGreaterThan(0)
     expect(h[0].window).toBe(20)
+  })
+})
+
+describe('matchups', () => {
+  const raw = m816600 as unknown as Record<string, unknown>
+  it('pairs strong vs weak and labels live', () => {
+    const teams = [{ id: String(raw.team_A_id), name: 'A', games: [raw] }, { id: String(raw.team_B_id), name: 'B', games: [raw] }]
+    const pre = matchups(teams, null)
+    expect(pre).toHaveLength(2)
+    expect(pre[0].lines.every((l) => l.status === null)).toBe(true)
+    const live = matchups(teams.map((t) => ({ ...t, games: [{ ...raw, match_id: 'x' }] })), raw)
+    expect(live[0].lines.some((l) => l.status === 'pysyy')).toBe(true)
   })
 })

@@ -1,4 +1,4 @@
-import { courtNow, hotPlayers, rotationAnalysis, serveStats, setFlows, type RotationAnalysis, type RotationScore } from '../domain/gameFlow'
+import { courtNow, hotPlayers, matchups, matchupText, rotationAnalysis, serveStats, setFlows, type RotationAnalysis, type RotationScore } from '../domain/gameFlow'
 
 type Row = Record<string, unknown>
 const NONE = 'text-sm text-zinc-500'
@@ -128,6 +128,22 @@ export function InGameTactics({ raw, teams, part }: { raw: Row; teams: { id: str
           </div>
         )
       })}
+    </section>
+  )
+}
+
+export function Matchups({ teams, raw }: { teams: { id: string; name: string; games: Row[] }[]; raw: Row | null }) {
+  const m = matchups(teams, raw)
+  return (
+    <section className="space-y-2" data-testid="kohtaamisvertailu">
+      <h2 className="text-sm font-bold text-white">Kohtaamisvertailu</h2>
+      <p className="text-[11px] text-zinc-500">Vahvat ja heikot kierrot viimeisistä otteluista (netto per ottelu){raw ? '; nyt = tämän ottelun netto, pysyy = sama suunta kuin tavallisesti' : ''}.</p>
+      {m.length ? m.map((x) => (
+        <div key={x.title} className="rounded-xl bg-zinc-900 p-3 space-y-1">
+          <h3 className="text-xs font-bold text-white">{x.title}</h3>
+          {x.lines.map((l) => <p key={l.team + l.rotation + l.kind} className="text-xs">{l.status && <span className={`mr-1 rounded px-1 font-bold ${l.status === 'pysyy' ? 'bg-emerald-900 text-emerald-200' : 'bg-amber-900 text-amber-200'}`}>{l.status}</span>}{matchupText(l)}</p>)}
+        </div>
+      )) : <p className={NONE}>Ei tietoa: aiemmista otteluista ei löytynyt kiertotietoja.</p>}
     </section>
   )
 }
