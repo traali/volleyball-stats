@@ -1,7 +1,7 @@
 import type { PreviewData } from '../components/MatchPreview'
-import { headToHead, lineupPublished, recentGames, rosterWithStats, teamSeason } from '../domain/preview'
+import { clubHeadToHead, headToHead, previousSeasonId, seasonFromPlayer, lineupPublished, recentGames, rosterWithStats, teamSeason } from '../domain/preview'
 import { asList, tasoData } from './taso'
-import { fetchMatchRaw, fetchMatches, fetchTeam } from './discovery'
+import { fetchMatchRaw, fetchMatches, fetchPlayer, fetchTeam } from './discovery'
 
 const s = (v: unknown) => (v == null ? '' : String(v).trim())
 const enc = encodeURIComponent
@@ -29,12 +29,23 @@ export async function fetchPreview(match: Record<string, unknown>): Promise<Prev
     team: names[i],
     games: ((await Promise.all((r || []).slice(0, 5).map((x) => ok(fetchMatchRaw(x.id))))).filter(Boolean)) as Record<string, unknown>[],
   })))
+  const prevSeason = previousSeasonId(s(match.competition_season))
+  const rosters = ids.map((id, i) => (teams[i] ? rosterWithStats(match, id, asList(teams[i], 'players'), stats) : null))
+  const players = new Map<string, Record<string, unknown> | null | undefined>()
+  await Promise.all(rosters.flat().filter(Boolean).map(async (p) => { players.set(p!.id, await ok(fetchPlayer(p!.id))) }))
+  for (const r of rosters) for (const p of r || []) {
+    const row = players.get(p.id)
+    p.prev = row === null || row === undefined || !prevSeason ? undefined : seasonFromPlayer(row, prevSeason)
+  }
+  const h2hPrev = prevSeason ? clubHeadToHead([...players.values()].filter((x): x is Record<string, unknown> => Boolean(x)), prevSeason, s(match.club_A_id), s(match.club_B_id)) : []
   return {
+    prevSeason,
+    h2hPrev,
     lineupPublished: lineupPublished(match),
     teams: ids.map((id, i) => ({
       id,
       name: names[i],
-      roster: teams[i] ? rosterWithStats(match, id, asList(teams[i], 'players'), stats) : null,
+      roster: rosters[i],
       recent: recent[i],
       season: standings?.find((r) => r.teamId === id) || null,
     })),

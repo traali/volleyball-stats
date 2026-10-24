@@ -5,6 +5,9 @@ export interface PreviewData {
   lineupPublished: boolean
   teams: Array<{ id: string; name: string; roster: RosterPlayer[] | null; recent: GameLine[] | null; season: TeamSeason | null }>
   h2h: GameLine[] | null
+  /** Previous season id ('2025-26') and club-vs-club games then. */
+  prevSeason?: string
+  h2hPrev?: GameLine[]
   standings: TeamSeason[] | null
   previousGames: Array<{ team: string; games: Record<string, unknown>[] }>
 }
@@ -39,11 +42,11 @@ export function MatchPreview({ data }: { data: PreviewData }) {
           <h2 className="text-sm font-bold text-white">Pelaajat: {t.name}</h2>
           <p className="text-[11px] text-zinc-500">
             {data.lineupPublished ? 'Ottelun kokoonpano julkaistu. Harmaana joukkueen pelaajat, jotka eivät ole kokoonpanossa.' : 'Ottelun kokoonpanoa ei ole vielä julkaistu: koko joukkue.'}
-            {' '}Pisteet = kauden pisteet tässä lohkossa (TASO).
+            {' '}Pisteet = kauden pisteet tässä lohkossa (TASO). {data.prevSeason ? `${data.prevSeason} = edellinen kausi (pist / ott, kaikki sarjat).` : ''}
           </p>
           {!t.roster ? <p className={NONE}>Ei tietoa: pelaajalistaa ei saatu.</p> : t.roster.length === 0 ? <p className={NONE}>Ei tietoa: joukkueelle ei ole ilmoitettu pelaajia.</p> : (
             <table className="w-full text-xs">
-              <thead className="text-zinc-500"><tr><th className="text-left py-1 w-8">#</th><th className="text-left">Pelaaja</th><th className="text-right">Ott</th><th className="text-right">Pist</th></tr></thead>
+              <thead className="text-zinc-500"><tr><th className="text-left py-1 w-8">#</th><th className="text-left">Pelaaja</th><th className="text-right">Ott</th><th className="text-right">Pist</th><th className="text-right pl-2">{data.prevSeason || 'Ed. kausi'}</th></tr></thead>
               <tbody>
                 {t.roster.map((p) => (
                   <tr key={p.id} data-in-lineup={p.inLineup ? '1' : '0'} className={`border-t border-zinc-800 ${p.inLineup ? '' : 'opacity-40'}`}>
@@ -51,6 +54,7 @@ export function MatchPreview({ data }: { data: PreviewData }) {
                     <td><Link className="hover:text-amber-300" to={`/player/${p.id}`}>{p.name}</Link>{p.inLineup ? '' : <span className="ml-1 text-[10px] text-zinc-500">ei kokoonpanossa</span>}</td>
                     <td className="text-right text-zinc-400">{p.matches ?? '–'}</td>
                     <td className="text-right font-bold">{p.points ?? <span className="font-normal text-zinc-500">ei tietoa</span>}</td>
+                    <td className="text-right pl-2" data-testid="prev-season"><Prev p={p} /></td>
                   </tr>
                 ))}
               </tbody>
@@ -69,6 +73,9 @@ export function MatchPreview({ data }: { data: PreviewData }) {
       <section className="space-y-1">
         <h2 className="text-sm font-bold text-white">Keskinäiset ottelut</h2>
         {!data.h2h || data.h2h.length === 0 ? <p className={NONE}>Ei tietoa: {a?.name} ja {b?.name} eivät ole kohdanneet tällä kaudella.</p> : <Games rows={data.h2h} />}
+        {data.prevSeason && (data.h2hPrev && data.h2hPrev.length
+          ? <><p className="text-[11px] text-zinc-500">Kausi {data.prevSeason}:</p><Games rows={data.h2hPrev} /></>
+          : <p className={NONE}>Kausi {data.prevSeason}: ei tietoa keskinäisistä otteluista (seurat eivät kohdanneet).</p>)}
       </section>
 
       <section className="space-y-1">
@@ -104,5 +111,16 @@ function Games({ rows }: { rows: GameLine[] }) {
         </li>
       ))}
     </ul>
+  )
+}
+
+function Prev({ p }: { p: RosterPlayer }) {
+  if (p.prev === undefined) return <span className="text-zinc-500">–</span>
+  if (p.prev === null) return <span className="text-zinc-500">ei tietoa</span>
+  return (
+    <span title={`${p.prev.teams} · ${p.prev.categories}`}>
+      <span className="font-bold">{p.prev.points}</span><span className="text-zinc-400"> / {p.prev.matches}</span>
+      <span className="block text-[10px] text-zinc-500 truncate max-w-[7rem] ml-auto">{p.prev.teams}</span>
+    </span>
   )
 }

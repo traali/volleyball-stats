@@ -14,6 +14,8 @@ export interface RosterPlayer {
   matches: number | null
   points: number | null
   inLineup: boolean
+  /** Previous season from getPlayer, undefined = not fetched, null = no games that season. */
+  prev?: PrevSeason | null
 }
 
 /** TASO publishes the match lineup only when lineups_published is set and rows exist. */
@@ -114,4 +116,43 @@ export function teamSeason(row: Row): TeamSeason {
     ballsFor: n(row.period_points_for),
     ballsAgainst: n(row.period_points_against),
   }
+}
+
+export interface PrevSeason {
+  season: string
+  matches: number
+  points: number
+  teams: string
+  categories: string
+}
+
+/** '2026-27' -> '2025-26'. Empty when the season id is not in that shape. */
+export function previousSeasonId(season: string): string {
+  const m = /^(\d{4})-(\d{2})$/.exec(season.trim())
+  if (!m) return ''
+  const y = Number(m[1]) - 1
+  return `${y}-${String((y + 1) % 100).padStart(2, '0')}`
+}
+
+/** One player's played games in a season from getPlayer.matches (not_participated games are skipped). */
+export function seasonFromPlayer(player: Row | null, season: string): PrevSeason | null {
+  const rows = (Array.isArray(player?.matches) ? (player!.matches as Row[]) : [])
+    .filter((m) => s(m.season_id) === season && s(m.status) === 'Played' && s(m.not_participated) !== '1')
+  if (!rows.length) return null
+  const uniq = (k: string) => [...new Set(rows.map((m) => s(m[k])).filter(Boolean))].join(', ')
+  return { season, matches: rows.length, points: rows.reduce((x, m) => x + n(m.player_points), 0), teams: uniq('team_name'), categories: uniq('category_name') }
+}
+
+/** Played games between two clubs found in the players' getPlayer rows for a season, from club A's side. */
+export function clubHeadToHead(players: Array<Row | null>, season: string, clubA: string, clubB: string): GameLine[] {
+  const seen = new Map<string, Row>()
+  for (const p of players) {
+    for (const m of (Array.isArray(p?.matches) ? (p!.matches as Row[]) : [])) {
+      if (s(m.season_id) !== season || !played(m)) continue
+      const clubs = [s(m.club_A_id), s(m.club_B_id)]
+      if (clubs.includes(clubA) && clubs.includes(clubB) && clubA !== clubB) seen.set(s(m.match_id), m)
+    }
+  }
+  const rows = [...seen.values()].map((m) => ({ ...m, _side: s(m.club_A_id) === clubA ? s(m.team_A_id) : s(m.team_B_id) }))
+  return rows.flatMap((m) => recentGames([m], s(m._side), '', 1)).sort((a, b) => b.date.localeCompare(a.date))
 }

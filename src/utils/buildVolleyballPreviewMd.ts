@@ -1,6 +1,12 @@
 import type { VolleyballMatchDetail, VolleyballPlayerStat, VolleyballStandingRow } from '../types/volleyball'
 import { pointsPerRotation, startingLineups } from '../domain/rotationStats'
-import type { RosterPlayer, TeamSeason } from '../domain/preview'
+import type { GameLine, RosterPlayer, TeamSeason } from '../domain/preview'
+
+function prevMd(p: RosterPlayer): string {
+  if (p.prev === undefined) return ''
+  if (p.prev === null) return ' · edellinen kausi: ei tietoa'
+  return ` · ${p.prev.season}: ${p.prev.points}p / ${p.prev.matches} ott (${p.prev.teams}; ${p.prev.categories})`
+}
 
 type Row = Record<string, unknown>
 const str = (v: unknown) => (v == null ? '' : String(v).trim())
@@ -46,6 +52,7 @@ export function buildVolleyballPreviewMd(opts: {
   players?: VolleyballPlayerStat[]
   /** Each team's previous games (full getMatch rows), already fetched. */
   previousGames?: Array<{ team: string; games: Row[] }>
+  h2hPrev?: { season: string; games: GameLine[] }
   rosters?: Array<{ team: string; players: RosterPlayer[]; lineupPublished: boolean }>
   teamStats?: TeamSeason[]
 }): string {
@@ -89,9 +96,10 @@ export function buildVolleyballPreviewMd(opts: {
     ...(opts.teamStats?.length ? ['## Joukkueiden kausi', ...opts.teamStats.map((x) => `- ${x.name}: ${x.standing}. sija · ${x.played} ott ${x.won}V ${x.lost}H · ${x.points}p · erät ${x.setsFor}–${x.setsAgainst} · pallot ${x.ballsFor}–${x.ballsAgainst}`), ''] : []),
     ...(opts.rosters || []).flatMap((r) => [
       `## Pelaajat: ${r.team}${r.lineupPublished ? ' (ottelun kokoonpano julkaistu; (ei kokoonpanossa) merkitty)' : ' (kokoonpanoa ei julkaistu, koko joukkue)'}`,
-      ...(r.players.length ? r.players.map((p) => `- ${p.number ? `#${p.number} ` : ''}${p.name} · ${p.points == null ? 'ei kauden tilastoa' : `${p.points}p / ${p.matches} ott`}${p.inLineup ? '' : ' (ei kokoonpanossa)'}`) : ['_ei tietoa_']),
+      ...(r.players.length ? r.players.map((p) => `- ${p.number ? `#${p.number} ` : ''}${p.name} · ${p.points == null ? 'ei kauden tilastoa' : `${p.points}p / ${p.matches} ott`}${prevMd(p)}${p.inLineup ? '' : ' (ei kokoonpanossa)'}`) : ['_ei tietoa_']),
       '',
     ]),
+    ...(opts.h2hPrev ? [`## Keskinäiset ottelut kaudella ${opts.h2hPrev.season}`, ...(opts.h2hPrev.games.length ? opts.h2hPrev.games.map((g) => `- ${g.date} ${g.home ? 'koti' : 'vieras'} vs ${g.opponent}: ${g.setsFor}–${g.setsAgainst}`) : ['_ei tietoa: seurat eivät kohdanneet_']), ''] : []),
     ...(opts.previousGames || []).flatMap((g) => [`## Aiemmat ottelut: ${g.team}`, ...(g.games.length ? g.games.map(previousGameMd) : ['_ei pelattuja otteluita tällä kaudella_']), '']),
     '## Prompt tekoälylle',
     '',
