@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { PointTape } from '../components/PointTape'
 import { RotationBoard } from '../components/RotationBoard'
 import { VolleyballPreviewExport } from '../components/VolleyballPreviewExport'
 import { VolleyballSetGrid } from '../components/VolleyballSetGrid'
-import { forfeitingSide, isForfeit, phaseForDisplay, pointsFromEvents, resultIsTrusted, rotationsFromMatch, setsFromMatch, setsWonRecorded, setWasPlayed } from '../domain/rally'
+import { forfeitingSide, isForfeit, liveState, phaseForDisplay, pointsFromEvents, resultIsTrusted, rotationsFromMatch, setsFromMatch, setsWonRecorded, setWasPlayed } from '../domain/rally'
 import { formatLabel, isTie, setPointsLabel, matchFormat, setWentToExtraPoints } from '../domain/tournament'
 import { LoadFailed } from '../components/LoadState'
 import { useTaso } from '../hooks/useTaso'
@@ -23,7 +23,9 @@ export function MatchPage() {
 function MatchBody({ matchId }: { matchId: string }) {
   const load = useTaso(() => fetchMatchRaw(matchId), [matchId])
   const [tab, setTab] = useState<Tab>('match')
-  const raw = load.state === 'ok' ? load.data : null
+  const loaded = load.state === 'ok' ? load.data : null
+  const live = useLiveRefresh(matchId, loaded)
+  const raw = live.raw ?? loaded
   const view = useMemo(() => (raw ? present(raw) : null), [raw])
 
   if (load.state === 'notfound') {
@@ -52,6 +54,7 @@ function MatchBody({ matchId }: { matchId: string }) {
         {view.detail.courtName ? ` · ${view.detail.courtName}` : ''}
       </p>
       <a href={federationUrl.match(matchId)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center text-xs text-zinc-400 underline">Tulospalvelu ↗</a>
+      {view.phase === 'live' && <LiveBox raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} updatedAt={live.at} failed={live.failed} />}
       {view.forfeit && (
         <p className="text-lg font-black text-amber-300">
           Luovutus{view.forfeitBy ? `: ${view.forfeitBy} luovutti` : ''}
@@ -155,6 +158,76 @@ function present(raw: Record<string, unknown>) {
     forfeit: isForfeit(raw),
     forfeitBy: forfeitingSide(raw) === 'A' ? detail.homeTeamName : forfeitingSide(raw) === 'B' ? detail.awayTeamName : '',
   }
+}
+
+const POLL_MS = 20_000
+
+/** While the game is live and the tab is visible, re-read getMatch every ~20 s past the cache. */
+function useLiveRefresh(matchId: string, loaded: Record<string, unknown> | null) {
+  const [state, setState] = useState<{ raw: Record<string, unknown> | null; at: Date | null; failed: boolean }>({ raw: null, at: null, failed: false })
+  const current = state.raw ?? loaded
+  const isLive = current ? phaseForDisplay(current) === 'live' : false
+  useEffect(() => {
+    if (!isLive) return
+    let stop = false
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const tick = async () => {
+      if (stop) return
+      if (document.visibilityState === 'visible') {
+        try {
+          const next = await fetchMatchRaw(matchId, true)
+          if (!stop && next) setState({ raw: next, at: new Date(), failed: false })
+        } catch {
+          if (!stop) setState((s) => ({ ...s, failed: true }))
+        }
+      }
+      if (!stop) timer = setTimeout(tick, POLL_MS)
+    }
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        clearTimeout(timer)
+        void tick()
+      }
+    }
+    timer = setTimeout(tick, POLL_MS)
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      stop = true
+      clearTimeout(timer)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [isLive, matchId])
+  return state
+}
+
+function LiveBox({ raw, home, away, updatedAt, failed }: { raw: Record<string, unknown>; home: string; away: string; updatedAt: Date | null; failed: boolean }) {
+  const st = liveState(raw)
+  return (
+    <section data-testid="live-box" className="rounded-2xl border border-red-500/40 bg-red-500/10 p-3 space-y-1">
+      <p className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-red-300">
+        <span className="inline-block h-2 w-2 rounded-full bg-red-400 animate-pulse" />Käynnissä
+        {st.currentSet ? <span className="text-zinc-300 normal-case font-bold">· {st.currentSet}. erä</span> : null}
+      </p>
+      {st.setsHome != null && st.setsAway != null && (
+        <p className="text-sm text-zinc-300">Erät <span data-testid="live-sets" className="font-mono font-black text-amber-300">{st.setsHome}–{st.setsAway}</span></p>
+      )}
+      {st.points ? (
+        <p className="text-3xl font-black font-mono text-white" data-testid="live-points">
+          {st.serving === 'A' ? '● ' : ''}{st.points.home}–{st.points.away}{st.serving === 'B' ? ' ●' : ''}
+        </p>
+      ) : (
+        <p className="text-sm text-zinc-400">Erän pisteitä ei ole vielä kirjattu (eräväli tai erä ei ole alkanut).</p>
+      )}
+      <p className="text-xs text-zinc-400">{home} – {away}</p>
+      {st.timeouts && (st.timeouts.home > 0 || st.timeouts.away > 0) && (
+        <p className="text-xs text-zinc-400">Aikalisät tässä erässä: {st.timeouts.home}–{st.timeouts.away}</p>
+      )}
+      <p className="text-[11px] text-zinc-500" data-testid="live-updated">
+        {failed ? 'Päivitys epäonnistui, yritetään uudelleen. ' : ''}
+        {updatedAt ? `Päivitetty ${updatedAt.toLocaleTimeString('fi-FI')}` : 'Päivittyy 20 s välein'}
+      </p>
+    </section>
+  )
 }
 
 function TeamLink({ id, name }: { id: string; name: string }) {

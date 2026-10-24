@@ -173,8 +173,8 @@ export const federationUrl = {
 }
 
 /** null = TASO says no such match; throws TasoError when it did not answer. */
-export async function fetchMatchRaw(matchId: string) {
-  const data = await tasoData(`getMatch?match_id=${enc(matchId)}`)
+export async function fetchMatchRaw(matchId: string, fresh = false) {
+  const data = await tasoData(`getMatch?match_id=${enc(matchId)}`, fresh)
   const match = data?.match
   return match && typeof match === 'object' ? (match as Record<string, unknown>) : null
 }
