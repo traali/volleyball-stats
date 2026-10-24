@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
+import { RotationAnalysisView } from './GameFlow'
+import type { RotationAnalysis } from '../domain/gameFlow'
 import type { GameLine, LikelyRotation, RosterPlayer, TeamSeason } from '../domain/preview'
 
 export interface PreviewData {
   lineupPublished: boolean
-  teams: Array<{ id: string; name: string; roster: RosterPlayer[] | null; recent: GameLine[] | null; season: TeamSeason | null; rotation?: LikelyRotation | null }>
+  teams: Array<{ id: string; name: string; roster: RosterPlayer[] | null; recent: GameLine[] | null; season: TeamSeason | null; rotation?: LikelyRotation | null; rotationStats?: RotationAnalysis | null }>
   h2h: GameLine[] | null
   /** Previous season id ('2025-26') and club-vs-club games then. */
   prevSeason?: string
@@ -41,6 +43,7 @@ export function MatchPreview({ data }: { data: PreviewData }) {
         <section key={`rot-${t.id}`} className="space-y-2" data-testid={`rotation-${t.id}`}>
           <h2 className="text-sm font-bold text-white">Todennäköinen aloituskierto: {t.name}</h2>
           <Rotation r={t.rotation} roster={t.roster} published={data.lineupPublished} />
+          <RotationAnalysisView title="Kierrot viimeisissä otteluissa" a={t.rotationStats ?? null} />
         </section>
       ))}
 

@@ -10,13 +10,15 @@ interface VolleyballPreviewExportProps {
   previousGames?: Parameters<typeof buildVolleyballPreviewMd>[0]['previousGames']
   rosters?: Parameters<typeof buildVolleyballPreviewMd>[0]['rosters']
   rotations?: Parameters<typeof buildVolleyballPreviewMd>[0]['rotations']
+  raw?: Parameters<typeof buildVolleyballPreviewMd>[0]['raw']
+  rotationStats?: Parameters<typeof buildVolleyballPreviewMd>[0]['rotationStats']
   h2hPrev?: Parameters<typeof buildVolleyballPreviewMd>[0]['h2hPrev']
   teamStats?: Parameters<typeof buildVolleyballPreviewMd>[0]['teamStats']
 }
 
-export function VolleyballPreviewExport({ match, standings = [], players = [], previousGames, rosters, teamStats, h2hPrev, rotations }: VolleyballPreviewExportProps) {
+export function VolleyballPreviewExport({ match, standings = [], players = [], previousGames, rosters, teamStats, h2hPrev, rotations, raw, rotationStats }: VolleyballPreviewExportProps) {
   const [copied, setCopied] = useState(false)
-  const md = useMemo(() => buildVolleyballPreviewMd({ match, standings, players, previousGames, rosters, teamStats, h2hPrev, rotations }), [match, standings, players, previousGames, rosters, teamStats, h2hPrev, rotations])
+  const md = useMemo(() => buildVolleyballPreviewMd({ match, standings, players, previousGames, rosters, teamStats, h2hPrev, rotations, raw, rotationStats }), [match, standings, players, previousGames, rosters, teamStats, h2hPrev, rotations, raw, rotationStats])
 
   const copy = async () => {
     await navigator.clipboard.writeText(md)

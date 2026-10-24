@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { CourtNowBoard, MatchRotationAnalysis, PointTimeline } from '../components/GameFlow'
 import { PointTape } from '../components/PointTape'
 import { RotationBoard } from '../components/RotationBoard'
 import { VolleyballPreviewExport } from '../components/VolleyballPreviewExport'
@@ -107,9 +108,14 @@ function MatchBody({ matchId }: { matchId: string }) {
           {preview ? <MatchPreview data={preview} /> : <p className="text-sm text-zinc-500">Haetaan pelaajia, tilastoja ja sarjataulukkoa…</p>}
         </div>
       )}
+      {tab === 'rotations' && <CourtNowBoard raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} live={view.phase === 'live'} />}
+      {tab === 'rotations' && <MatchRotationAnalysis raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />}
       {tab === 'rotations' && <RotationBoard rows={view.rotations} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />}
       {tab === 'points' && (
-        <PointTape points={view.points} homeId={view.detail.homeTeamId} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />
+        <PointTimeline raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />
+      )}
+      {tab === 'points' && (
+        <details className="text-xs"><summary className="text-zinc-400">Pistetyypit ja pelaajat</summary><PointTape points={view.points} homeId={view.detail.homeTeamId} home={view.detail.homeTeamName} away={view.detail.awayTeamName} /></details>
       )}
       {tab === 'share' && <VolleyballPreviewExport
         match={view.detail}
@@ -117,6 +123,8 @@ function MatchBody({ matchId }: { matchId: string }) {
         rotations={preview?.teams.map((t) => ({ team: t.name, rotation: t.rotation }))}
         h2hPrev={preview?.prevSeason ? { season: preview.prevSeason, games: preview.h2hPrev || [] } : undefined}
         teamStats={preview?.standings ?? undefined}
+        raw={raw}
+        rotationStats={preview?.teams.map((t) => ({ team: t.name, analysis: t.rotationStats ?? null }))}
         rosters={preview?.teams.filter((x) => x.roster).map((x) => ({ team: x.name, players: x.roster!, lineupPublished: preview.lineupPublished }))}
       />}
     </main>

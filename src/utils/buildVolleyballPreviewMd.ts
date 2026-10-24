@@ -1,5 +1,6 @@
 import type { VolleyballMatchDetail, VolleyballPlayerStat, VolleyballStandingRow } from '../types/volleyball'
 import { pointsPerRotation, startingLineups } from '../domain/rotationStats'
+import { analysisMd, flowMd, type RotationAnalysis } from '../domain/gameFlow'
 import type { GameLine, LikelyRotation, RosterPlayer, TeamSeason } from '../domain/preview'
 
 function gamesMd(p: RosterPlayer): string {
@@ -67,6 +68,10 @@ export function buildVolleyballPreviewMd(opts: {
   /** Each team's previous games (full getMatch rows), already fetched. */
   previousGames?: Array<{ team: string; games: Row[] }>
   rotations?: Array<{ team: string; rotation: LikelyRotation | null | undefined }>
+  /** Full getMatch row: point timeline, court now, rotations of this match (live or played). */
+  raw?: Row
+  /** Recent-games rotation analysis per team. */
+  rotationStats?: Array<{ team: string; analysis: RotationAnalysis | null }>
   h2hPrev?: { season: string; games: GameLine[] }
   rosters?: Array<{ team: string; players: RosterPlayer[]; lineupPublished: boolean }>
   teamStats?: TeamSeason[]
@@ -114,6 +119,8 @@ export function buildVolleyballPreviewMd(opts: {
       ...(r.players.length ? r.players.map((p) => `- ${p.number ? `#${p.number} ` : ''}${p.name} · ${p.points == null ? 'ei kauden tilastoa' : `${p.points}p / ${p.matches} ott`}${prevMd(p)}${gamesMd(p)}${p.inLineup ? '' : ' (ei kokoonpanossa)'}`) : ['_ei tietoa_']),
       '',
     ]),
+    ...(opts.raw ? flowMd(opts.raw, m.homeTeamName, m.awayTeamName) : []),
+    ...(opts.rotationStats?.length ? ['## Kierrot viimeisissä otteluissa', ...opts.rotationStats.flatMap((x) => analysisMd(x.team, x.analysis))] : []),
     ...(opts.rotations || []).flatMap((x) => { const r = opts.rosters?.find((y) => y.team === x.team); return rotationMd(x.team, x.rotation, r?.players || [], Boolean(r?.lineupPublished)) }),
     ...(opts.h2hPrev ? [`## Keskinäiset ottelut kaudella ${opts.h2hPrev.season}`, ...(opts.h2hPrev.games.length ? opts.h2hPrev.games.map((g) => `- ${g.date} ${g.home ? 'koti' : 'vieras'} vs ${g.opponent}: ${g.setsFor}–${g.setsAgainst}`) : ['_ei tietoa: seurat eivät kohdanneet_']), ''] : []),
     ...(opts.previousGames || []).flatMap((g) => [`## Aiemmat ottelut: ${g.team}`, ...(g.games.length ? g.games.map(previousGameMd) : ['_ei pelattuja otteluita tällä kaudella_']), '']),

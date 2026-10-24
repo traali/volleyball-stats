@@ -1,6 +1,7 @@
 import type { PreviewData } from '../components/MatchPreview'
 import { clubHeadToHead, likelyRotation, playerGames, headToHead, previousSeasonId, seasonFromPlayer, lineupPublished, recentGames, rosterWithStats, teamSeason } from '../domain/preview'
 import { asList, tasoData } from './taso'
+import { rotationAnalysis } from '../domain/gameFlow'
 import { fetchMatchRaw, fetchMatches, fetchPlayer, fetchTeam } from './discovery'
 
 const s = (v: unknown) => (v == null ? '' : String(v).trim())
@@ -49,6 +50,7 @@ export async function fetchPreview(match: Record<string, unknown>): Promise<Prev
       roster: rosters[i],
       recent: recent[i],
       rotation: likelyRotation(previousGames[i].games, id),
+      rotationStats: rotationAnalysis(previousGames[i].games, id),
       season: standings?.find((r) => r.teamId === id) || null,
     })),
     h2h: mA ? headToHead(mA, ids[0], ids[1], s(match.match_id)) : null,
