@@ -16,6 +16,8 @@ export interface RosterPlayer {
   inLineup: boolean
   /** Previous season from getPlayer, undefined = not fetched, null = no games that season. */
   prev?: PrevSeason | null
+  /** Per-game points from getPlayer, this season and previous, newest first. */
+  games?: PlayerGame[]
 }
 
 /** TASO publishes the match lineup only when lineups_published is set and rows exist. */
@@ -155,4 +157,45 @@ export function clubHeadToHead(players: Array<Row | null>, season: string, clubA
   }
   const rows = [...seen.values()].map((m) => ({ ...m, _side: s(m.club_A_id) === clubA ? s(m.team_A_id) : s(m.team_B_id) }))
   return rows.flatMap((m) => recentGames([m], s(m._side), '', 1)).sort((a, b) => b.date.localeCompare(a.date))
+}
+
+export interface PlayerGame { matchId: string; date: string; season: string; opponent: string; points: number }
+
+/** Played games (participated) of the given seasons, newest first. */
+export function playerGames(player: Row | null, seasons: string[]): PlayerGame[] {
+  return (Array.isArray(player?.matches) ? (player!.matches as Row[]) : [])
+    .filter((m) => seasons.includes(s(m.season_id)) && s(m.status) === 'Played' && s(m.not_participated) !== '1')
+    .map((m) => ({
+      matchId: s(m.match_id), date: s(m.date), season: s(m.season_id), points: n(m.player_points),
+      opponent: s(m.team_id) === s(m.team_A_id) ? s(m.team_B_name) : s(m.team_A_name),
+    }))
+    .sort((a, b) => b.date.localeCompare(a.date))
+}
+
+export interface LikelyRotation { shirts: string[]; libero: string; basedOn: number; games: number }
+
+/** Most common set-1 starting six (position order I–VI from pelipaikat) over the team's games; ties go to the newest game (raws newest first). */
+export function likelyRotation(raws: Row[], teamId: string): LikelyRotation | null {
+  const counts = new Map<string, number>()
+  const liberos = new Map<string, number>()
+  let games = 0
+  for (const raw of raws) {
+    const side = s(raw.team_A_id) === teamId ? 'A' : s(raw.team_B_id) === teamId ? 'B' : ''
+    if (!side) continue
+    const evs = (Array.isArray(raw.events) ? (raw.events as Row[]) : []).filter((e) =>
+      e && s(e.code) === 'pelipaikat' && (Number(e.period) || 1) === 1 && (s(e.team) === side || s(e.team_id) === teamId))
+    const parsed = evs.map((e) => s(e.description).split(',').map((x) => s(x.split('=')[1])).filter(Boolean)).filter((x) => x.length >= 6)
+    if (!parsed.length) continue
+    games++
+    const key = parsed[0].slice(0, 6).join(',')
+    counts.set(key, (counts.get(key) || 0) + 1)
+    const lib = parsed.find((x) => x[6])?.[6]
+    if (lib) liberos.set(lib, (liberos.get(lib) || 0) + 1)
+  }
+  if (!games) return null
+  let best = ''
+  for (const [k, c] of counts) if (!best || c > counts.get(best)!) best = k
+  let libero = ''
+  for (const [k, c] of liberos) if (!libero || c > liberos.get(libero)!) libero = k
+  return { shirts: best.split(','), libero, basedOn: counts.get(best)!, games }
 }

@@ -1,5 +1,5 @@
 import type { PreviewData } from '../components/MatchPreview'
-import { clubHeadToHead, headToHead, previousSeasonId, seasonFromPlayer, lineupPublished, recentGames, rosterWithStats, teamSeason } from '../domain/preview'
+import { clubHeadToHead, likelyRotation, playerGames, headToHead, previousSeasonId, seasonFromPlayer, lineupPublished, recentGames, rosterWithStats, teamSeason } from '../domain/preview'
 import { asList, tasoData } from './taso'
 import { fetchMatchRaw, fetchMatches, fetchPlayer, fetchTeam } from './discovery'
 
@@ -36,6 +36,7 @@ export async function fetchPreview(match: Record<string, unknown>): Promise<Prev
   for (const r of rosters) for (const p of r || []) {
     const row = players.get(p.id)
     p.prev = row === null || row === undefined || !prevSeason ? undefined : seasonFromPlayer(row, prevSeason)
+    p.games = row ? playerGames(row, [s(match.competition_season), prevSeason].filter(Boolean)) : undefined
   }
   const h2hPrev = prevSeason ? clubHeadToHead([...players.values()].filter((x): x is Record<string, unknown> => Boolean(x)), prevSeason, s(match.club_A_id), s(match.club_B_id)) : []
   return {
@@ -47,6 +48,7 @@ export async function fetchPreview(match: Record<string, unknown>): Promise<Prev
       name: names[i],
       roster: rosters[i],
       recent: recent[i],
+      rotation: likelyRotation(previousGames[i].games, id),
       season: standings?.find((r) => r.teamId === id) || null,
     })),
     h2h: mA ? headToHead(mA, ids[0], ids[1], s(match.match_id)) : null,

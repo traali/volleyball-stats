@@ -114,6 +114,7 @@ function MatchBody({ matchId }: { matchId: string }) {
       {tab === 'share' && <VolleyballPreviewExport
         match={view.detail}
         previousGames={preview?.previousGames}
+        rotations={preview?.teams.map((t) => ({ team: t.name, rotation: t.rotation }))}
         h2hPrev={preview?.prevSeason ? { season: preview.prevSeason, games: preview.h2hPrev || [] } : undefined}
         teamStats={preview?.standings ?? undefined}
         rosters={preview?.teams.filter((x) => x.roster).map((x) => ({ team: x.name, players: x.roster!, lineupPublished: preview.lineupPublished }))}
