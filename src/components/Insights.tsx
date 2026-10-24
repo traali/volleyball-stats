@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { insightInputs, type Finding } from '../domain/insights'
+import { aiPrompt, countedFacts, insightInputs, type Finding } from '../domain/insights'
 import type { PreviewData } from './MatchPreview'
 
 type Row = Record<string, unknown>
@@ -12,13 +12,14 @@ const lm = (): LM | null => {
 
 export function Insights({ preview, raw, phase }: { preview: PreviewData; raw: Row | null; phase: string }) {
   const { pre, live } = useMemo(() => insightInputs(preview, raw, phase), [preview, raw, phase])
+  const facts = useMemo(() => countedFacts(preview, raw, phase), [preview, raw, phase])
   return (
     <section className="space-y-2 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-3" data-testid="insights">
       <h2 className="text-sm font-bold text-white">Ennuste ja havainnot</h2>
-      <p className="text-[11px] text-zinc-500">Johdettu TASO-datasta laskemalla (ei tekoälyä).</p>
+      <p className="text-[11px] text-zinc-500">Johdettu TASO-datasta laskemalla. Tekoälyhavainnot vain, jos laitteessa on paikallinen malli.</p>
       {pre && <ul className="text-xs text-zinc-200 space-y-1 list-disc pl-4">{pre.map((x, i) => <li key={i}>{x}</li>)}</ul>}
       {live && <Holds rows={live} live={phase === 'live'} />}
-      <LocalAi facts={[...(pre || []), ...(live || []).map((f) => `${f.holds ? 'Pysyy' : 'Poikkeaa'}: ${f.text}`)]} />
+      <LocalAi facts={facts} live={phase === 'live'} />
     </section>
   )
 }
@@ -36,7 +37,7 @@ function Holds({ rows, live }: { rows: Finding[]; live: boolean }) {
   )
 }
 
-function LocalAi({ facts }: { facts: string[] }) {
+function LocalAi({ facts, live }: { facts: string[]; live: boolean }) {
   const [ok, setOk] = useState(false)
   const [out, setOut] = useState<string>('')
   const [busy, setBusy] = useState(false)
@@ -50,7 +51,7 @@ function LocalAi({ facts }: { facts: string[] }) {
     setBusy(true)
     try {
       const sess = await lm()!.create()
-      const text = await sess.prompt(`Tiivistä suomeksi 3 lyhyellä lauseella lentopallo-ottelusta. Käytä VAIN näitä faktoja, älä keksi mitään:\n${facts.join('\n')}`)
+      const text = await sess.prompt(aiPrompt(facts, live))
       sess.destroy?.()
       setOut(text)
     } catch { setOut('Paikallinen tekoäly ei vastannut.') }
@@ -58,8 +59,8 @@ function LocalAi({ facts }: { facts: string[] }) {
   }
   return (
     <div className="space-y-1" data-testid="local-ai">
-      <button type="button" onClick={() => void run()} disabled={busy} className="min-h-[44px] rounded-xl bg-zinc-800 px-3 text-xs font-bold">{busy ? 'Lasketaan…' : 'Paikallinen tekoäly: tiivistä'}</button>
-      {out && <p className="text-xs text-zinc-300">{out} <span className="text-zinc-500">(laitteen oma malli, vain yllä olevista faktoista)</span></p>}
+      <button type="button" onClick={() => void run()} disabled={busy} className="min-h-[44px] rounded-xl bg-zinc-800 px-3 text-xs font-bold">{busy ? 'Lasketaan…' : 'Paikallinen tekoäly: mikä ratkaisee nyt?'}</button>
+      {out && <p className="text-xs text-zinc-300">{out} <span className="text-zinc-500">(paikallinen tekoäly laitteella, vain lasketuista luvuista)</span></p>}
     </div>
   )
 }
