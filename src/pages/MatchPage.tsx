@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { CourtNowBoard, MatchRotationAnalysis, PointTimeline } from '../components/GameFlow'
+import { Insights } from '../components/Insights'
+import { insightInputs } from '../domain/insights'
 import { PointTape } from '../components/PointTape'
 import { RotationBoard } from '../components/RotationBoard'
 import { VolleyballPreviewExport } from '../components/VolleyballPreviewExport'
@@ -49,8 +52,8 @@ function MatchBody({ matchId }: { matchId: string }) {
 
   const tabs: Array<{ id: Tab; label: string }> = [
     { id: 'match', label: 'Ottelu' },
-    { id: 'rotations', label: 'Rotaatiot' },
     { id: 'points', label: `Pisteet (${view.points.length})` },
+    { id: 'rotations', label: 'Kenttä' },
     { id: 'share', label: 'Jaa' },
   ]
 
@@ -63,7 +66,7 @@ function MatchBody({ matchId }: { matchId: string }) {
         {view.detail.courtName ? ` · ${view.detail.courtName}` : ''}
       </p>
       <a href={federationUrl.match(matchId)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center text-xs text-zinc-400 underline">Tulospalvelu ↗</a>
-      {view.phase === 'live' && <LiveBox raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} updatedAt={live.at} failed={live.failed} />}
+      {view.phase === 'live' && <LiveBox raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} updatedAt={live.at} failed={live.failed} sets={view.detail.sets} />}
       {view.forfeit && (
         <p className="text-lg font-black text-amber-300">
           Luovutus{view.forfeitBy ? `: ${view.forfeitBy} luovutti` : ''}
@@ -80,9 +83,11 @@ function MatchBody({ matchId }: { matchId: string }) {
       )}
       {!view.trusted && <p className="text-sm text-zinc-500">Ei kirjattua tulosta. Ei näytetä 0–0:aa.</p>}
       {view.format && <p className="text-xs text-zinc-500">Pelimuoto: {view.format}</p>}
+      {view.phase !== 'upcoming' && preview && <Insights preview={preview} raw={raw} phase={view.phase} />}
+      {view.phase !== 'upcoming' && <MatchRotationAnalysis raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />}
       <div className="flex flex-wrap gap-1.5">
         {tabs.map((t) => (
-          <button key={t.id} type="button" onClick={() => setTab(t.id)} className={`px-3 py-2 rounded-xl text-xs font-bold ${tab === t.id ? 'bg-amber-500/20 text-amber-200' : 'text-zinc-400'}`}>{t.label}</button>
+          <button key={t.id} type="button" onClick={() => setTab(t.id)} className={`min-h-[44px] px-4 py-2 rounded-xl text-sm font-bold ${tab === t.id ? 'bg-amber-500/20 text-amber-200' : 'text-zinc-400'}`}>{t.label}</button>
         ))}
       </div>
       {tab === 'match' && (
@@ -104,12 +109,17 @@ function MatchBody({ matchId }: { matchId: string }) {
             {' · '}
             <TeamLink id={view.detail.awayTeamId} name={view.detail.awayTeamName} />
           </p>
+          {view.phase === 'upcoming' && preview && <Insights preview={preview} raw={raw} phase={view.phase} />}
           {preview ? <MatchPreview data={preview} /> : <p className="text-sm text-zinc-500">Haetaan pelaajia, tilastoja ja sarjataulukkoa…</p>}
         </div>
       )}
+      {tab === 'rotations' && <CourtNowBoard raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} live={view.phase === 'live'} />}
       {tab === 'rotations' && <RotationBoard rows={view.rotations} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />}
       {tab === 'points' && (
-        <PointTape points={view.points} homeId={view.detail.homeTeamId} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />
+        <PointTimeline raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />
+      )}
+      {tab === 'points' && (
+        <details className="text-xs"><summary className="text-zinc-400">Pistetyypit ja pelaajat</summary><PointTape points={view.points} homeId={view.detail.homeTeamId} home={view.detail.homeTeamName} away={view.detail.awayTeamName} /></details>
       )}
       {tab === 'share' && <VolleyballPreviewExport
         match={view.detail}
@@ -117,6 +127,9 @@ function MatchBody({ matchId }: { matchId: string }) {
         rotations={preview?.teams.map((t) => ({ team: t.name, rotation: t.rotation }))}
         h2hPrev={preview?.prevSeason ? { season: preview.prevSeason, games: preview.h2hPrev || [] } : undefined}
         teamStats={preview?.standings ?? undefined}
+        raw={raw}
+        insights={preview ? insightInputs(preview, raw, view.phase) : undefined}
+        rotationStats={preview?.teams.map((t) => ({ team: t.name, analysis: t.rotationStats ?? null }))}
         rosters={preview?.teams.filter((x) => x.roster).map((x) => ({ team: x.name, players: x.roster!, lineupPublished: preview.lineupPublished }))}
       />}
     </main>
@@ -217,10 +230,10 @@ function useLiveRefresh(matchId: string, loaded: Record<string, unknown> | null)
   return state
 }
 
-function LiveBox({ raw, home, away, updatedAt, failed }: { raw: Record<string, unknown>; home: string; away: string; updatedAt: Date | null; failed: boolean }) {
+function LiveBox({ raw, home, away, updatedAt, failed, sets }: { raw: Record<string, unknown>; home: string; away: string; updatedAt: Date | null; failed: boolean; sets: VolleyballSet[] }) {
   const st = liveState(raw)
   return (
-    <section data-testid="live-box" className="rounded-2xl border border-red-500/40 bg-red-500/10 p-3 space-y-1">
+    <section data-testid="live-box" className="sticky top-0 z-20 -mx-4 border-b border-red-500/40 bg-zinc-950/95 backdrop-blur px-4 py-2 space-y-1">
       <p className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-red-300">
         <span className="inline-block h-2 w-2 rounded-full bg-red-400 animate-pulse" />Käynnissä
         {st.currentSet ? <span className="text-zinc-300 normal-case font-bold">· {st.currentSet}. erä</span> : null}
@@ -235,13 +248,18 @@ function LiveBox({ raw, home, away, updatedAt, failed }: { raw: Record<string, u
       ) : (
         <p className="text-sm text-zinc-400">Erän pisteitä ei ole vielä kirjattu (eräväli tai erä ei ole alkanut).</p>
       )}
-      <p className="text-xs text-zinc-400">{home} – {away}</p>
+      <p className="text-xs text-zinc-400">{home} – {away}{st.serving ? ` · syöttää ${st.serving === 'A' ? home : away}` : ''}</p>
+      {sets.length > 0 && (
+        <p className="flex flex-wrap gap-1 text-[11px] font-mono" data-testid="live-set-chips">
+          {sets.map((x) => <span key={x.number} className={`rounded px-1.5 py-0.5 ${x.status === 'in_progress' ? 'bg-red-500/20 text-white' : 'bg-zinc-800 text-zinc-300'}`}>{x.number}. {x.homeScore}–{x.awayScore}</span>)}
+        </p>
+      )}
       {st.timeouts && (st.timeouts.home > 0 || st.timeouts.away > 0) && (
         <p className="text-xs text-zinc-400">Aikalisät tässä erässä: {st.timeouts.home}–{st.timeouts.away}</p>
       )}
       <p className="text-[11px] text-zinc-500" data-testid="live-updated">
         {failed ? 'Päivitys epäonnistui, yritetään uudelleen. ' : ''}
-        {updatedAt ? `Päivitetty ${updatedAt.toLocaleTimeString('fi-FI')}` : 'Päivittyy 20 s välein'}
+        {updatedAt ? `päivitetty klo ${updatedAt.toLocaleTimeString('fi-FI')} · päivittyy 20 s välein` : 'päivittyy 20 s välein'}
       </p>
     </section>
   )
