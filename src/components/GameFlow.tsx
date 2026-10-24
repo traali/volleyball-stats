@@ -5,13 +5,20 @@ const NONE = 'text-sm text-zinc-500'
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI']
 const s = (v: unknown) => (v == null ? '' : String(v).trim())
 
+function inRun(pts: { winner: string }[], i: number, min = 3): boolean {
+  let a = i, b = i
+  while (a > 0 && pts[a - 1].winner === pts[i].winner) a--
+  while (b < pts.length - 1 && pts[b + 1].winner === pts[i].winner) b++
+  return b - a + 1 >= min
+}
+
 export function PointTimeline({ raw, home, away }: { raw: Row; home: string; away: string }) {
   const flows = setFlows(raw)
   if (!flows.length) return <p className={NONE}>Ei tietoa: pistetapahtumia ei ole kirjattu.</p>
   const nm = (x: string) => (x === 'A' ? home : away)
   return (
     <div className="space-y-4" data-testid="point-timeline">
-      <p className="text-[11px] text-zinc-500">● = syöttävä joukkue ennen palloa. Lihavoitu = pisteen voittaja. Putki = vähintään 3 peräkkäistä pistettä.</p>
+      <p className="text-[11px] text-zinc-500">● = syöttävä joukkue ennen palloa. Lihavoitu = pisteen voittaja. Korostettu = putki, vähintään 3 peräkkäistä pistettä. Uusin ensin.</p>
       {[...flows].reverse().map((f) => (
         <section key={f.period} className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-3 space-y-2">
           <h3 className="text-xs font-bold uppercase tracking-wider text-amber-400">{f.period}. erä · {f.points[f.points.length - 1].a}–{f.points[f.points.length - 1].b}</h3>
@@ -19,7 +26,7 @@ export function PointTimeline({ raw, home, away }: { raw: Row; home: string; awa
           {f.runs.length > 0 && <ul className="text-[11px] text-zinc-300">{f.runs.map((r, i) => <li key={i}>Putki {nm(r.side)}: {r.length} p ({r.from} → {r.to})</li>)}</ul>}
           <ol className="text-xs font-mono">
             {[...f.points].reverse().map((p, i) => (
-              <li key={i} className="flex gap-2 border-t border-zinc-800 py-0.5">
+              <li key={i} className={`flex gap-2 border-t border-zinc-800 py-1 ${inRun(f.points, f.points.length - 1 - i) ? (p.winner === 'A' ? 'bg-amber-500/10' : 'bg-sky-500/10') : ''}`}>
                 <span className="w-16 text-zinc-500">{p.time.slice(0, 8)}</span>
                 <span className="w-4 text-amber-300">{p.server === 'A' ? '●' : ''}</span>
                 <span className={p.winner === 'A' ? 'font-bold text-white' : 'text-zinc-400'}>{p.a}</span>–<span className={p.winner === 'B' ? 'font-bold text-white' : 'text-zinc-400'}>{p.b}</span>
