@@ -1,7 +1,7 @@
 import type { VolleyballMatchDetail, VolleyballPlayerStat, VolleyballStandingRow } from '../types/volleyball'
 import { pointsPerRotation, startingLineups } from '../domain/rotationStats'
 import { insightsMd, type Finding } from '../domain/insights'
-import { analysisMd, flowMd, type RotationAnalysis } from '../domain/gameFlow'
+import { analysisMd, flowMd, serveMd, serveStats, type RotationAnalysis } from '../domain/gameFlow'
 import type { GameLine, LikelyRotation, RosterPlayer, TeamSeason } from '../domain/preview'
 
 function gamesMd(p: RosterPlayer): string {
@@ -123,6 +123,7 @@ export function buildVolleyballPreviewMd(opts: {
     ]),
     ...(opts.insights ? insightsMd(opts.insights.pre, opts.insights.live) : []),
     ...(opts.raw ? flowMd(opts.raw, m.homeTeamName, m.awayTeamName) : []),
+    ...(opts.raw ? ['## Syötöt tässä ottelussa', ...serveMd(m.homeTeamName, serveStats([opts.raw], String(opts.raw.team_A_id))), ...serveMd(m.awayTeamName, serveStats([opts.raw], String(opts.raw.team_B_id)))] : []),
     ...(opts.rotationStats?.length ? ['## Kierrot viimeisissä otteluissa', ...opts.rotationStats.flatMap((x) => analysisMd(x.team, x.analysis))] : []),
     ...(opts.rotations || []).flatMap((x) => { const r = opts.rosters?.find((y) => y.team === x.team); return rotationMd(x.team, x.rotation, r?.players || [], Boolean(r?.lineupPublished)) }),
     ...(opts.h2hPrev ? [`## Keskinäiset ottelut kaudella ${opts.h2hPrev.season}`, ...(opts.h2hPrev.games.length ? opts.h2hPrev.games.map((g) => `- ${g.date} ${g.home ? 'koti' : 'vieras'} vs ${g.opponent}: ${g.setsFor}–${g.setsAgainst}`) : ['_ei tietoa: seurat eivät kohdanneet_']), ''] : []),

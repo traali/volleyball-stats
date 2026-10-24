@@ -3,7 +3,7 @@
  * Pre-game: form, standings, rotation strengths, key scorers, rough win likelihood with its basis.
  * In-game: "Pysyy / Poikkeaa" — live numbers vs recent-game baselines.
  */
-import { rotationAnalysis, setFlows, type RotationAnalysis } from './gameFlow'
+import { hotPlayers, rotationAnalysis, serveStats, setFlows, type RotationAnalysis } from './gameFlow'
 import type { GameLine, RosterPlayer, TeamSeason } from './preview'
 
 type Row = Record<string, unknown>
@@ -143,3 +143,35 @@ export function insightInputs(preview: { teams: TeamFacts[]; previousGames?: Arr
   return { pre, live }
 }
 
+
+
+const sgn = (x: number) => `${x >= 0 ? '+' : ''}${x}`
+
+/** All counted facts (rotations, kuumana, serves, runs, Pysyy/Poikkeaa) as short Finnish lines — input for panels' text and the on-device model. */
+export function countedFacts(preview: { teams: TeamFacts[]; previousGames?: Array<{ games: Row[] }> }, raw: Row | null, phase: string): string[] {
+  const out: string[] = []
+  const inGame = phase !== 'upcoming' && raw
+  preview.teams.forEach((t, i) => {
+    const base = preview.previousGames?.[i]?.games || []
+    const nm = (shirt: string) => { const p = t.roster?.find((x) => x.number === shirt); return `#${shirt}${p ? ` ${p.name.split(' ').slice(-1)[0]}` : ''}` }
+    const games = inGame ? [raw!] : base
+    const ra = rotationAnalysis(games, t.id)
+    if (ra) out.push(`${t.name}${inGame ? '' : ` (viime ${ra.games} ott.)`}: vahvat kierrot ${ra.strong.map((r) => `${r.rotation} ${sgn(r.net)}`).join(', ')}; haastavat ${ra.weak.map((r) => `${r.rotation} ${sgn(r.net)}`).join(', ')}.`)
+    const sv = serveStats(games, t.id).slice(0, 3)
+    if (sv.length) out.push(`${t.name} syöttäjät: ${sv.map((x) => `${nm(x.shirt)} ${x.serves} syöttöä, ${x.won} p, ässät ${x.aces}, virheet ${x.errors}, putki ${x.bestRun}`).join('; ')}.`)
+    if (inGame) {
+      const hot = hotPlayers(raw!, t.id, base).filter((h) => h.recent >= 3 && h.recent >= h.expected + 2).slice(0, 2)
+      for (const h of hot) out.push(`Kuumana ${t.name} ${nm(h.shirt)}: ${h.recent} p viimeisen ${h.window} pallon aikana (tavallisesti ${h.expected.toFixed(1)}).`)
+      const side = s(raw!.team_A_id) === t.id ? 'A' : 'B'
+      const runs = setFlows(raw!).flatMap((f) => f.runs.map((r) => ({ ...r, period: f.period }))).filter((r) => r.side === side).sort((a, b) => b.length - a.length).slice(0, 2)
+      for (const r of runs) out.push(`${t.name} putki ${r.length} p ${r.period}. erässä (${r.from} → ${r.to}), kierto ${r.rotation}${r.servers.length ? `, syötti ${r.servers.map(nm).join(', ')}` : ''}.`)
+    }
+  })
+  if (inGame) for (const f of liveFindings(raw!, preview.teams.map((t, i) => ({ id: t.id, name: t.name, roster: t.roster, games: preview.previousGames?.[i]?.games || [] })))) out.push(`${f.holds ? 'Pysyy' : 'Poikkeaa'}: ${f.text}`)
+  else out.push(...pregameInsights(preview.teams[0], preview.teams[1]))
+  return out
+}
+
+export function aiPrompt(facts: string[], live: boolean): string {
+  return `Olet lentopallovalmentajan analyytikko. ${live ? 'Ottelu on käynnissä.' : 'Ottelu on tulossa.'} Alla lasketut faktat. Nosta 3–4 tärkeintä taktista havaintoa suomeksi, lyhyesti (esim. "vastustajan kierto 4 vuotaa", "syöttäjä #X putki", mikä pysyy ja mikä poikkeaa tavallisesta). Käytä VAIN näitä lukuja, älä keksi mitään.\n${facts.map((f) => `- ${f}`).join('\n')}`
+}

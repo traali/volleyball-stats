@@ -12,8 +12,12 @@ type Side = 'A' | 'B'
 const s = (v: unknown) => (v == null ? '' : String(v).trim())
 const evs = (raw: Row): Row[] => (Array.isArray(raw.events) ? (raw.events as Row[]).filter((e) => e && typeof e === 'object') : [])
 
-export interface FlowPoint { time: string; a: number; b: number; winner: Side; server: Side | ''; kind: string; shirt: string }
-export interface Run { side: Side; length: number; from: string; to: string }
+export interface FlowPoint { time: string; a: number; b: number; winner: Side; server: Side | ''; kind: string; shirt: string
+  /** Shirt in position I of the serving side at that rally (from latest pelipaikat). */
+  serverShirt: string
+  /** Rotation (1–6 from set start) of each side during the rally. */
+  rot: { A: number; B: number } }
+export interface Run { side: Side; length: number; from: string; to: string; rotation: number; servers: string[] }
 export interface SetFlow { period: number; points: FlowPoint[]; runs: Run[]; longest: { A: number; B: number } }
 
 function startSide(raw: Row, period: number): Side | '' {
@@ -25,14 +29,26 @@ function startSide(raw: Row, period: number): Side | '' {
 
 export function setFlows(raw: Row, minRun = 3): SetFlow[] {
   const by = new Map<number, FlowPoint[]>()
+  const lineup: Record<Side, string[]> = { A: [], B: [] }
+  const rot = new Map<number, { A: number; B: number }>()
   for (const e of evs(raw)) {
-    if (s(e.code) !== 'piste') continue
+    const code = s(e.code)
+    if (code === 'pelipaikat') {
+      const sd = s(e.team)
+      const p = s(e.description).split(',').map((x) => s(x.split('=')[1])).filter(Boolean)
+      if ((sd === 'A' || sd === 'B') && p.length >= 6) lineup[sd] = p
+      continue
+    }
+    if (code !== 'piste') continue
     const w = s(e.team)
     if (w !== 'A' && w !== 'B') continue
     const period = Number(e.period) || 1
     const list = by.get(period) || []
+    const r = rot.get(period) || { A: 1, B: 1 }
     const server: Side | '' = list.length ? list[list.length - 1].winner : startSide(raw, period)
-    list.push({ time: s(e.wall_time), a: Number(e.ps_A) || 0, b: Number(e.ps_B) || 0, winner: w, server, kind: s(e.description), shirt: s(e.shirt_number) })
+    list.push({ time: s(e.wall_time), a: Number(e.ps_A) || 0, b: Number(e.ps_B) || 0, winner: w, server, kind: s(e.description), shirt: s(e.shirt_number), serverShirt: server ? lineup[server][0] || '' : '', rot: { ...r } })
+    if (server && server !== w) r[w] = (r[w] % 6) + 1
+    rot.set(period, r)
     by.set(period, list)
   }
   return [...by.entries()].sort((x, y) => x[0] - y[0]).map(([period, points]) => {
@@ -46,11 +62,73 @@ export function setFlows(raw: Row, minRun = 3): SetFlow[] {
       const len = j - i + 1
       longest[side] = Math.max(longest[side], len)
       const before = i ? points[i - 1] : { a: 0, b: 0 }
-      if (len >= minRun) runs.push({ side, length: len, from: `${before.a}–${before.b}`, to: `${points[j].a}–${points[j].b}` })
+      // a run is served by the scoring side from its 2nd point on: rotation/server = that of rally i+1
+      const k = Math.min(j, i + 1)
+      if (len >= minRun) runs.push({ side, length: len, from: `${before.a}–${before.b}`, to: `${points[j].a}–${points[j].b}`, rotation: points[k].rot[side], servers: [...new Set(points.slice(k, j + 1).filter((p) => p.server === side).map((p) => p.serverShirt).filter(Boolean))] })
       i = j + 1
     }
     return { period, points, runs, longest }
   })
+}
+
+export interface ServeLine { shirt: string; serves: number; won: number; aces: number; errors: number; bestRun: number }
+
+/** Per-server stats for one team: serves, rallies won while serving, aces (kind 'serve'), serve errors, longest serve run. */
+export function serveStats(raws: Row[], teamId: string): ServeLine[] {
+  const t = new Map<string, ServeLine>()
+  for (const raw of raws) {
+    const side = sideFor(raw, teamId)
+    if (!side) continue
+    for (const f of setFlows(raw)) {
+      let runShirt = '', run = 0
+      for (const p of f.points) {
+        if (p.server !== side || !p.serverShirt) { runShirt = ''; run = 0; continue }
+        const l = t.get(p.serverShirt) || { shirt: p.serverShirt, serves: 0, won: 0, aces: 0, errors: 0, bestRun: 0 }
+        l.serves++
+        if (p.winner === side) {
+          l.won++
+          if (p.kind === 'serve') l.aces++
+          run = runShirt === p.serverShirt ? run + 1 : 1
+          runShirt = p.serverShirt
+          l.bestRun = Math.max(l.bestRun, run)
+        } else {
+          if (p.kind === 'error_serve') l.errors++
+          runShirt = ''; run = 0
+        }
+        t.set(p.serverShirt, l)
+      }
+    }
+  }
+  return [...t.values()].sort((a, b) => b.serves - a.serves)
+}
+
+function sideFor(raw: Row, teamId: string): Side | '' {
+  return s(raw.team_A_id) === teamId ? 'A' : s(raw.team_B_id) === teamId ? 'B' : ''
+}
+
+export interface HotLine { shirt: string; recent: number; expected: number; window: number }
+
+/** 'Kuumana': player points in the last N rallies of this match vs their per-rally rate in the baseline games. */
+export function hotPlayers(raw: Row, teamId: string, baseline: Row[], n = 20): HotLine[] {
+  const side = sideFor(raw, teamId)
+  if (!side) return []
+  const all = setFlows(raw).flatMap((f) => f.points)
+  const last = all.slice(-n)
+  if (last.length < 8) return []
+  const rate = new Map<string, number>()
+  let rallies = 0
+  for (const g of baseline) {
+    const sd = sideFor(g, teamId)
+    if (!sd || s(g.match_id) === s(raw.match_id)) continue
+    for (const p of setFlows(g).flatMap((f) => f.points)) {
+      rallies++
+      if (p.winner === sd && p.shirt) rate.set(p.shirt, (rate.get(p.shirt) || 0) + 1)
+    }
+  }
+  const recent = new Map<string, number>()
+  for (const p of last) if (p.winner === side && p.shirt) recent.set(p.shirt, (recent.get(p.shirt) || 0) + 1)
+  return [...recent.entries()].map(([shirt, r]) => ({ shirt, recent: r, expected: rallies ? ((rate.get(shirt) || 0) / rallies) * last.length : 0, window: last.length }))
+    .sort((a, b) => b.recent - b.expected - (a.recent - a.expected))
 }
 
 export interface CourtNow { side: Side; period: number; shirts: string[]; libero: string; time: string; score: string }
@@ -79,7 +157,7 @@ export function rotationAnalysis(raws: Row[], teamId: string, top = 2): Rotation
   const t = new Map<number, RotationScore>()
   let games = 0
   for (const raw of raws) {
-    const side = s(raw.team_A_id) === teamId ? 'A' : s(raw.team_B_id) === teamId ? 'B' : ''
+    const side = sideFor(raw, teamId)
     if (!side) continue
     const lines = pointsPerRotation(raw).flatMap((x) => x.lines).filter((l) => l.side === side)
     if (!lines.length) continue
@@ -109,7 +187,7 @@ export function flowMd(raw: Row, home: string, away: string): string[] {
   const nm = (x: Side | '') => (x === 'A' ? home : x === 'B' ? away : '?')
   for (const f of flows) {
     out.push(`### ${f.period}. erä`, `Pisimmät putket: ${home} ${f.longest.A}, ${away} ${f.longest.B}`)
-    for (const r of f.runs) out.push(`- Putki ${nm(r.side)} ${r.length} pistettä (${r.from} → ${r.to})`)
+    for (const r of f.runs) out.push(`- Putki ${nm(r.side)} ${r.length} pistettä (${r.from} → ${r.to}), kierto ${r.rotation}${r.servers.length ? `, syötti #${r.servers.join(', #')}` : ''}`)
     out.push(`Pisteet: ${f.points.map((p) => `${p.time.slice(0, 5)} ${p.a}–${p.b}${p.server ? ` (syöttö ${p.server === 'A' ? 'K' : 'V'})` : ''}`).join(', ')}`, '')
   }
   out.push('## Kenttäasetelma nyt / lopussa')
@@ -119,4 +197,9 @@ export function flowMd(raw: Row, home: string, away: string): string[] {
   out.push('', '## Kierrot tässä ottelussa')
   out.push(...analysisMd(home, rotationAnalysis([raw], s(raw.team_A_id))), ...analysisMd(away, rotationAnalysis([raw], s(raw.team_B_id))))
   return out
+}
+
+export function serveMd(title: string, rows: ServeLine[]): string[] {
+  if (!rows.length) return [`### Syötöt: ${title}`, '_ei tietoa: syöttäjiä ei voitu päätellä (pelipaikat puuttuvat)_', '']
+  return [`### Syötöt: ${title}`, ...rows.map((r) => `- #${r.shirt}: ${r.serves} syöttöä, ${r.won} pistettä omalla syötöllä, ässät ${r.aces}, syöttövirheet ${r.errors}, pisin syöttöputki ${r.bestRun}`), '']
 }

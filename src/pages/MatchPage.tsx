@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { CourtNowBoard, MatchRotationAnalysis, PointTimeline } from '../components/GameFlow'
+import { CourtNowBoard, InGameTactics, MatchRotationAnalysis, PointTimeline } from '../components/GameFlow'
 import { Insights } from '../components/Insights'
 import { insightInputs } from '../domain/insights'
 import { PointTape } from '../components/PointTape'
@@ -85,6 +85,7 @@ function MatchBody({ matchId }: { matchId: string }) {
       {view.format && <p className="text-xs text-zinc-500">Pelimuoto: {view.format}</p>}
       {view.phase !== 'upcoming' && preview && <Insights preview={preview} raw={raw} phase={view.phase} />}
       {view.phase !== 'upcoming' && <MatchRotationAnalysis raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />}
+      {view.phase !== 'upcoming' && raw && <InGameTactics raw={raw} teams={(preview?.teams || [{ id: String(raw.team_A_id), name: view.detail.homeTeamName }, { id: String(raw.team_B_id), name: view.detail.awayTeamName }]).map((t, i) => ({ id: t.id, name: t.name, roster: (t as { roster?: { number: string; name: string }[] }).roster, games: preview?.previousGames?.[i]?.games || [] }))} />}
       <div className="flex flex-wrap gap-1.5">
         {tabs.map((t) => (
           <button key={t.id} type="button" onClick={() => setTab(t.id)} className={`min-h-[44px] px-4 py-2 rounded-xl text-sm font-bold ${tab === t.id ? 'bg-amber-500/20 text-amber-200' : 'text-zinc-400'}`}>{t.label}</button>
