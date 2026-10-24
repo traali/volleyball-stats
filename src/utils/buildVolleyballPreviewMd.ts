@@ -1,6 +1,20 @@
 import type { VolleyballMatchDetail, VolleyballPlayerStat, VolleyballStandingRow } from '../types/volleyball'
 import { pointsPerRotation, startingLineups } from '../domain/rotationStats'
-import type { GameLine, RosterPlayer, TeamSeason } from '../domain/preview'
+import type { GameLine, LikelyRotation, RosterPlayer, TeamSeason } from '../domain/preview'
+
+function gamesMd(p: RosterPlayer): string {
+  if (!p.games) return ''
+  if (!p.games.length) return '\n  - per ottelu: ei tietoa'
+  return '\n  - per ottelu: ' + p.games.map((g) => `${g.date} vs ${g.opponent} ${g.points}p`).join('; ')
+}
+
+function rotationMd(team: string, r: LikelyRotation | null | undefined, players: RosterPlayer[], published: boolean): string[] {
+  const head = `## Todennäköinen aloituskierto: ${team}`
+  if (!r) return [head, '_ei tietoa: ei pelipaikkatietoja aiemmista otteluista_', '']
+  const roman = ['I', 'II', 'III', 'IV', 'V', 'VI']
+  const name = (x: string) => { const p = players.find((q) => q.number === x); return `#${x} ${p?.name || '?'}${published && (!p || !p.inLineup) ? ' (ei kokoonpanossa)' : ''}` }
+  return [head, `_sama 1. erän aloitus ${r.basedOn}/${r.games} ottelussa_`, ...r.shirts.map((x, i) => `- ${roman[i]}: ${name(x)}`), `- Libero: ${r.libero ? name(r.libero) : 'ei tietoa'}`, '']
+}
 
 function prevMd(p: RosterPlayer): string {
   if (p.prev === undefined) return ''
@@ -52,6 +66,7 @@ export function buildVolleyballPreviewMd(opts: {
   players?: VolleyballPlayerStat[]
   /** Each team's previous games (full getMatch rows), already fetched. */
   previousGames?: Array<{ team: string; games: Row[] }>
+  rotations?: Array<{ team: string; rotation: LikelyRotation | null | undefined }>
   h2hPrev?: { season: string; games: GameLine[] }
   rosters?: Array<{ team: string; players: RosterPlayer[]; lineupPublished: boolean }>
   teamStats?: TeamSeason[]
@@ -96,9 +111,10 @@ export function buildVolleyballPreviewMd(opts: {
     ...(opts.teamStats?.length ? ['## Joukkueiden kausi', ...opts.teamStats.map((x) => `- ${x.name}: ${x.standing}. sija · ${x.played} ott ${x.won}V ${x.lost}H · ${x.points}p · erät ${x.setsFor}–${x.setsAgainst} · pallot ${x.ballsFor}–${x.ballsAgainst}`), ''] : []),
     ...(opts.rosters || []).flatMap((r) => [
       `## Pelaajat: ${r.team}${r.lineupPublished ? ' (ottelun kokoonpano julkaistu; (ei kokoonpanossa) merkitty)' : ' (kokoonpanoa ei julkaistu, koko joukkue)'}`,
-      ...(r.players.length ? r.players.map((p) => `- ${p.number ? `#${p.number} ` : ''}${p.name} · ${p.points == null ? 'ei kauden tilastoa' : `${p.points}p / ${p.matches} ott`}${prevMd(p)}${p.inLineup ? '' : ' (ei kokoonpanossa)'}`) : ['_ei tietoa_']),
+      ...(r.players.length ? r.players.map((p) => `- ${p.number ? `#${p.number} ` : ''}${p.name} · ${p.points == null ? 'ei kauden tilastoa' : `${p.points}p / ${p.matches} ott`}${prevMd(p)}${gamesMd(p)}${p.inLineup ? '' : ' (ei kokoonpanossa)'}`) : ['_ei tietoa_']),
       '',
     ]),
+    ...(opts.rotations || []).flatMap((x) => { const r = opts.rosters?.find((y) => y.team === x.team); return rotationMd(x.team, x.rotation, r?.players || [], Boolean(r?.lineupPublished)) }),
     ...(opts.h2hPrev ? [`## Keskinäiset ottelut kaudella ${opts.h2hPrev.season}`, ...(opts.h2hPrev.games.length ? opts.h2hPrev.games.map((g) => `- ${g.date} ${g.home ? 'koti' : 'vieras'} vs ${g.opponent}: ${g.setsFor}–${g.setsAgainst}`) : ['_ei tietoa: seurat eivät kohdanneet_']), ''] : []),
     ...(opts.previousGames || []).flatMap((g) => [`## Aiemmat ottelut: ${g.team}`, ...(g.games.length ? g.games.map(previousGameMd) : ['_ei pelattuja otteluita tällä kaudella_']), '']),
     '## Prompt tekoälylle',

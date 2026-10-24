@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
-import type { GameLine, RosterPlayer, TeamSeason } from '../domain/preview'
+import type { GameLine, LikelyRotation, RosterPlayer, TeamSeason } from '../domain/preview'
 
 export interface PreviewData {
   lineupPublished: boolean
-  teams: Array<{ id: string; name: string; roster: RosterPlayer[] | null; recent: GameLine[] | null; season: TeamSeason | null }>
+  teams: Array<{ id: string; name: string; roster: RosterPlayer[] | null; recent: GameLine[] | null; season: TeamSeason | null; rotation?: LikelyRotation | null }>
   h2h: GameLine[] | null
   /** Previous season id ('2025-26') and club-vs-club games then. */
   prevSeason?: string
@@ -38,6 +38,13 @@ export function MatchPreview({ data }: { data: PreviewData }) {
       </section>
 
       {data.teams.map((t) => (
+        <section key={`rot-${t.id}`} className="space-y-2" data-testid={`rotation-${t.id}`}>
+          <h2 className="text-sm font-bold text-white">Todennäköinen aloituskierto: {t.name}</h2>
+          <Rotation r={t.rotation} roster={t.roster} published={data.lineupPublished} />
+        </section>
+      ))}
+
+      {data.teams.map((t) => (
         <section key={t.id} className="space-y-2" data-testid={`roster-${t.id}`}>
           <h2 className="text-sm font-bold text-white">Pelaajat: {t.name}</h2>
           <p className="text-[11px] text-zinc-500">
@@ -51,7 +58,7 @@ export function MatchPreview({ data }: { data: PreviewData }) {
                 {t.roster.map((p) => (
                   <tr key={p.id} data-in-lineup={p.inLineup ? '1' : '0'} className={`border-t border-zinc-800 ${p.inLineup ? '' : 'opacity-40'}`}>
                     <td className="py-1.5 font-mono text-zinc-400">{p.number || '–'}</td>
-                    <td><Link className="hover:text-amber-300" to={`/player/${p.id}`}>{p.name}</Link>{p.inLineup ? '' : <span className="ml-1 text-[10px] text-zinc-500">ei kokoonpanossa</span>}</td>
+                    <td><Link className="hover:text-amber-300" to={`/player/${p.id}`}>{p.name}</Link>{p.inLineup ? '' : <span className="ml-1 text-[10px] text-zinc-500">ei kokoonpanossa</span>}<PerGame p={p} /></td>
                     <td className="text-right text-zinc-400">{p.matches ?? '–'}</td>
                     <td className="text-right font-bold">{p.points ?? <span className="font-normal text-zinc-500">ei tietoa</span>}</td>
                     <td className="text-right pl-2" data-testid="prev-season"><Prev p={p} /></td>
@@ -122,5 +129,44 @@ function Prev({ p }: { p: RosterPlayer }) {
       <span className="font-bold">{p.prev.points}</span><span className="text-zinc-400"> / {p.prev.matches}</span>
       <span className="block text-[10px] text-zinc-500 truncate max-w-[7rem] ml-auto">{p.prev.teams}</span>
     </span>
+  )
+}
+
+function PerGame({ p }: { p: RosterPlayer }) {
+  if (!p.games) return null
+  if (!p.games.length) return <span className="block text-[10px] text-zinc-500">per ottelu: ei tietoa</span>
+  return (
+    <span className="block text-[10px] text-zinc-500" data-testid="per-game" title={p.games.map((g) => `${g.date} vs ${g.opponent}: ${g.points}`).join('\n')}>
+      per ottelu: {p.games.slice(0, 8).map((g) => g.points).join(' · ')}{p.games.length > 8 ? ' …' : ''}
+    </span>
+  )
+}
+
+const COURT = [[3, 2, 1], [4, 5, 0]] // indexes into shirts (I..VI): front IV III II, back V VI I
+
+function Rotation({ r, roster, published }: { r?: LikelyRotation | null; roster: RosterPlayer[] | null; published: boolean }) {
+  if (!r) return <p className={NONE}>Ei tietoa: aiemmista otteluista ei löytynyt pelipaikkatietoja.</p>
+  const who = (shirt: string) => roster?.find((p) => p.number === shirt)
+  const cell = (shirt: string, pos: string) => {
+    const p = who(shirt)
+    const out = published && (!p || !p.inLineup)
+    return (
+      <div key={pos} data-in-lineup={out ? '0' : '1'} className={`rounded border border-zinc-700 p-1.5 text-center ${out ? 'opacity-40' : ''}`}>
+        <div className="text-[10px] text-zinc-500">{pos}</div>
+        <div className="font-mono font-bold">#{shirt}</div>
+        <div className="truncate text-[10px] text-zinc-300">{p?.name.split(' ').slice(-1)[0] || '?'}</div>
+      </div>
+    )
+  }
+  const roman = ['I', 'II', 'III', 'IV', 'V', 'VI']
+  return (
+    <div className="space-y-1 text-xs">
+      <div className="text-[10px] text-zinc-500 text-center">verkko</div>
+      {COURT.map((row, i) => <div key={i} className="grid grid-cols-3 gap-1">{row.map((k) => cell(r.shirts[k], roman[k]))}</div>)}
+      <p className="text-[11px] text-zinc-500">
+        {r.libero ? <>Libero #{r.libero} {who(r.libero)?.name || ''}. </> : 'Libero: ei tietoa. '}
+        Sama 1. erän aloitus {r.basedOn}/{r.games} ottelussa (TASO pelipaikat, viimeiset ottelut). Kierto: {r.shirts.map((x, i) => `${roman[i]} #${x}`).join(', ')}.
+      </p>
+    </div>
   )
 }
