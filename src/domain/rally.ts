@@ -211,7 +211,8 @@ export function phaseOf(status: unknown): 'upcoming' | 'live' | 'completed' {
   const s = str(status).toLowerCase()
   if (s === 'played' || s === 'finished' || s === '1') return 'completed'
   if (s === 'forfeited' || s === 'walkover') return 'completed'
-  if (s.includes('live') || s === '2' || s === 'started') return 'live'
+  // 'Penalties' is what getMatch says between sets of a running volleyball game.
+  if (s.includes('live') || s === '2' || s === 'started' || s === 'penalties') return 'live'
   return 'upcoming'
 }
 
@@ -234,9 +235,63 @@ export function resultIsTrusted(raw: Record<string, unknown>): boolean {
   return a !== '' && b !== '' && !(a === '0' && b === '0')
 }
 
+/** Live by status, or a set is open beyond the ones played while TASO has not closed the match. */
+export function isLiveMatch(raw: Record<string, unknown>): boolean {
+  const statusPhase = phaseOf(raw.status)
+  if (statusPhase === 'live') return true
+  if (statusPhase === 'completed' || isForfeit(raw)) return false
+  const period = Number(str(raw.live_period))
+  const played = Number(str(raw.periods_played))
+  return str(raw.live_period) !== '' && Number.isFinite(period) && period > 0 && Number.isFinite(played) && period > played
+}
+
+export interface LiveState {
+  setsHome: number | null
+  setsAway: number | null
+  currentSet: number | null
+  /** Running points of the set being played; null when there is no data for it (e.g. between sets). */
+  points: { home: number; away: number } | null
+  /** 'A' or 'B' only when TASO states the serving team. */
+  serving: 'A' | 'B' | null
+  /** Timeouts taken in the current set, from timeout events. */
+  timeouts: { home: number; away: number } | null
+}
+
+function intOrNull(v: unknown): number | null {
+  const t = str(v)
+  if (t === '' || !/^\d+$/.test(t)) return null
+  return Number(t)
+}
+
+export function liveState(raw: Record<string, unknown>): LiveState {
+  const setsHome = intOrNull(raw.live_A) ?? intOrNull(raw.fs_A)
+  const setsAway = intOrNull(raw.live_B) ?? intOrNull(raw.fs_B)
+  const current = intOrNull(raw.live_period)
+  const currentSet = current && current > 0 ? current : null
+  const events = Array.isArray(raw.events) ? (raw.events as Record<string, unknown>[]) : []
+  let points: LiveState['points'] = null
+  let timeouts: LiveState['timeouts'] = null
+  if (currentSet) {
+    const closed = events.some((e) => str(e?.code) === 'lopetajakso' && num(e?.period) === currentSet)
+    const inSet = pointsFromEvents(events, str(raw.team_A_id)).filter((p) => p.period === currentSet)
+    const last = inSet[inSet.length - 1]
+    const m = last ? /^(\d+)–(\d+)$/.exec(last.score) : null
+    if (!closed && m) points = { home: Number(m[1]), away: Number(m[2]) }
+    if (!closed && !points) {
+      const a = intOrNull(raw.live_ps_A)
+      const b = intOrNull(raw.live_ps_B)
+      if (a != null && b != null) points = { home: a, away: b }
+    }
+    const tos = events.filter((e) => str(e?.code) === 'aikalisa' && num(e?.period) === currentSet)
+    timeouts = { home: tos.filter((e) => str(e.team) === 'A').length, away: tos.filter((e) => str(e.team) === 'B').length }
+  }
+  const serve = str(raw.live_serve_team).toUpperCase()
+  return { setsHome, setsAway, currentSet, points, serving: serve === 'A' || serve === 'B' ? serve : null, timeouts }
+}
+
 export function phaseForDisplay(raw: Record<string, unknown>): 'upcoming' | 'live' | 'completed' {
   const statusPhase = phaseOf(raw.status)
-  if (statusPhase === 'live') return 'live'
+  if (isLiveMatch(raw)) return 'live'
   if (!resultIsTrusted(raw)) return 'upcoming'
   return statusPhase === 'upcoming' ? 'completed' : statusPhase
 }
