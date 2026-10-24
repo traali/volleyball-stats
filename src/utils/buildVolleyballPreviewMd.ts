@@ -1,7 +1,7 @@
 import type { VolleyballMatchDetail, VolleyballPlayerStat, VolleyballStandingRow } from '../types/volleyball'
 import { pointsPerRotation, startingLineups } from '../domain/rotationStats'
 import { insightsMd, type Finding } from '../domain/insights'
-import { analysisMd, flowMd, matchupMd, serveMd, serveStats, type Matchup, type RotationAnalysis } from '../domain/gameFlow'
+import { analysisMd, flowMd, playerStatsMd, matchupMd, serveMd, serveStats, type Matchup, type RotationAnalysis } from '../domain/gameFlow'
 import type { GameLine, LikelyRotation, RosterPlayer, TeamSeason } from '../domain/preview'
 
 function gamesMd(p: RosterPlayer): string {
@@ -124,6 +124,7 @@ export function buildVolleyballPreviewMd(opts: {
     ]),
     ...(opts.insights ? insightsMd(opts.insights.pre, opts.insights.live) : []),
     ...(opts.matchups ? matchupMd(opts.matchups) : []),
+    ...(opts.raw ? playerStatsMd(opts.raw, m.homeTeamName, m.awayTeamName) : []),
     ...(opts.raw ? flowMd(opts.raw, m.homeTeamName, m.awayTeamName) : []),
     ...(opts.raw ? ['## Syötöt tässä ottelussa', ...serveMd(m.homeTeamName, serveStats([opts.raw], String(opts.raw.team_A_id))), ...serveMd(m.awayTeamName, serveStats([opts.raw], String(opts.raw.team_B_id)))] : []),
     ...(opts.rotationStats?.length ? ['## Kierrot viimeisissä otteluissa', ...opts.rotationStats.flatMap((x) => analysisMd(x.team, x.analysis))] : []),
