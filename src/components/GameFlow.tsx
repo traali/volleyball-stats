@@ -1,4 +1,4 @@
-import { courtNow, hotPlayers, matchups, matchupText, rotationAnalysis, serveStats, setFlows, type RotationAnalysis, type RotationScore } from '../domain/gameFlow'
+import { courtNow, hotPlayers, playerMatchStats, matchups, matchupText, rotationAnalysis, serveStats, setFlows, type RotationAnalysis, type RotationScore } from '../domain/gameFlow'
 
 type Row = Record<string, unknown>
 const NONE = 'text-sm text-zinc-500'
@@ -144,6 +144,25 @@ export function Matchups({ teams, raw }: { teams: { id: string; name: string; ga
           {x.lines.map((l) => <p key={l.team + l.rotation + l.kind} className="text-xs">{l.status && <span className={`mr-1 rounded px-1 font-bold ${l.status === 'pysyy' ? 'bg-emerald-900 text-emerald-200' : 'bg-amber-900 text-amber-200'}`}>{l.status}</span>}{matchupText(l)}</p>)}
         </div>
       )) : <p className={NONE}>Ei tietoa: aiemmista otteluista ei löytynyt kiertotietoja.</p>}
+    </section>
+  )
+}
+
+export function PlayerMatchStats({ raw, home, away }: { raw: Row; home: string; away: string }) {
+  const rows = playerMatchStats(raw)
+  return (
+    <section className="space-y-2" data-testid="player-match-stats">
+      <h2 className="text-sm font-bold text-white">Pelaajatilastot</h2>
+      <p className="text-[11px] text-zinc-500">P pisteet, BP pisteet oman joukkueen syötöllä (päätelty, voi poiketa virallisesta 1–2), +/- (TASO), Ä ässät, HY hyökkäyspisteet, TO torjunnat, Sy syötöt, SV syöttövirheet. Lasketaan tapahtumista, päivittyy livenä.</p>
+      {rows.length ? (['A', 'B'] as const).map((sd) => (
+        <div key={sd} className="overflow-x-auto">
+          <h3 className="text-xs font-bold text-white">{sd === 'A' ? home : away}</h3>
+          <table className="w-full text-xs">
+            <thead className="text-zinc-500"><tr><th className="text-left">#</th><th className="text-left">Pelaaja</th><th>P</th><th>BP</th><th>+/-</th><th>Ä</th><th>HY</th><th>TO</th><th>Sy</th><th>SV</th></tr></thead>
+            <tbody>{rows.filter((r) => r.side === sd).map((r) => <tr key={r.shirt} className="border-t border-zinc-800"><td className="font-mono text-zinc-400">{r.shirt}</td><td className="truncate max-w-[110px]">{r.name || '–'}</td><td className="text-center font-bold">{r.p}</td><td className="text-center">{r.bp}</td><td className="text-center">{r.pm ?? r.p}</td><td className="text-center">{r.aces}</td><td className="text-center">{r.attack}</td><td className="text-center">{r.block}</td><td className="text-center">{r.serves}</td><td className="text-center">{r.serveErrors}</td></tr>)}</tbody>
+          </table>
+        </div>
+      )) : <p className={NONE}>Ei pelaajakohtaisia pisteitä.</p>}
     </section>
   )
 }

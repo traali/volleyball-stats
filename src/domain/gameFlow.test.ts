@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import m816600 from './fixtures/match-816600.json'
-import { courtNow, flowMd, rotationAnalysis, setFlows, hotPlayers, serveStats, matchups } from './gameFlow'
+import { courtNow, flowMd, rotationAnalysis, setFlows, hotPlayers, serveStats, matchups, playerMatchStats } from './gameFlow'
 
 const pt = (team: string, a: number, b: number, t = '18:00:00', period = '1') => ({ code: 'piste', team, ps_A: a, ps_B: b, wall_time: t, period })
 const raw = {
@@ -74,5 +74,17 @@ describe('matchups', () => {
     expect(pre[0].lines.every((l) => l.status === null)).toBe(true)
     const live = matchups(teams.map((t) => ({ ...t, games: [{ ...raw, match_id: 'x' }] })), raw)
     expect(live[0].lines.some((l) => l.status === 'pysyy')).toBe(true)
+  })
+})
+
+describe('playerMatchStats matches official Tilastot (816600)', () => {
+  it('P/Ä/HY/TO exact, BP for most', () => {
+    const rows = playerMatchStats(m816600 as unknown as Record<string, unknown>)
+    const g = (side: string, shirt: string) => rows.find((r) => r.side === side && r.shirt === shirt)!
+    expect(g('B', '27')).toMatchObject({ p: 19, aces: 2, attack: 17, block: 0 })
+    expect(g('A', '16')).toMatchObject({ p: 8, aces: 1, attack: 7, block: 0 })
+    expect(g('A', '8')).toMatchObject({ p: 4, bp: 1, aces: 1, attack: 2, block: 1 })
+    expect(g('B', '3')).toMatchObject({ p: 7, bp: 4, aces: 1, attack: 5, block: 1 })
+    expect(g('A', '41')).toMatchObject({ p: 6, bp: 2, aces: 0, attack: 6, block: 0 })
   })
 })

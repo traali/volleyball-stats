@@ -238,3 +238,51 @@ export function matchupMd(m: Matchup[]): string[] {
   if (!m.length) return []
   return ['## Kohtaamisvertailu', ...m.flatMap((x) => [`### ${x.title}`, ...x.lines.map((l) => `- ${matchupText(l)}`), '']), '']
 }
+
+export interface PlayerMatchLine { side: Side; shirt: string; name: string; p: number; bp: number; pm: number | null; aces: number; attack: number; block: number; serves: number; serveErrors: number }
+
+/**
+ * Per-player match stats like the official Tilastot (P, BP, +/-, Ä, HY, TO), counted from piste events so they update live:
+ * P = points scored, BP = points scored while own team served (server inferred from previous rally; matches official for most players, can differ by 1–2), Ä = kind serve, HY = attack + return, TO = block.
+ * +/- comes from the lineup row (TASO points_plus_minus) when present. Extras: serves and serve errors.
+ */
+export function playerMatchStats(raw: Row): PlayerMatchLine[] {
+  const lineups = Array.isArray(raw.lineups) ? (raw.lineups as Row[]) : []
+  const sideOf = (r: Row): Side | '' => (s(r.team_id) === s(raw.team_A_id) ? 'A' : s(r.team_id) === s(raw.team_B_id) ? 'B' : '')
+  const m = new Map<string, PlayerMatchLine>()
+  const get = (side: Side, shirt: string) => {
+    const k = side + shirt
+    let l = m.get(k)
+    if (!l) {
+      const r = lineups.find((x) => sideOf(x) === side && s(x.shirt_number) === shirt)
+      const pm = r && s(r.points_plus_minus) !== '' ? Number(r.points_plus_minus) : null
+      l = { side, shirt, name: r ? s(r.player_name) : '', p: 0, bp: 0, pm, aces: 0, attack: 0, block: 0, serves: 0, serveErrors: 0 }
+      m.set(k, l)
+    }
+    return l
+  }
+  for (const r of lineups) { const sd = sideOf(r); if (sd && s(r.shirt_number) && n0(r.points_scored) > 0) get(sd, s(r.shirt_number)) }
+  for (const f of setFlows(raw)) for (const pt of f.points) {
+    if (pt.shirt && !pt.kind.startsWith('error')) {
+      const l = get(pt.winner, pt.shirt)
+      l.p++
+      if (pt.server === pt.winner) l.bp++
+      if (pt.kind === 'serve') l.aces++
+      else if (pt.kind === 'attack' || pt.kind === 'return') l.attack++
+      else if (pt.kind === 'block') l.block++
+    }
+    if (pt.server && pt.serverShirt) {
+      const l = get(pt.server, pt.serverShirt)
+      l.serves++
+      if (pt.winner !== pt.server && pt.kind === 'error_serve') l.serveErrors++
+    }
+  }
+  return [...m.values()].sort((a, b) => a.side.localeCompare(b.side) || b.p - a.p)
+}
+const n0 = (v: unknown) => Number(v) || 0
+
+export function playerStatsMd(raw: Row, home: string, away: string): string[] {
+  const rows = playerMatchStats(raw)
+  if (!rows.length) return []
+  return ['## Pelaajatilastot (P, BP, +/-, Ä, HY, TO, syötöt, syöttövirheet)', ...(['A', 'B'] as Side[]).flatMap((sd) => [`### ${sd === 'A' ? home : away}`, ...rows.filter((r) => r.side === sd).map((r) => `- #${r.shirt} ${r.name}: P ${r.p}, BP ${r.bp}, +/- ${r.pm ?? r.p}, Ä ${r.aces}, HY ${r.attack}, TO ${r.block}, syötöt ${r.serves}, syöttövirheet ${r.serveErrors}`), '']), '']
+}
