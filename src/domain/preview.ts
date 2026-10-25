@@ -22,6 +22,8 @@ export interface RosterPlayer {
   /** TASO's own group 'periods' (counts every set of a match the player was listed for). */
   tasoSets?: number | null
   inLineup: boolean
+  /** Marked libero on this phone: sets are not counted (TASO does not record libero sets). */
+  libero?: boolean
   /** Previous season from getPlayer, undefined = not fetched, null = no games that season. */
   prev?: PrevSeason | null
   /** Per-game points from getPlayer, this season and previous, newest first. */

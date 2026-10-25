@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import { LIBERO_NOTE } from '../domain/libero'
+import { useLiberos } from '../hooks/useLiberos'
 import { RotationAnalysisView } from './GameFlow'
 import type { RotationAnalysis } from '../domain/gameFlow'
 import { actualRotation, type GameLine, type LikelyRotation, type RosterPlayer, type TeamSeason } from '../domain/preview'
@@ -18,6 +20,7 @@ const NONE = 'text-sm text-zinc-500'
 
 export function MatchPreview({ data, raw }: { data: PreviewData; raw?: Record<string, unknown> | null }) {
   const [a, b] = data.teams
+  const { isLibero } = useLiberos()
   return (
     <div className="space-y-5" data-testid="match-preview">
       <section className="space-y-2">
@@ -54,25 +57,25 @@ export function MatchPreview({ data, raw }: { data: PreviewData; raw?: Record<st
           <h2 className="text-sm font-bold text-white">Pelaajat: {t.name}</h2>
           <p className="text-[11px] text-zinc-500">
             {data.lineupPublished ? 'Ottelun kokoonpano julkaistu. Harmaana joukkueen pelaajat, jotka eivät ole kokoonpanossa.' : 'Ottelun kokoonpanoa ei ole vielä julkaistu: koko joukkue.'}
-            {' '}Pist = kauden pisteet tässä lohkossa (TASO). Erät = erät kentällä (aloituskokoonpanossa tai vaihdettu sisään), Vaihdossa = erät kokoonpanossa mutta ei kentällä; lasketaan lohkon otteluiden eräkokoonpanoista ja vaihdoista (libero vain, jos TASO on kirjannut sen). +? = erät otteluista ilman eräkokoonpanotietoa. P/O = pisteet/ottelu, P/E = pisteet/erä kentällä. {data.prevSeason ? `${data.prevSeason} = edellinen kausi (pist / ott, kaikki sarjat).` : ''}
+            {' '}Pist = kauden pisteet tässä lohkossa (TASO). Erät = erät kentällä (aloituskokoonpanossa tai vaihdettu sisään), Vaihdossa = erät kokoonpanossa mutta ei kentällä; lasketaan lohkon otteluiden eräkokoonpanoista ja vaihdoista (libero vain, jos TASO on kirjannut sen). +? = erät otteluista ilman eräkokoonpanotietoa. Libero = merkitty liberoksi tässä puhelimessa: {LIBERO_NOTE}. P/O = pisteet/ottelu, P/E = pisteet/erä kentällä. {data.prevSeason ? `${data.prevSeason} = edellinen kausi (pist / ott, kaikki sarjat).` : ''}
           </p>
           {!t.roster ? <p className={NONE}>Ei tietoa: pelaajalistaa ei saatu.</p> : t.roster.length === 0 ? <p className={NONE}>Ei tietoa: joukkueelle ei ole ilmoitettu pelaajia.</p> : (
             <table className="w-full text-xs">
               <thead className="text-zinc-500"><tr><th className="text-left py-1 w-8">#</th><th className="text-left">Pelaaja</th><th className="text-right">Ott</th><th className="text-right">Pist</th><th className="text-right">Erät</th><th className="text-right" title="Erät kokoonpanossa, ei kentällä">Vaihdossa</th><th className="text-right">P/O</th><th className="text-right">P/E</th><th className="text-right pl-2">{data.prevSeason || 'Ed. kausi'}</th></tr></thead>
               <tbody>
-                {t.roster.map((p) => (
+                {t.roster.map((p) => { const lib = isLibero(t.id, p.id); return (
                   <tr key={p.id} data-in-lineup={p.inLineup ? '1' : '0'} className={`border-t border-zinc-800 ${p.inLineup ? '' : 'opacity-40'}`}>
                     <td className="py-1.5 font-mono text-zinc-400">{p.number || '–'}</td>
                     <td><Link className="hover:text-amber-300" to={`/player/${p.id}`}>{p.name}</Link>{p.inLineup ? '' : <span className="ml-1 text-[10px] text-zinc-500">ei kokoonpanossa</span>}<PerGame p={p} /></td>
                     <td className="text-right text-zinc-400">{p.matches ?? '–'}</td>
                     <td className="text-right font-bold">{p.points ?? <span className="font-normal text-zinc-500">ei tietoa</span>}</td>
-                    <td className="text-right text-zinc-400" data-testid="season-sets" title={p.tasoSets != null ? `TASO: ${p.tasoSets} erää kokoonpanossa` : undefined}>{p.sets ?? '–'}{p.setsUnknown ? '+?' : ''}</td>
-                    <td className="text-right text-zinc-500" data-testid="season-bench">{p.setsBench ?? '–'}</td>
+                    <td className="text-right text-zinc-400" data-testid="season-sets" title={lib ? LIBERO_NOTE : p.tasoSets != null ? `TASO: ${p.tasoSets} erää kokoonpanossa` : undefined}>{lib ? 'Libero' : <>{p.sets ?? '–'}{p.setsUnknown ? '+?' : ''}</>}</td>
+                    <td className="text-right text-zinc-500" data-testid="season-bench">{lib ? '–' : p.setsBench ?? '–'}</td>
                     <td className="text-right text-zinc-400">{p.matches && p.points != null ? (p.points / p.matches).toFixed(1) : '–'}</td>
-                    <td className="text-right text-zinc-400">{p.sets && p.points != null ? (p.points / p.sets).toFixed(1) : '–'}</td>
+                    <td className="text-right text-zinc-400">{!lib && p.sets && p.points != null ? (p.points / p.sets).toFixed(1) : '–'}</td>
                     <td className="text-right pl-2" data-testid="prev-season"><Prev p={p} /></td>
                   </tr>
-                ))}
+                ) })}
               </tbody>
             </table>
           )}

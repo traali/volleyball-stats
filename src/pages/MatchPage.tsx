@@ -17,6 +17,7 @@ import { actualRotation } from '../domain/preview'
 import { matchups } from '../domain/gameFlow'
 import { MatchPreview, type PreviewData } from '../components/MatchPreview'
 import { fetchPreview } from '../services/preview'
+import { useLiberos } from '../hooks/useLiberos'
 import { fetchMatchRaw, federationUrl } from '../services/discovery'
 import type { VolleyballMatchDetail, VolleyballSet } from '../types/volleyball'
 
@@ -35,6 +36,7 @@ function MatchBody({ matchId }: { matchId: string }) {
   const raw = live.raw ?? loaded
   const view = useMemo(() => (raw ? present(raw) : null), [raw])
   const [preview, setPreview] = useState<PreviewData | null>(null)
+  const { isLibero } = useLiberos()
   useEffect(() => {
     if (!loaded) return
     let stop = false
@@ -129,7 +131,7 @@ function MatchBody({ matchId }: { matchId: string }) {
         insights={preview ? insightInputs(preview, raw, view.phase) : undefined}
         matchups={preview ? matchups(tacTeams, view.phase !== 'upcoming' ? raw : null) : undefined}
         rotationStats={preview?.teams.map((t) => ({ team: t.name, analysis: t.rotationStats ?? null }))}
-        rosters={preview?.teams.filter((x) => x.roster).map((x) => ({ team: x.name, players: x.roster!, lineupPublished: preview.lineupPublished }))}
+        rosters={preview?.teams.filter((x) => x.roster).map((x) => ({ team: x.name, players: x.roster!.map((p) => ({ ...p, libero: isLibero(x.id, p.id) })), lineupPublished: preview.lineupPublished }))}
       />
     </main>
   )

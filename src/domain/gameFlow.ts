@@ -1,4 +1,5 @@
 import { setParticipation } from './setParticipation'
+import { LIBERO_NOTE, type LiberoCheck } from './libero'
 /**
  * How a game goes, from getMatch events: per-set point timeline (running score, time, serving side),
  * runs, the latest rotation on court and per-rotation points (strong / challenging rotations).
@@ -299,11 +300,15 @@ export function playerMatchStats(raw: Row): PlayerMatchLine[] {
 }
 const n0 = (v: unknown) => Number(v) || 0
 
-export function playerStatsMd(raw: Row, home: string, away: string): string[] {
+export function playerStatsMd(raw: Row, home: string, away: string, isLibero: LiberoCheck = () => false): string[] {
   const part = new Map(setParticipation(raw).map((p) => [`${p.teamId === s(raw.team_A_id) ? 'A' : 'B'}${p.shirt}`, p]))
-  const setsTxt = (sd: string, shirt: string) => { const p = part.get(sd + shirt); return p ? `, erät kentällä ${p.onCourt.length}${p.unknown.length ? '+?' : ''}, vaihdossa ${p.bench.length}` : '' }
-  const rows = playerMatchStats(raw)
-  if (!rows.length) return []
+  const setsTxt = (sd: string, shirt: string) => { const p = part.get(sd + shirt); if (p && isLibero(p.teamId, p.playerId)) return `, erät: Libero (${LIBERO_NOTE})`; return p ? `, erät kentällä ${p.onCourt.length}${p.unknown.length ? '+?' : ''}, vaihdossa ${p.bench.length}` : '' }
+  const base = playerMatchStats(raw)
+  if (!base.length) return []
+  // Roster players without points too (same as the match table), so bench and libero rows are exported.
+  const extra = [...part.entries()].filter(([k, p]) => p.shirt && !base.some((r) => r.side + r.shirt === k))
+    .map(([k, p]) => ({ side: k[0] as Side, shirt: p.shirt, name: p.name, p: 0, bp: 0, pm: null as number | null, aces: 0, attack: 0, block: 0, serves: 0, serveErrors: 0 }))
+  const rows = [...base, ...extra]
   return ['## Pelaajatilastot (P, BP, +/-, Ä, HY, TO, syötöt, syöttövirheet)', ...(['A', 'B'] as Side[]).flatMap((sd) => [`### ${sd === 'A' ? home : away}`, ...rows.filter((r) => r.side === sd).map((r) => `- #${r.shirt} ${r.name}: P ${r.p}, BP ${r.bp}, +/- ${r.pm ?? r.p}, Ä ${r.aces}, HY ${r.attack}, TO ${r.block}, syötöt ${r.serves}, syöttövirheet ${r.serveErrors}${setsTxt(sd, r.shirt)}`), '']), '']
 }
 

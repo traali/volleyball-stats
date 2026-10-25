@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import type { VolleyballMatchDetail, VolleyballPlayerStat, VolleyballStandingRow } from '../types/volleyball'
 import { Check, Copy, Download } from 'lucide-react'
 import { buildVolleyballPreviewMd } from '../utils/buildVolleyballPreviewMd'
+import { useLiberos } from '../hooks/useLiberos'
 
 interface VolleyballPreviewExportProps {
   match: VolleyballMatchDetail
@@ -20,7 +21,8 @@ interface VolleyballPreviewExportProps {
 
 export function VolleyballPreviewExport({ match, standings = [], players = [], previousGames, rosters, teamStats, h2hPrev, rotations, raw, rotationStats, insights, matchups }: VolleyballPreviewExportProps) {
   const [copied, setCopied] = useState(false)
-  const md = useMemo(() => buildVolleyballPreviewMd({ match, standings, players, previousGames, rosters, teamStats, h2hPrev, rotations, raw, rotationStats, insights, matchups }), [match, standings, players, previousGames, rosters, teamStats, h2hPrev, rotations, raw, rotationStats, insights, matchups])
+  const { isLibero } = useLiberos()
+  const md = useMemo(() => buildVolleyballPreviewMd({ match, standings, players, previousGames, rosters, teamStats, h2hPrev, rotations, raw, rotationStats, insights, matchups, isLibero }), [match, standings, players, previousGames, rosters, teamStats, h2hPrev, rotations, raw, rotationStats, insights, matchups, isLibero])
 
   const copy = async () => {
     await navigator.clipboard.writeText(md)
