@@ -1,1514 +1,2963 @@
 {
- "matchId": "816603",
- "home": "HSC",
- "away": "EsIsku",
- "date": "2026-10-24",
- "video": {
-  "provider": "youtube",
-  "id": "QYsk3kQvJvg",
-  "endsAt": "5. erä 14-9"
- },
- "setScores": {
-  "1": "25-22",
-  "2": "21-25",
-  "3": "25-23",
-  "4": "17-25",
-  "5": "15-13"
- },
- "analysedSets": [
-  1
- ],
- "sets": {
-  "1": [
-   {
-    "score": "1-0",
-    "officialWinner": "home",
-    "torneopalType": null,
-    "youtubeS": 1151,
-    "finding": {
-     "text": "EsIsku rotation fault (ref signalled)",
-     "confidence": "high"
-    }
-   },
-   {
-    "score": "1-1",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 1210
-   },
-   {
-    "score": "1-2",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 1256
-   },
-   {
-    "score": "1-3",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 1271
-   },
-   {
-    "score": "2-3",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 1299
-   },
-   {
-    "score": "3-3",
-    "officialWinner": "home",
-    "torneopalType": "serve",
-    "youtubeS": 1327
-   },
-   {
-    "score": "4-3",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 1341
-   },
-   {
-    "score": "4-4",
-    "officialWinner": "away",
-    "torneopalType": "error_serve",
-    "youtubeS": 1366
-   },
-   {
-    "score": "4-5",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 1386
-   },
-   {
-    "score": "5-5",
-    "officialWinner": "home",
-    "torneopalType": "error_serve",
-    "youtubeS": 1409,
-    "finding": {
-     "text": "EsIsku serve error",
-     "confidence": "high"
-    },
-    "ball": {
-     "landing": {
-      "text": "serve error (EsIsku)",
-      "confidence": "high"
-     }
-    }
-   },
-   {
-    "score": "5-6",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 1424
-   },
-   {
-    "score": "6-6",
-    "officialWinner": "home",
-    "torneopalType": "error_technical",
-    "youtubeS": 1448,
-    "finding": {
-     "text": "EsIsku attack out, no touch",
-     "confidence": "high"
-    },
-    "note": "Torneopal: technical error; thumbs-up/replay nearby",
-    "ball": {
-     "blockTouch": {
-      "text": "no touch",
-      "confidence": "high"
-     },
-     "landing": {
-      "text": "out",
-      "confidence": "high"
-     }
-    }
-   },
-   {
-    "score": "7-6",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 1462,
-    "finding": {
-     "text": "HSC block",
-     "confidence": "high"
-    },
-    "note": "Torneopal: EsIsku attack error",
-    "ball": {
-     "blockTouch": {
-      "text": "HSC block (point)",
-      "confidence": "high"
-     }
-    }
-   },
-   {
-    "score": "8-6",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 1507,
-    "finding": {
-     "text": "EsIsku attack out, no touch",
-     "confidence": "high"
-    },
-    "ball": {
-     "blockTouch": {
-      "text": "no touch",
-      "confidence": "high"
-     },
-     "landing": {
-      "text": "out",
-      "confidence": "high"
-     }
-    }
-   },
-   {
-    "score": "9-6",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 1525
-   },
-   {
-    "score": "9-7",
-    "officialWinner": "away",
-    "torneopalType": "error_serve",
-    "youtubeS": 1548,
-    "finding": {
-     "text": "HSC serve into net",
-     "confidence": "high"
-    },
-    "ball": {
-     "landing": {
-      "text": "serve into net",
-      "confidence": "high"
-     }
-    }
-   },
-   {
-    "score": "10-7",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 1571
-   },
-   {
-    "score": "11-7",
-    "officialWinner": "home",
-    "torneopalType": "serve",
-    "youtubeS": 1587
-   },
-   {
-    "score": "12-7",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 1663,
-    "finding": {
-     "text": "HSC ace",
-     "confidence": "high"
-    },
-    "note": "EsIsku timeout ~here",
-    "ball": {
-     "reception": {
-      "text": "ace, no playable reception",
-      "confidence": "high"
-     }
-    }
-   },
-   {
-    "score": "12-8",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 1689
-   },
-   {
-    "score": "12-9",
-    "officialWinner": "away",
-    "torneopalType": "serve",
-    "youtubeS": 1706
-   },
-   {
-    "score": "12-10",
-    "officialWinner": "away",
-    "torneopalType": "serve",
-    "youtubeS": 1722
-   },
-   {
-    "score": "13-10",
-    "officialWinner": "home",
-    "torneopalType": "return",
-    "youtubeS": 1788,
-    "note": "EsIsku timeout ~here"
-   },
-   {
-    "score": "13-11",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 1808
-   },
-   {
-    "score": "13-12",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 1833
-   },
-   {
-    "score": "14-12",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 1856,
-    "finding": {
-     "text": "HSC kill",
-     "confidence": "high"
-    }
-   },
-   {
-    "score": "14-13",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 1874,
-    "finding": {
-     "text": "EsIsku kill",
-     "confidence": "high"
-    },
-    "note": "EsIsku sub #14 for #2 ~here"
-   },
-   {
-    "score": "15-13",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 1902,
-    "finding": {
-     "text": "HSC kill",
-     "confidence": "high"
-    }
-   },
-   {
-    "score": "16-13",
-    "officialWinner": "home",
-    "torneopalType": "error_technical",
-    "youtubeS": 1917,
-    "finding": {
-     "text": "EsIsku attack out, no touch",
-     "confidence": "high"
-    },
-    "note": "Torneopal: technical error",
-    "ball": {
-     "blockTouch": {
-      "text": "no touch",
-      "confidence": "high"
-     },
-     "landing": {
-      "text": "out",
-      "confidence": "high"
-     }
-    }
-   },
-   {
-    "score": "17-13",
-    "officialWinner": "home",
-    "torneopalType": "serve",
-    "youtubeS": 1956
-   },
-   {
-    "score": "18-13",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 2005
-   },
-   {
-    "score": "19-13",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 2104,
-    "note": "HSC timeout"
-   },
-   {
-    "score": "19-14",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 2137,
-    "finding": {
-     "text": "EsIsku kill",
-     "confidence": "high"
-    }
-   },
-   {
-    "score": "20-14",
-    "officialWinner": "home",
-    "torneopalType": "error_serve",
-    "youtubeS": 2148
-   },
-   {
-    "score": "20-15",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 2162,
-    "finding": {
-     "text": "HSC net touch",
-     "confidence": "high"
-    },
-    "note": "Torneopal: EsIsku 'attack'"
-   },
-   {
-    "score": "21-15",
-    "officialWinner": "home",
-    "torneopalType": "error_serve",
-    "youtubeS": 2207,
-    "finding": {
-     "text": "HSC #15 kill off block (block-touch signal)",
-     "confidence": "high"
-    },
-    "note": "Thumbs-up (stray ball) before this point",
-    "ball": {
-     "attacker": {
-      "text": "HSC #15",
-      "confidence": "high"
-     },
-     "blockTouch": {
-      "text": "yes (ref signal)",
-      "confidence": "high"
-     }
-    }
-   },
-   {
-    "score": "21-16",
-    "officialWinner": "away",
-    "torneopalType": "error_serve",
-    "youtubeS": 2234
-   },
-   {
-    "score": "21-17",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 2282,
-    "note": "HSC sub #11 for #9 (one read)"
-   },
-   {
-    "score": "22-17",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 2312
-   },
-   {
-    "score": "22-18",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 2344
-   },
-   {
-    "score": "22-19",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 2365
-   },
-   {
-    "score": "22-20",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 2383,
-    "finding": {
-     "text": "EsIsku middle quick attack kill, landed in, no block touch, referee \"ball in\" signal",
-     "confidence": "medium"
-    },
-    "note": "Torneopal logged as HSC technical error; user-flagged at YouTube t=2383s",
-    "ball": {
-     "attacker": {
-      "text": "EsIsku middle (quick attack)",
-      "confidence": "medium"
-     },
-     "blockTouch": {
-      "text": "no touch",
-      "confidence": "medium"
-     },
-     "landing": {
-      "text": "in (ref \"ball in\" signal)",
-      "confidence": "medium"
-     }
-    }
-   },
-   {
-    "score": "23-20",
-    "officialWinner": "home",
-    "torneopalType": "error_serve",
-    "youtubeS": 2383
-   },
-   {
-    "score": "23-21",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 2425
-   },
-   {
-    "score": "24-21",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 2466
-   },
-   {
-    "score": "24-22",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 2486
-   },
-   {
-    "score": "25-22",
-    "officialWinner": "home",
-    "torneopalType": null,
-    "youtubeS": 2507
-   }
+  "matchId": "816603",
+  "home": "HSC",
+  "away": "EsIsku",
+  "date": "2026-10-24",
+  "video": {
+    "provider": "youtube",
+    "id": "QYsk3kQvJvg",
+    "endsAt": "5. erä 14-9"
+  },
+  "setScores": {
+    "1": "25-22",
+    "2": "21-25",
+    "3": "25-23",
+    "4": "17-25",
+    "5": "15-13"
+  },
+  "analysedSets": [
+    1,
+    2,
+    3,
+    4,
+    5
   ],
-  "2": [
-   {
-    "score": "0-1",
-    "officialWinner": "away",
-    "torneopalType": "error_serve",
-    "youtubeS": 3010
-   },
-   {
-    "score": "0-2",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 3019
-   },
-   {
-    "score": "0-3",
-    "officialWinner": "away",
-    "torneopalType": "serve",
-    "youtubeS": 3041
-   },
-   {
-    "score": "0-4",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 3068
-   },
-   {
-    "score": "1-4",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 3089
-   },
-   {
-    "score": "1-5",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 3122
-   },
-   {
-    "score": "2-5",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 3146
-   },
-   {
-    "score": "2-6",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 3173
-   },
-   {
-    "score": "3-6",
-    "officialWinner": "home",
-    "torneopalType": "error_serve",
-    "youtubeS": 3187
-   },
-   {
-    "score": "4-6",
-    "officialWinner": "home",
-    "torneopalType": "serve",
-    "youtubeS": 3299
-   },
-   {
-    "score": "5-6",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 3305
-   },
-   {
-    "score": "6-6",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 3314
-   },
-   {
-    "score": "7-6",
-    "officialWinner": "home",
-    "torneopalType": "serve",
-    "youtubeS": 3332
-   },
-   {
-    "score": "7-7",
-    "officialWinner": "away",
-    "torneopalType": "error_serve",
-    "youtubeS": 3335
-   },
-   {
-    "score": "7-8",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 3360
-   },
-   {
-    "score": "8-8",
-    "officialWinner": "home",
-    "torneopalType": "error_technical",
-    "youtubeS": 3386
-   },
-   {
-    "score": "8-9",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 3416
-   },
-   {
-    "score": "9-9",
-    "officialWinner": "home",
-    "torneopalType": "error_serve",
-    "youtubeS": 3430
-   },
-   {
-    "score": "9-10",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 3457
-   },
-   {
-    "score": "9-11",
-    "officialWinner": "away",
-    "torneopalType": "block",
-    "youtubeS": 3478
-   },
-   {
-    "score": "10-11",
-    "officialWinner": "home",
-    "torneopalType": "error_technical",
-    "youtubeS": 3494
-   },
-   {
-    "score": "10-12",
-    "officialWinner": "away",
-    "torneopalType": "error_serve",
-    "youtubeS": 3509
-   },
-   {
-    "score": "11-12",
-    "officialWinner": "home",
-    "torneopalType": "error_serve",
-    "youtubeS": 3533
-   },
-   {
-    "score": "12-12",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 3558
-   },
-   {
-    "score": "13-12",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 3596
-   },
-   {
-    "score": "14-12",
-    "officialWinner": "home",
-    "torneopalType": "error_technical",
-    "youtubeS": 3621
-   },
-   {
-    "score": "15-12",
-    "officialWinner": "home",
-    "torneopalType": "block",
-    "youtubeS": 3647
-   },
-   {
-    "score": "16-12",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 3665
-   },
-   {
-    "score": "17-12",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 3714
-   },
-   {
-    "score": "17-13",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 3776
-   },
-   {
-    "score": "17-14",
-    "officialWinner": "away",
-    "torneopalType": "serve",
-    "youtubeS": 3789
-   },
-   {
-    "score": "18-14",
-    "officialWinner": "home",
-    "torneopalType": "error_serve",
-    "youtubeS": 3823
-   },
-   {
-    "score": "19-14",
-    "officialWinner": "home",
-    "torneopalType": "serve",
-    "youtubeS": 3828
-   },
-   {
-    "score": "19-15",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 3926
-   },
-   {
-    "score": "19-16",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 3955
-   },
-   {
-    "score": "19-17",
-    "officialWinner": "away",
-    "torneopalType": "block",
-    "youtubeS": 3977
-   },
-   {
-    "score": "19-18",
-    "officialWinner": "away",
-    "torneopalType": "block",
-    "youtubeS": 4002
-   },
-   {
-    "score": "19-19",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 4055
-   },
-   {
-    "score": "20-19",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 4089
-   },
-   {
-    "score": "20-20",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 4107
-   },
-   {
-    "score": "20-21",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 4148
-   },
-   {
-    "score": "20-22",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 4169
-   },
-   {
-    "score": "21-22",
-    "officialWinner": "home",
-    "torneopalType": "error_serve",
-    "youtubeS": 4191
-   },
-   {
-    "score": "21-23",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 4213
-   },
-   {
-    "score": "21-24",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 4260
-   },
-   {
-    "score": "21-25",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 4316
-   }
+  "sets": {
+    "1": [
+      {
+        "score": "1-0",
+        "officialWinner": "home",
+        "torneopalType": null,
+        "youtubeS": 1161,
+        "finding": {
+          "text": "EsIsku rotation fault (ref signalled)",
+          "confidence": "high"
+        },
+        "desc": {
+          "text": "HSC point (type not logged, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "1-1",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 1240,
+        "desc": {
+          "text": "EsIsku point: HSC serve; EsIsku OH spike off HSC two-person block, out; ref arm to EsIsku",
+          "tags": [
+            "kill",
+            "two-person block"
+          ],
+          "confidence": "high"
+        }
+      },
+      {
+        "score": "1-2",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 1261,
+        "desc": {
+          "text": "EsIsku serve; HSC libero receives; setter #15 sets left OH; EsIsku two-person block stuffs attack, lands in HSC court; ref arm to EsIsku",
+          "tags": [
+            "block point",
+            "two-person block"
+          ],
+          "confidence": "high"
+        }
+      },
+      {
+        "score": "1-3",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 1280,
+        "desc": {
+          "text": "EsIsku #3 spike off HSC #15/#10 two-person block, out; ref block-touch signal (read says HSC served - wrong, EsIsku served)",
+          "tags": [
+            "kill",
+            "two-person block"
+          ],
+          "confidence": "medium"
+        }
+      },
+      {
+        "score": "2-3",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 1312,
+        "desc": {
+          "text": "HSC point: EsIsku #6 serve; HSC tip, EsIsku dig, free ball, HSC left spike off EsIsku three-person block, out",
+          "tags": [
+            "block-out",
+            "kill",
+            "long rally",
+            "three-person block",
+            "tip"
+          ],
+          "confidence": "medium"
+        }
+      },
+      {
+        "score": "3-3",
+        "officialWinner": "home",
+        "torneopalType": "serve",
+        "youtubeS": 1333,
+        "desc": {
+          "text": "HSC point: EsIsku serve into net (Torneopal: HSC serve/ace) Video differs from Torneopal type \"serve\".",
+          "tags": [
+            "serve error",
+            "serve net"
+          ],
+          "confidence": "high"
+        }
+      },
+      {
+        "score": "4-3",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 1349,
+        "desc": {
+          "text": "HSC point: EsIsku jump float serve; HSC left spike touched by EsIsku 2-person block, EsIsku diving dig, free ball; HSC left spike through 2-person block, in (shirt numbers unreliable)",
+          "tags": [
+            "kill",
+            "two-person block",
+            "long rally"
+          ],
+          "confidence": "medium"
+        }
+      },
+      {
+        "score": "4-4",
+        "officialWinner": "away",
+        "torneopalType": "error_serve",
+        "youtubeS": 1363,
+        "desc": {
+          "text": "EsIsku point: HSC #6 jump float serve long, EsIsku let it go; ref out signal",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "high"
+        }
+      },
+      {
+        "score": "4-5",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 1391,
+        "desc": {
+          "text": "EsIsku #10 jump serve short, lands untouched",
+          "tags": [
+            "ace"
+          ],
+          "confidence": "high"
+        }
+      },
+      {
+        "score": "5-5",
+        "officialWinner": "home",
+        "torneopalType": "error_serve",
+        "youtubeS": 1406,
+        "finding": {
+          "text": "EsIsku serve error",
+          "confidence": "high"
+        },
+        "ball": {
+          "landing": {
+            "text": "serve error (EsIsku)",
+            "confidence": "high"
+          }
+        },
+        "desc": {
+          "text": "HSC point: EsIsku jump serve into net (new clip; matches earlier 2 reads)",
+          "tags": [
+            "serve error",
+            "serve net"
+          ],
+          "confidence": "high"
+        }
+      },
+      {
+        "score": "5-6",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 1424,
+        "desc": {
+          "text": "EsIsku point: HSC #2 jump serve into net (clip timing early) Video differs from Torneopal type \"attack\".",
+          "tags": [
+            "serve error",
+            "serve net"
+          ],
+          "confidence": "medium"
+        }
+      },
+      {
+        "score": "6-6",
+        "officialWinner": "home",
+        "torneopalType": "error_technical",
+        "youtubeS": 1437,
+        "finding": {
+          "text": "EsIsku attack out, no touch",
+          "confidence": "high"
+        },
+        "note": "Torneopal: technical error; thumbs-up/replay nearby",
+        "ball": {
+          "blockTouch": {
+            "text": "no touch",
+            "confidence": "high"
+          },
+          "landing": {
+            "text": "out",
+            "confidence": "high"
+          }
+        },
+        "desc": {
+          "text": "HSC point: EsIsku #2 serve, HSC #10 pass, setter #15, HSC #6 middle quick off EsIsku 2-person block, in (earlier reads: EsIsku attack out)",
+          "tags": [
+            "kill",
+            "two-person block"
+          ],
+          "confidence": "medium"
+        }
+      },
+      {
+        "score": "7-6",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 1466,
+        "finding": {
+          "text": "HSC block",
+          "confidence": "high"
+        },
+        "note": "Torneopal: EsIsku attack error",
+        "ball": {
+          "blockTouch": {
+            "text": "HSC block (point)",
+            "confidence": "high"
+          }
+        },
+        "desc": {
+          "text": "HSC point: long rally: EsIsku #8 spike dug, HSC #3 left spike, EsIsku free ball, HSC #6 right spike (maybe back-row), EsIsku #3 spike, HSC #3 left spike off EsIsku two-person block, out; ref block-touch signal (earlier reads said HSC block; whistle timing uncertain)",
+          "tags": [
+            "kill",
+            "two-person block",
+            "long rally"
+          ],
+          "confidence": "medium"
+        }
+      },
+      {
+        "score": "8-6",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 1496,
+        "finding": {
+          "text": "EsIsku attack out, no touch",
+          "confidence": "high"
+        },
+        "ball": {
+          "blockTouch": {
+            "text": "no touch",
+            "confidence": "high"
+          },
+          "landing": {
+            "text": "out",
+            "confidence": "high"
+          }
+        },
+        "desc": {
+          "text": "HSC point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "9-6",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 1515,
+        "desc": {
+          "text": "HSC point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "9-7",
+        "officialWinner": "away",
+        "torneopalType": "error_serve",
+        "youtubeS": 1544,
+        "finding": {
+          "text": "HSC serve into net",
+          "confidence": "high"
+        },
+        "ball": {
+          "landing": {
+            "text": "serve into net",
+            "confidence": "high"
+          }
+        },
+        "desc": {
+          "text": "EsIsku point: HSC jump serve long/out (earlier reads: into net)",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "medium"
+        }
+      },
+      {
+        "score": "10-7",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 1575,
+        "desc": {
+          "text": "HSC point: EsIsku #10 serve, HSC libero pass, HSC left spike (#8?) off EsIsku 2-person block (#6), out",
+          "tags": [
+            "kill",
+            "two-person block"
+          ],
+          "confidence": "medium"
+        }
+      },
+      {
+        "score": "11-7",
+        "officialWinner": "home",
+        "torneopalType": "serve",
+        "youtubeS": 1599,
+        "desc": {
+          "text": "HSC point (ace, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "ace",
+            "timeout"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "12-7",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 1670,
+        "finding": {
+          "text": "HSC ace",
+          "confidence": "high"
+        },
+        "note": "EsIsku timeout ~here",
+        "ball": {
+          "reception": {
+            "text": "ace, no playable reception",
+            "confidence": "high"
+          }
+        },
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "12-8",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 1691,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "12-9",
+        "officialWinner": "away",
+        "torneopalType": "serve",
+        "youtubeS": 1706,
+        "desc": {
+          "text": "EsIsku point (ace, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "ace"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "12-10",
+        "officialWinner": "away",
+        "torneopalType": "serve",
+        "youtubeS": 1718,
+        "desc": {
+          "text": "EsIsku point (ace, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "ace",
+            "timeout"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "13-10",
+        "officialWinner": "home",
+        "torneopalType": "return",
+        "youtubeS": 1785,
+        "note": "EsIsku timeout ~here",
+        "desc": {
+          "text": "HSC point (point on return, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "13-11",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 1806,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "13-12",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 1827,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "14-12",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 1847,
+        "finding": {
+          "text": "HSC kill",
+          "confidence": "high"
+        },
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "14-13",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 1868,
+        "finding": {
+          "text": "EsIsku kill",
+          "confidence": "high"
+        },
+        "note": "EsIsku sub #14 for #2 ~here",
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "15-13",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 1906,
+        "finding": {
+          "text": "HSC kill",
+          "confidence": "high"
+        },
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "16-13",
+        "officialWinner": "home",
+        "torneopalType": "error_technical",
+        "youtubeS": 1927,
+        "finding": {
+          "text": "EsIsku attack out, no touch",
+          "confidence": "high"
+        },
+        "note": "Torneopal: technical error",
+        "ball": {
+          "blockTouch": {
+            "text": "no touch",
+            "confidence": "high"
+          },
+          "landing": {
+            "text": "out",
+            "confidence": "high"
+          }
+        },
+        "desc": {
+          "text": "HSC point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "17-13",
+        "officialWinner": "home",
+        "torneopalType": "serve",
+        "youtubeS": 1969,
+        "desc": {
+          "text": "HSC point (ace, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "ace",
+            "substitution"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "18-13",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 2014,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill",
+            "timeout"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "19-13",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 2092,
+        "note": "HSC timeout",
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "19-14",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 2134,
+        "finding": {
+          "text": "EsIsku kill",
+          "confidence": "high"
+        },
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "20-14",
+        "officialWinner": "home",
+        "torneopalType": "error_serve",
+        "youtubeS": 2151,
+        "desc": {
+          "text": "HSC point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "20-15",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 2164,
+        "finding": {
+          "text": "HSC net touch",
+          "confidence": "high"
+        },
+        "note": "Torneopal: EsIsku 'attack'",
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "21-15",
+        "officialWinner": "home",
+        "torneopalType": "error_serve",
+        "youtubeS": 2194,
+        "finding": {
+          "text": "HSC #15 kill off block (block-touch signal)",
+          "confidence": "high"
+        },
+        "note": "Thumbs-up (stray ball) before this point",
+        "ball": {
+          "attacker": {
+            "text": "HSC #15",
+            "confidence": "high"
+          },
+          "blockTouch": {
+            "text": "yes (ref signal)",
+            "confidence": "high"
+          }
+        },
+        "desc": {
+          "text": "HSC point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "21-16",
+        "officialWinner": "away",
+        "torneopalType": "error_serve",
+        "youtubeS": 2228,
+        "desc": {
+          "text": "EsIsku point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error",
+            "substitution"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "21-17",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 2277,
+        "note": "HSC sub #11 for #9 (one read)",
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "22-17",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 2291,
+        "desc": {
+          "text": "HSC point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error",
+            "substitution"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "22-18",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 2346,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "22-19",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 2368,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "22-20",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 2395,
+        "finding": {
+          "text": "EsIsku middle quick attack kill, landed in, no block touch, referee \"ball in\" signal",
+          "confidence": "medium"
+        },
+        "note": "Torneopal logged as HSC technical error; user-flagged at YouTube t=2383s",
+        "ball": {
+          "attacker": {
+            "text": "EsIsku middle (quick attack)",
+            "confidence": "medium"
+          },
+          "blockTouch": {
+            "text": "no touch",
+            "confidence": "medium"
+          },
+          "landing": {
+            "text": "in (ref \"ball in\" signal)",
+            "confidence": "medium"
+          }
+        },
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "timeout"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "23-20",
+        "officialWinner": "home",
+        "torneopalType": "error_serve",
+        "youtubeS": 2398,
+        "desc": {
+          "text": "HSC point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "23-21",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 2435,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "24-21",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 2469,
+        "desc": {
+          "text": "HSC point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "24-22",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 2485,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "substitution"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "25-22",
+        "officialWinner": "home",
+        "torneopalType": null,
+        "youtubeS": 2506,
+        "desc": {
+          "text": "HSC point (type not logged, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      }
+    ],
+    "2": [
+      {
+        "score": "0-1",
+        "officialWinner": "away",
+        "torneopalType": "error_serve",
+        "youtubeS": 3013,
+        "desc": {
+          "text": "EsIsku point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "0-2",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 3020,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "0-3",
+        "officialWinner": "away",
+        "torneopalType": "serve",
+        "youtubeS": 3037,
+        "desc": {
+          "text": "EsIsku point (ace, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "ace"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "0-4",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 3065,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "1-4",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 3085,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "1-5",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 3115,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "2-5",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 3130,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "2-6",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 3169,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "3-6",
+        "officialWinner": "home",
+        "torneopalType": "error_serve",
+        "youtubeS": 3190,
+        "desc": {
+          "text": "HSC point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "4-6",
+        "officialWinner": "home",
+        "torneopalType": "serve",
+        "youtubeS": 3276,
+        "desc": {
+          "text": "HSC point (ace, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "ace"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "5-6",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 3283,
+        "desc": {
+          "text": "HSC point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "6-6",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 3302,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "7-6",
+        "officialWinner": "home",
+        "torneopalType": "serve",
+        "youtubeS": 3318,
+        "desc": {
+          "text": "HSC point (ace, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "ace"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "7-7",
+        "officialWinner": "away",
+        "torneopalType": "error_serve",
+        "youtubeS": 3322,
+        "desc": {
+          "text": "EsIsku point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "7-8",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 3341,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "8-8",
+        "officialWinner": "home",
+        "torneopalType": "error_technical",
+        "youtubeS": 3369,
+        "desc": {
+          "text": "HSC point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "8-9",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 3402,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "9-9",
+        "officialWinner": "home",
+        "torneopalType": "error_serve",
+        "youtubeS": 3418,
+        "desc": {
+          "text": "HSC point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "9-10",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 3445,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "9-11",
+        "officialWinner": "away",
+        "torneopalType": "block",
+        "youtubeS": 3472,
+        "desc": {
+          "text": "EsIsku point (block point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "block point"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "10-11",
+        "officialWinner": "home",
+        "torneopalType": "error_technical",
+        "youtubeS": 3494,
+        "desc": {
+          "text": "HSC point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "10-12",
+        "officialWinner": "away",
+        "torneopalType": "error_serve",
+        "youtubeS": 3512,
+        "desc": {
+          "text": "EsIsku point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "11-12",
+        "officialWinner": "home",
+        "torneopalType": "error_serve",
+        "youtubeS": 3532,
+        "desc": {
+          "text": "HSC point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "12-12",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 3542,
+        "desc": {
+          "text": "HSC point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "13-12",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 3582,
+        "desc": {
+          "text": "HSC point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error",
+            "substitution"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "14-12",
+        "officialWinner": "home",
+        "torneopalType": "error_technical",
+        "youtubeS": 3604,
+        "desc": {
+          "text": "HSC point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "15-12",
+        "officialWinner": "home",
+        "torneopalType": "block",
+        "youtubeS": 3638,
+        "desc": {
+          "text": "HSC point (block point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "block point"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "16-12",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 3661,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill",
+            "substitution"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "17-12",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 3702,
+        "desc": {
+          "text": "HSC point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error",
+            "timeout"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "17-13",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 3778,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "17-14",
+        "officialWinner": "away",
+        "torneopalType": "serve",
+        "youtubeS": 3792,
+        "desc": {
+          "text": "EsIsku point (ace, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "ace"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "18-14",
+        "officialWinner": "home",
+        "torneopalType": "error_serve",
+        "youtubeS": 3818,
+        "desc": {
+          "text": "HSC point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "19-14",
+        "officialWinner": "home",
+        "torneopalType": "serve",
+        "youtubeS": 3831,
+        "desc": {
+          "text": "HSC point (ace, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "ace",
+            "timeout"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "19-15",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 3927,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "19-16",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 3947,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "19-17",
+        "officialWinner": "away",
+        "torneopalType": "block",
+        "youtubeS": 3979,
+        "desc": {
+          "text": "EsIsku point (block point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "block point"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "19-18",
+        "officialWinner": "away",
+        "torneopalType": "block",
+        "youtubeS": 4009,
+        "desc": {
+          "text": "EsIsku point (block point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "block point",
+            "timeout"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "19-19",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 4058,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "20-19",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 4086,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "20-20",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 4109,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "20-21",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 4150,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "20-22",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 4179,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "21-22",
+        "officialWinner": "home",
+        "torneopalType": "error_serve",
+        "youtubeS": 4193,
+        "desc": {
+          "text": "HSC point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "21-23",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 4216,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "21-24",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 4258,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "timeout"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "21-25",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 4329,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      }
+    ],
+    "3": [
+      {
+        "score": "0-1",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 4620,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "0-2",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 4633,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "1-2",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 4652,
+        "desc": {
+          "text": "HSC point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "2-2",
+        "officialWinner": "home",
+        "torneopalType": "serve",
+        "youtubeS": 4660,
+        "desc": {
+          "text": "HSC point (ace, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "ace"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "3-2",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 4676,
+        "desc": {
+          "text": "HSC point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "3-3",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 4717,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "4-3",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 4723,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "4-4",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 4740,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "4-5",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 4770,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "5-5",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 4772,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "6-5",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 4797,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "6-6",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 4804,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "7-6",
+        "officialWinner": "home",
+        "torneopalType": "return",
+        "youtubeS": 4823,
+        "desc": {
+          "text": "HSC point (point on return, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "7-7",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 4837,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "8-7",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 4851,
+        "desc": {
+          "text": "HSC point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "9-7",
+        "officialWinner": "home",
+        "torneopalType": "error_technical",
+        "youtubeS": 4866,
+        "desc": {
+          "text": "HSC point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "9-8",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 4878,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "10-8",
+        "officialWinner": "home",
+        "torneopalType": "return",
+        "youtubeS": 4890,
+        "desc": {
+          "text": "HSC point (point on return, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "11-8",
+        "officialWinner": "home",
+        "torneopalType": "error_technical",
+        "youtubeS": 4898,
+        "desc": {
+          "text": "HSC point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "timeout"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "12-8",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 4992,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "12-9",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 5017,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "12-10",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 5058,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "12-11",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 5078,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "13-11",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 5098,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "14-11",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 5130,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "15-11",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 5160,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill",
+            "timeout"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "15-12",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 5238,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "16-12",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 5257,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill",
+            "substitution"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "16-13",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 5295,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "17-13",
+        "officialWinner": "home",
+        "torneopalType": "error_technical",
+        "youtubeS": 5321,
+        "desc": {
+          "text": "HSC point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "18-13",
+        "officialWinner": "home",
+        "torneopalType": "serve",
+        "youtubeS": 5345,
+        "desc": {
+          "text": "HSC point (ace, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "ace"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "18-14",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 5366,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "18-15",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 5426,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "19-15",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 5454,
+        "desc": {
+          "text": "HSC point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "20-15",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 5487,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "20-16",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 5512,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "21-16",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 5554,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill",
+            "substitution"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "21-17",
+        "officialWinner": "away",
+        "torneopalType": "error_serve",
+        "youtubeS": 5570,
+        "desc": {
+          "text": "EsIsku point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "22-17",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 5594,
+        "desc": {
+          "text": "HSC point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "22-18",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 5632,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "22-19",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 5654,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "22-20",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 5696,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill",
+            "timeout"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "22-21",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 5758,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "23-21",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 5779,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "24-21",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 5827,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill",
+            "substitution"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "24-22",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 5862,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error",
+            "substitution"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "24-23",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 5891,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "25-23",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 5916,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      }
+    ],
+    "4": [
+      {
+        "score": "0-1",
+        "officialWinner": "away",
+        "torneopalType": "block",
+        "youtubeS": 6204,
+        "desc": {
+          "text": "EsIsku point (block point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "block point"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "0-2",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 6224,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "1-2",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 6244,
+        "desc": {
+          "text": "HSC point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "1-3",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 6281,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "2-3",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 6301,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "2-4",
+        "officialWinner": "away",
+        "torneopalType": "error_serve",
+        "youtubeS": 6329,
+        "desc": {
+          "text": "EsIsku point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "3-4",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 6341,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "4-4",
+        "officialWinner": "home",
+        "torneopalType": "serve",
+        "youtubeS": 6365,
+        "desc": {
+          "text": "HSC point (ace, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "ace"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "4-5",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 6388,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "5-5",
+        "officialWinner": "home",
+        "torneopalType": "error_serve",
+        "youtubeS": 6396,
+        "desc": {
+          "text": "HSC point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "5-6",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 6460,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "6-6",
+        "officialWinner": "home",
+        "torneopalType": "error_serve",
+        "youtubeS": 6491,
+        "desc": {
+          "text": "HSC point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "7-6",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 6502,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "7-7",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 6526,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "7-8",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 6551,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "7-9",
+        "officialWinner": "away",
+        "torneopalType": "block",
+        "youtubeS": 6585,
+        "desc": {
+          "text": "EsIsku point (block point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "block point"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "7-10",
+        "officialWinner": "away",
+        "torneopalType": "block",
+        "youtubeS": 6607,
+        "desc": {
+          "text": "EsIsku point (block point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "block point"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "8-10",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 6635,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "9-10",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 6672,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "9-11",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 6694,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "10-11",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 6737,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "10-12",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 6761,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill",
+            "substitution"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "11-12",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 6793,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "11-13",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 6817,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "11-14",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 6840,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "11-15",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 6884,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "11-16",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 6906,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error",
+            "timeout"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "11-17",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 6975,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "12-17",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 6999,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "12-18",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 7052,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "12-19",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 7089,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "12-20",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 7106,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "12-21",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 7134,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "13-21",
+        "officialWinner": "home",
+        "torneopalType": "error_serve",
+        "youtubeS": 7160,
+        "desc": {
+          "text": "HSC point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "14-21",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 7182,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "14-22",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 7198,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "15-22",
+        "officialWinner": "home",
+        "torneopalType": "block",
+        "youtubeS": 7214,
+        "desc": {
+          "text": "HSC point (block point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "block point"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "15-23",
+        "officialWinner": "away",
+        "torneopalType": null,
+        "youtubeS": 7232,
+        "desc": {
+          "text": "EsIsku point (type not logged, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "15-24",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 7244,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "16-24",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 7290,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "17-24",
+        "officialWinner": "home",
+        "torneopalType": "block",
+        "youtubeS": 7314,
+        "desc": {
+          "text": "HSC point (block point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "block point"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "17-25",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 7340,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      }
+    ],
+    "5": [
+      {
+        "score": "0-1",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 7612,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "1-1",
+        "officialWinner": "home",
+        "torneopalType": "error_technical",
+        "youtubeS": 7649,
+        "desc": {
+          "text": "HSC point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "1-2",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 7674,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "2-2",
+        "officialWinner": "home",
+        "torneopalType": "error_serve",
+        "youtubeS": 7690,
+        "desc": {
+          "text": "HSC point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "3-2",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 7712,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "4-2",
+        "officialWinner": "home",
+        "torneopalType": "error_attack",
+        "youtubeS": 7732,
+        "desc": {
+          "text": "HSC point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "5-2",
+        "officialWinner": "home",
+        "torneopalType": "serve",
+        "youtubeS": 7745,
+        "desc": {
+          "text": "HSC point (ace, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "ace",
+            "timeout"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "5-3",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 7818,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "6-3",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 7847,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "7-3",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 7873,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "8-3",
+        "officialWinner": "home",
+        "torneopalType": "serve",
+        "youtubeS": 7901,
+        "desc": {
+          "text": "HSC point (ace, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "ace"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "9-3",
+        "officialWinner": "home",
+        "torneopalType": "error_technical",
+        "youtubeS": 7987,
+        "desc": {
+          "text": "HSC point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "9-4",
+        "officialWinner": "away",
+        "torneopalType": "error_serve",
+        "youtubeS": 8003,
+        "desc": {
+          "text": "EsIsku point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "9-5",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 8018,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "9-6",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 8054,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "10-6",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 8082,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "10-7",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": 8092,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "11-7",
+        "officialWinner": "home",
+        "torneopalType": "error_serve",
+        "youtubeS": 8116,
+        "desc": {
+          "text": "HSC point (opponent serve error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "serve error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "12-7",
+        "officialWinner": "home",
+        "torneopalType": "serve",
+        "youtubeS": 8135,
+        "desc": {
+          "text": "HSC point (ace, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "ace",
+            "timeout"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "13-7",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 8216,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "13-8",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": 8232,
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "13-9",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": 8283,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "14-9",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": 8302,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal); video not reviewed in detail - can't tell how the rally ended.",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "14-10",
+        "officialWinner": "away",
+        "torneopalType": "error_attack",
+        "youtubeS": null,
+        "note": "After video end (14-9)",
+        "desc": {
+          "text": "EsIsku point (opponent attack error, per Torneopal). No video for this rally (stream ends 5th set 14-9).",
+          "tags": [
+            "attack error"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "14-11",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": null,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal). No video for this rally (stream ends 5th set 14-9).",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "14-12",
+        "officialWinner": "away",
+        "torneopalType": "error_technical",
+        "youtubeS": null,
+        "desc": {
+          "text": "EsIsku point (opponent technical fault, per Torneopal). No video for this rally (stream ends 5th set 14-9).",
+          "tags": [],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "14-13",
+        "officialWinner": "away",
+        "torneopalType": "attack",
+        "youtubeS": null,
+        "desc": {
+          "text": "EsIsku point (attack point, per Torneopal). No video for this rally (stream ends 5th set 14-9).",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      },
+      {
+        "score": "15-13",
+        "officialWinner": "home",
+        "torneopalType": "attack",
+        "youtubeS": null,
+        "desc": {
+          "text": "HSC point (attack point, per Torneopal). No video for this rally (stream ends 5th set 14-9).",
+          "tags": [
+            "kill"
+          ],
+          "confidence": "low"
+        }
+      }
+    ]
+  },
+  "events": [
+    {
+      "set": 1,
+      "score": "1-0",
+      "kind": "fault",
+      "text": "Rotation fault EsIsku (ref signal)",
+      "youtubeS": 1151
+    },
+    {
+      "set": 1,
+      "score": "6-6",
+      "kind": "replay",
+      "text": "Thumbs-up: replay/new ball (stray ball from next court), approx.",
+      "youtubeS": 1448
+    },
+    {
+      "set": 1,
+      "score": "12-7",
+      "kind": "timeout",
+      "text": "Timeout EsIsku (approx.)",
+      "youtubeS": 1663
+    },
+    {
+      "set": 1,
+      "score": "13-10",
+      "kind": "timeout",
+      "text": "Timeout EsIsku (approx.)",
+      "youtubeS": 1788
+    },
+    {
+      "set": 1,
+      "score": "14-13",
+      "kind": "sub",
+      "text": "Sub EsIsku #14 for #2 (approx.)",
+      "youtubeS": 1874
+    },
+    {
+      "set": 1,
+      "score": "19-13",
+      "kind": "timeout",
+      "text": "Timeout HSC",
+      "youtubeS": 2104
+    },
+    {
+      "set": 1,
+      "score": "21-15",
+      "kind": "replay",
+      "text": "Thumbs-up: replay (stray ball) before this rally; block-touch signal on HSC #15 kill",
+      "youtubeS": 2207
+    },
+    {
+      "set": 1,
+      "score": "21-17",
+      "kind": "sub",
+      "text": "Sub HSC #11 for #9 (one read only, approx.)",
+      "youtubeS": 2282
+    }
   ],
-  "3": [
-   {
-    "score": "0-1",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 4605
-   },
-   {
-    "score": "0-2",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 4634
-   },
-   {
-    "score": "1-2",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 4667
-   },
-   {
-    "score": "2-2",
-    "officialWinner": "home",
-    "torneopalType": "serve",
-    "youtubeS": 4674
-   },
-   {
-    "score": "3-2",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 4692
-   },
-   {
-    "score": "3-3",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 4723
-   },
-   {
-    "score": "4-3",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 4730
-   },
-   {
-    "score": "4-4",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 4771
-   },
-   {
-    "score": "4-5",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 4799
-   },
-   {
-    "score": "5-5",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 4802
-   },
-   {
-    "score": "6-5",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 4824
-   },
-   {
-    "score": "6-6",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 4848
-   },
-   {
-    "score": "7-6",
-    "officialWinner": "home",
-    "torneopalType": "return",
-    "youtubeS": 4872
-   },
-   {
-    "score": "7-7",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 4875
-   },
-   {
-    "score": "8-7",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 4888
-   },
-   {
-    "score": "9-7",
-    "officialWinner": "home",
-    "torneopalType": "error_technical",
-    "youtubeS": 4920
-   },
-   {
-    "score": "9-8",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 4937
-   },
-   {
-    "score": "10-8",
-    "officialWinner": "home",
-    "torneopalType": "return",
-    "youtubeS": 4954
-   },
-   {
-    "score": "11-8",
-    "officialWinner": "home",
-    "torneopalType": "error_technical",
-    "youtubeS": 4973
-   },
-   {
-    "score": "12-8",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 5053
-   },
-   {
-    "score": "12-9",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 5067
-   },
-   {
-    "score": "12-10",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 5091
-   },
-   {
-    "score": "12-11",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 5110
-   },
-   {
-    "score": "13-11",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 5128
-   },
-   {
-    "score": "14-11",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 5158
-   },
-   {
-    "score": "15-11",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 5175
-   },
-   {
-    "score": "15-12",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 5254
-   },
-   {
-    "score": "16-12",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 5274
-   },
-   {
-    "score": "16-13",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 5310
-   },
-   {
-    "score": "17-13",
-    "officialWinner": "home",
-    "torneopalType": "error_technical",
-    "youtubeS": 5343
-   },
-   {
-    "score": "18-13",
-    "officialWinner": "home",
-    "torneopalType": "serve",
-    "youtubeS": 5358
-   },
-   {
-    "score": "18-14",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 5385
-   },
-   {
-    "score": "18-15",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 5439
-   },
-   {
-    "score": "19-15",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 5462
-   },
-   {
-    "score": "20-15",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 5500
-   },
-   {
-    "score": "20-16",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 5524
-   },
-   {
-    "score": "21-16",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 5556
-   },
-   {
-    "score": "21-17",
-    "officialWinner": "away",
-    "torneopalType": "error_serve",
-    "youtubeS": 5578
-   },
-   {
-    "score": "22-17",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 5613
-   },
-   {
-    "score": "22-18",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 5635
-   },
-   {
-    "score": "22-19",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 5651
-   },
-   {
-    "score": "22-20",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 5693
-   },
-   {
-    "score": "22-21",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 5756
-   },
-   {
-    "score": "23-21",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 5776
-   },
-   {
-    "score": "24-21",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 5819
-   },
-   {
-    "score": "24-22",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 5851
-   },
-   {
-    "score": "24-23",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 5879
-   },
-   {
-    "score": "25-23",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 5908
-   }
-  ],
-  "4": [
-   {
-    "score": "0-1",
-    "officialWinner": "away",
-    "torneopalType": "block",
-    "youtubeS": 6205
-   },
-   {
-    "score": "0-2",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 6226
-   },
-   {
-    "score": "1-2",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 6241
-   },
-   {
-    "score": "1-3",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 6279
-   },
-   {
-    "score": "2-3",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 6299
-   },
-   {
-    "score": "2-4",
-    "officialWinner": "away",
-    "torneopalType": "error_serve",
-    "youtubeS": 6328
-   },
-   {
-    "score": "3-4",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 6348
-   },
-   {
-    "score": "4-4",
-    "officialWinner": "home",
-    "torneopalType": "serve",
-    "youtubeS": 6369
-   },
-   {
-    "score": "4-5",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 6385
-   },
-   {
-    "score": "5-5",
-    "officialWinner": "home",
-    "torneopalType": "error_serve",
-    "youtubeS": 6406
-   },
-   {
-    "score": "5-6",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 6458
-   },
-   {
-    "score": "6-6",
-    "officialWinner": "home",
-    "torneopalType": "error_serve",
-    "youtubeS": 6489
-   },
-   {
-    "score": "7-6",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 6515
-   },
-   {
-    "score": "7-7",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 6533
-   },
-   {
-    "score": "7-8",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 6558
-   },
-   {
-    "score": "7-9",
-    "officialWinner": "away",
-    "torneopalType": "block",
-    "youtubeS": 6590
-   },
-   {
-    "score": "7-10",
-    "officialWinner": "away",
-    "torneopalType": "block",
-    "youtubeS": 6604
-   },
-   {
-    "score": "8-10",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 6635
-   },
-   {
-    "score": "9-10",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 6671
-   },
-   {
-    "score": "9-11",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 6696
-   },
-   {
-    "score": "10-11",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 6735
-   },
-   {
-    "score": "10-12",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 6758
-   },
-   {
-    "score": "11-12",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 6791
-   },
-   {
-    "score": "11-13",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 6814
-   },
-   {
-    "score": "11-14",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 6838
-   },
-   {
-    "score": "11-15",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 6875
-   },
-   {
-    "score": "11-16",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 6899
-   },
-   {
-    "score": "11-17",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 6972
-   },
-   {
-    "score": "12-17",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 6997
-   },
-   {
-    "score": "12-18",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 7049
-   },
-   {
-    "score": "12-19",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 7086
-   },
-   {
-    "score": "12-20",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 7104
-   },
-   {
-    "score": "12-21",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 7131
-   },
-   {
-    "score": "13-21",
-    "officialWinner": "home",
-    "torneopalType": "error_serve",
-    "youtubeS": 7157
-   },
-   {
-    "score": "14-21",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 7180
-   },
-   {
-    "score": "14-22",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 7196
-   },
-   {
-    "score": "15-22",
-    "officialWinner": "home",
-    "torneopalType": "block",
-    "youtubeS": 7217
-   },
-   {
-    "score": "15-23",
-    "officialWinner": "away",
-    "torneopalType": null,
-    "youtubeS": 7235
-   },
-   {
-    "score": "15-24",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 7263
-   },
-   {
-    "score": "16-24",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 7288
-   },
-   {
-    "score": "17-24",
-    "officialWinner": "home",
-    "torneopalType": "block",
-    "youtubeS": 7312
-   },
-   {
-    "score": "17-25",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 7331
-   }
-  ],
-  "5": [
-   {
-    "score": "0-1",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 7618
-   },
-   {
-    "score": "1-1",
-    "officialWinner": "home",
-    "torneopalType": "error_technical",
-    "youtubeS": 7647
-   },
-   {
-    "score": "1-2",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 7666
-   },
-   {
-    "score": "2-2",
-    "officialWinner": "home",
-    "torneopalType": "error_serve",
-    "youtubeS": 7688
-   },
-   {
-    "score": "3-2",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 7709
-   },
-   {
-    "score": "4-2",
-    "officialWinner": "home",
-    "torneopalType": "error_attack",
-    "youtubeS": 7730
-   },
-   {
-    "score": "5-2",
-    "officialWinner": "home",
-    "torneopalType": "serve",
-    "youtubeS": 7743
-   },
-   {
-    "score": "5-3",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 7816
-   },
-   {
-    "score": "6-3",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 7845
-   },
-   {
-    "score": "7-3",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 7871
-   },
-   {
-    "score": "8-3",
-    "officialWinner": "home",
-    "torneopalType": "serve",
-    "youtubeS": 7885
-   },
-   {
-    "score": "9-3",
-    "officialWinner": "home",
-    "torneopalType": "error_technical",
-    "youtubeS": 7965
-   },
-   {
-    "score": "9-4",
-    "officialWinner": "away",
-    "torneopalType": "error_serve",
-    "youtubeS": 7973
-   },
-   {
-    "score": "9-5",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 8015
-   },
-   {
-    "score": "9-6",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 8031
-   },
-   {
-    "score": "10-6",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 8063
-   },
-   {
-    "score": "10-7",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": 8073
-   },
-   {
-    "score": "11-7",
-    "officialWinner": "home",
-    "torneopalType": "error_serve",
-    "youtubeS": 8108
-   },
-   {
-    "score": "12-7",
-    "officialWinner": "home",
-    "torneopalType": "serve",
-    "youtubeS": 8130
-   },
-   {
-    "score": "13-7",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 8208
-   },
-   {
-    "score": "13-8",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": 8244
-   },
-   {
-    "score": "13-9",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": 8279
-   },
-   {
-    "score": "14-9",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": 8292
-   },
-   {
-    "score": "14-10",
-    "officialWinner": "away",
-    "torneopalType": "error_attack",
-    "youtubeS": null,
-    "note": "After video end (14-9)"
-   },
-   {
-    "score": "14-11",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": null
-   },
-   {
-    "score": "14-12",
-    "officialWinner": "away",
-    "torneopalType": "error_technical",
-    "youtubeS": null
-   },
-   {
-    "score": "14-13",
-    "officialWinner": "away",
-    "torneopalType": "attack",
-    "youtubeS": null
-   },
-   {
-    "score": "15-13",
-    "officialWinner": "home",
-    "torneopalType": "attack",
-    "youtubeS": null
-   }
+  "notes": [
+    "Torneopal on virallinen lähde pisteille ja voittajille.",
+    "Pistetyypit ovat vapaaehtoisten kirjaamia, joten erot videoon ovat huomioita, eivät virheitä.",
+    "Kamera kaatui pariin otteeseen; hetkiä ei ole paikannettu.",
+    "Yksi matala kamera: ylitykset, torjuntakosketukset ja kaukainen puoli usein epäselviä.",
+    "YouTube-ajat: 3 s ennen syöttöä (serve_s-3). Aikasiirtymää ei ole varmistettu.",
+    "Kuvaukset (desc) ovat videohavaintoja; useimmat on merkitty epävarmoiksi, koska videota ei käyty läpi tarkasti. Voittaja on aina Torneopalin mukainen."
   ]
- },
- "events": [
-  {
-   "set": 1,
-   "score": "1-0",
-   "kind": "fault",
-   "text": "Rotation fault EsIsku (ref signal)",
-   "youtubeS": 1151
-  },
-  {
-   "set": 1,
-   "score": "6-6",
-   "kind": "replay",
-   "text": "Thumbs-up: replay/new ball (stray ball from next court), approx.",
-   "youtubeS": 1448
-  },
-  {
-   "set": 1,
-   "score": "12-7",
-   "kind": "timeout",
-   "text": "Timeout EsIsku (approx.)",
-   "youtubeS": 1663
-  },
-  {
-   "set": 1,
-   "score": "13-10",
-   "kind": "timeout",
-   "text": "Timeout EsIsku (approx.)",
-   "youtubeS": 1788
-  },
-  {
-   "set": 1,
-   "score": "14-13",
-   "kind": "sub",
-   "text": "Sub EsIsku #14 for #2 (approx.)",
-   "youtubeS": 1874
-  },
-  {
-   "set": 1,
-   "score": "19-13",
-   "kind": "timeout",
-   "text": "Timeout HSC",
-   "youtubeS": 2104
-  },
-  {
-   "set": 1,
-   "score": "21-15",
-   "kind": "replay",
-   "text": "Thumbs-up: replay (stray ball) before this rally; block-touch signal on HSC #15 kill",
-   "youtubeS": 2207
-  },
-  {
-   "set": 1,
-   "score": "21-17",
-   "kind": "sub",
-   "text": "Sub HSC #11 for #9 (one read only, approx.)",
-   "youtubeS": 2282
-  }
- ],
- "notes": [
-  "Torneopal on virallinen lähde pisteille ja voittajille.",
-  "Pistetyypit ovat vapaaehtoisten kirjaamia, joten erot videoon ovat huomioita, eivät virheitä.",
-  "YouTube-ajat: noin 5 s ennen syöttövihellystä (tai 15 s ennen pallorallin loppua). YouTube-version aikasiirtymää ei ole varmistettu.",
-  "Kamera kaatui pariin otteeseen; hetkiä ei ole paikannettu.",
-  "Yksi matala kamera: ylitykset, torjuntakosketukset ja kaukainen puoli usein epäselviä."
- ]
 }
