@@ -1,3 +1,4 @@
+import { setParticipation } from './setParticipation'
 /**
  * How a game goes, from getMatch events: per-set point timeline (running score, time, serving side),
  * runs, the latest rotation on court and per-rotation points (strong / challenging rotations).
@@ -299,9 +300,11 @@ export function playerMatchStats(raw: Row): PlayerMatchLine[] {
 const n0 = (v: unknown) => Number(v) || 0
 
 export function playerStatsMd(raw: Row, home: string, away: string): string[] {
+  const part = new Map(setParticipation(raw).map((p) => [`${p.teamId === s(raw.team_A_id) ? 'A' : 'B'}${p.shirt}`, p]))
+  const setsTxt = (sd: string, shirt: string) => { const p = part.get(sd + shirt); return p ? `, erät kentällä ${p.onCourt.length}${p.unknown.length ? '+?' : ''}, vaihdossa ${p.bench.length}` : '' }
   const rows = playerMatchStats(raw)
   if (!rows.length) return []
-  return ['## Pelaajatilastot (P, BP, +/-, Ä, HY, TO, syötöt, syöttövirheet)', ...(['A', 'B'] as Side[]).flatMap((sd) => [`### ${sd === 'A' ? home : away}`, ...rows.filter((r) => r.side === sd).map((r) => `- #${r.shirt} ${r.name}: P ${r.p}, BP ${r.bp}, +/- ${r.pm ?? r.p}, Ä ${r.aces}, HY ${r.attack}, TO ${r.block}, syötöt ${r.serves}, syöttövirheet ${r.serveErrors}`), '']), '']
+  return ['## Pelaajatilastot (P, BP, +/-, Ä, HY, TO, syötöt, syöttövirheet)', ...(['A', 'B'] as Side[]).flatMap((sd) => [`### ${sd === 'A' ? home : away}`, ...rows.filter((r) => r.side === sd).map((r) => `- #${r.shirt} ${r.name}: P ${r.p}, BP ${r.bp}, +/- ${r.pm ?? r.p}, Ä ${r.aces}, HY ${r.attack}, TO ${r.block}, syötöt ${r.serves}, syöttövirheet ${r.serveErrors}${setsTxt(sd, r.shirt)}`), '']), '']
 }
 
 export interface PlayerRotationCell { rotation: number; won: number; lost: number; net: number; rallies: number }

@@ -18,6 +18,11 @@ function rotationMd(team: string, r: LikelyRotation | null | undefined, players:
   return [head, r.source === 'actual' ? '_toteutunut 1. erän aloitus tämän ottelun pelipaikoista_' : `_sama 1. erän aloitus ${r.basedOn}/${r.games} ottelussa; ${r.source === 'lineup' ? 'vain tämän ottelun kokoonpanon pelaajat' : 'kokoonpanoa ei julkaistu, kaikki pelaajat'}_`, ...r.shirts.map((x, i) => `- ${roman[i]}: ${name(x)}`), `- Libero: ${r.libero ? name(r.libero) : 'ei tietoa'}`, '']
 }
 
+function setsMd(p: RosterPlayer): string {
+  if (p.sets == null) return ''
+  return ` · erät kentällä ${p.sets}${p.setsUnknown ? '+?' : ''}, vaihdossa ${p.setsBench ?? 0}`
+}
+
 function prevMd(p: RosterPlayer): string {
   if (p.prev === undefined) return ''
   if (p.prev === null) return ' · edellinen kausi: ei tietoa'
@@ -119,7 +124,7 @@ export function buildVolleyballPreviewMd(opts: {
     ...(opts.teamStats?.length ? ['## Joukkueiden kausi', ...opts.teamStats.map((x) => `- ${x.name}: ${x.standing}. sija · ${x.played} ott ${x.won}V ${x.lost}H · ${x.points}p · erät ${x.setsFor}–${x.setsAgainst} · pallot ${x.ballsFor}–${x.ballsAgainst}`), ''] : []),
     ...(opts.rosters || []).flatMap((r) => [
       `## Pelaajat: ${r.team}${r.lineupPublished ? ' (ottelun kokoonpano julkaistu; (ei kokoonpanossa) merkitty)' : ' (kokoonpanoa ei julkaistu, koko joukkue)'}`,
-      ...(r.players.length ? r.players.map((p) => `- ${p.number ? `#${p.number} ` : ''}${p.name} · ${p.points == null ? 'ei kauden tilastoa' : `${p.points}p / ${p.matches} ott`}${prevMd(p)}${gamesMd(p)}${p.inLineup ? '' : ' (ei kokoonpanossa)'}`) : ['_ei tietoa_']),
+      ...(r.players.length ? r.players.map((p) => `- ${p.number ? `#${p.number} ` : ''}${p.name} · ${p.points == null ? 'ei kauden tilastoa' : `${p.points}p / ${p.matches} ott`}${setsMd(p)}${prevMd(p)}${gamesMd(p)}${p.inLineup ? '' : ' (ei kokoonpanossa)'}`) : ['_ei tietoa_']),
       '',
     ]),
     ...(opts.insights ? insightsMd(opts.insights.pre, opts.insights.live, opts.insights.liveBase ?? undefined) : []),

@@ -1,3 +1,4 @@
+import { setParticipation } from '../domain/setParticipation'
 import { rotationLabel, basedOn, isPreliminary, playerRotations, playerRotationText, courtNow, hotPlayers, playerMatchStats, matchups, matchupText, rotationAnalysis, serveStats, setFlows, type RotationAnalysis, type RotationScore } from '../domain/gameFlow'
 
 type Row = Record<string, unknown>
@@ -152,21 +153,28 @@ export function Matchups({ teams, raw }: { teams: { id: string; name: string; ga
 }
 
 export function PlayerMatchStats({ raw, home, away, history }: { raw: Row; home: string; away: string; history?: Row[][] }) {
-  const rows = playerMatchStats(raw)
+  const part = setParticipation(raw)
+  const ids0 = [s(raw.team_A_id), s(raw.team_B_id)]
+  const base = playerMatchStats(raw)
+  // Every roster player gets a row, so bench-only players show their sets too.
+  const rows = [...base, ...part.filter((p) => p.shirt && !base.some((r) => r.shirt === p.shirt && ids0[r.side === 'A' ? 0 : 1] === p.teamId))
+    .map((p) => ({ side: (p.teamId === ids0[0] ? 'A' : 'B') as 'A' | 'B', shirt: p.shirt, name: p.name, p: 0, bp: 0, pm: null, aces: 0, attack: 0, block: 0, serves: 0, serveErrors: 0 }))]
   const ids = [s(raw.team_A_id), s(raw.team_B_id)]
+  const sets = new Map(part.map((p) => [`${p.teamId}|${p.shirt}`, p]))
+  const setCell = (sd: 'A' | 'B', shirt: string, k: 'onCourt' | 'bench') => { const p = sets.get(`${ids[sd === 'A' ? 0 : 1]}|${shirt}`); return !p ? '–' : p.unknown.length && !p.onCourt.length && !p.bench.length ? '?' : `${p[k].length}${p.unknown.length ? '+?' : ''}` }
   const now = ids.map((id) => playerRotations([raw], id))
   const past = ids.map((id, i) => playerRotations((history?.[i] || []).filter((g) => s(g.match_id) !== s(raw.match_id)), id))
   return (
     <section className="space-y-2" data-testid="player-match-stats">
       <h2 className="text-sm font-bold text-white">Pelaajatilastot</h2>
-      <p className="text-[11px] text-zinc-500">P pisteet, BP pisteet oman joukkueen syötöllä (päätelty, voi poiketa virallisesta 1–2), +/- (TASO), Ä ässät, HY hyökkäyspisteet, TO torjunnat, Sy syötöt, SV syöttövirheet. Lasketaan tapahtumista, päivittyy livenä. Kierrot: pisteet voitettu–menetetty pelaajan ollessa kentällä joukkueen kierrossa K1–K6 (r. = palloja; alle 10 = alustava).</p>
+      <p className="text-[11px] text-zinc-500">P pisteet, BP pisteet oman joukkueen syötöllä (päätelty, voi poiketa virallisesta 1–2), +/- (TASO), Ä ässät, HY hyökkäyspisteet, TO torjunnat, Sy syötöt, SV syöttövirheet, E erät kentällä (aloituskokoonpanossa tai vaihdettu sisään erässä), Vai erät vaihdossa (kokoonpanossa, ei kentällä; libero näkyy kentällä vain, jos TASO on kirjannut sen). Lasketaan tapahtumista, päivittyy livenä. Kierrot: pisteet voitettu–menetetty pelaajan ollessa kentällä joukkueen kierrossa K1–K6 (r. = palloja; alle 10 = alustava).</p>
       {rows.length ? (['A', 'B'] as const).map((sd) => (
         <div key={sd} className="overflow-x-auto">
           <h3 className="text-xs font-bold text-white">{sd === 'A' ? home : away}</h3>
           <table className="w-full text-xs">
-            <thead className="text-zinc-500"><tr><th className="text-left">#</th><th className="text-left">Pelaaja</th><th>P</th><th>BP</th><th>+/-</th><th>Ä</th><th>HY</th><th>TO</th><th>Sy</th><th>SV</th></tr></thead>
-            <tbody>{rows.filter((r) => r.side === sd).map((r) => { const i = sd === 'A' ? 0 : 1; const pr = past[i].find((x) => x.shirt === r.shirt); return [<tr key={r.shirt} className="border-t border-zinc-800"><td className="font-mono text-zinc-400">{r.shirt}</td><td className="truncate max-w-[110px]">{r.name || '–'}</td><td className="text-center font-bold">{r.p}</td><td className="text-center">{r.bp}</td><td className="text-center">{r.pm ?? r.p}</td><td className="text-center">{r.aces}</td><td className="text-center">{r.attack}</td><td className="text-center">{r.block}</td><td className="text-center">{r.serves}</td><td className="text-center">{r.serveErrors}</td></tr>,
-              <tr key={r.shirt + 'k'} data-testid="player-rotation"><td /><td colSpan={9} className="pb-1 text-[11px] text-zinc-400 whitespace-normal">{playerRotationText(now[i].find((x) => x.shirt === r.shirt))}{pr && <span className="block text-zinc-500">Viime {pr.games} ott.: {playerRotationText(pr).replace('Kiertotieto puuttuu', '–')}</span>}</td></tr>] })}</tbody>
+            <thead className="text-zinc-500"><tr><th className="text-left">#</th><th className="text-left">Pelaaja</th><th>P</th><th>BP</th><th>+/-</th><th>Ä</th><th>HY</th><th>TO</th><th>Sy</th><th>SV</th><th title="Erät kentällä">E</th><th title="Erät vaihdossa">Vai</th></tr></thead>
+            <tbody>{rows.filter((r) => r.side === sd).map((r) => { const i = sd === 'A' ? 0 : 1; const pr = past[i].find((x) => x.shirt === r.shirt); return [<tr key={r.shirt} className="border-t border-zinc-800"><td className="font-mono text-zinc-400">{r.shirt}</td><td className="truncate max-w-[110px]">{r.name || '–'}</td><td className="text-center font-bold">{r.p}</td><td className="text-center">{r.bp}</td><td className="text-center">{r.pm ?? r.p}</td><td className="text-center">{r.aces}</td><td className="text-center">{r.attack}</td><td className="text-center">{r.block}</td><td className="text-center">{r.serves}</td><td className="text-center">{r.serveErrors}</td><td className="text-center" data-testid="sets-on-court">{setCell(sd, r.shirt, 'onCourt')}</td><td className="text-center text-zinc-500" data-testid="sets-bench">{setCell(sd, r.shirt, 'bench')}</td></tr>,
+              <tr key={r.shirt + 'k'} data-testid="player-rotation"><td /><td colSpan={11} className="pb-1 text-[11px] text-zinc-400 whitespace-normal">{playerRotationText(now[i].find((x) => x.shirt === r.shirt))}{pr && <span className="block text-zinc-500">Viime {pr.games} ott.: {playerRotationText(pr).replace('Kiertotieto puuttuu', '–')}</span>}</td></tr>] })}</tbody>
           </table>
         </div>
       )) : <p className={NONE}>Ei pelaajakohtaisia pisteitä.</p>}
