@@ -149,6 +149,15 @@ export function courtNow(raw: Row): CourtNow[] {
   return (['A', 'B'] as Side[]).flatMap((k) => (out[k] ? [out[k]!] : []))
 }
 
+export const MIN_COACH_RALLIES = 6
+/** Vahva/Heikko only with |net| >= this (and >= MIN_COACH_RALLIES rallies). */
+export const MIN_LABEL_NET = 3
+export function rotationLabel(won: number, lost: number): 'Vahva' | 'Heikko' | 'tasainen' | 'liian vähän' {
+  const net = won - lost
+  if (won + lost < MIN_COACH_RALLIES) return 'liian vähän'
+  return net >= MIN_LABEL_NET ? 'Vahva' : net <= -MIN_LABEL_NET ? 'Heikko' : 'tasainen'
+}
+
 export interface RotationScore { rotation: number; won: number; lost: number; net: number }
 export interface RotationAnalysis { lines: RotationScore[]; strong: RotationScore[]; weak: RotationScore[]; games: number }
 
@@ -172,7 +181,7 @@ export function rotationAnalysis(raws: Row[], teamId: string, top = 2): Rotation
   const lines = [...t.values()].sort((a, b) => a.rotation - b.rotation)
   const ranked = [...lines].sort((a, b) => b.net - a.net || b.won - a.won)
   // 'Vahvat' only with a positive net, 'Haastavat' only with a negative net — never label a minus rotation strong.
-  return { lines, strong: ranked.filter((r) => r.net > 0).slice(0, top), weak: ranked.filter((r) => r.net < 0).slice(-top).reverse(), games }
+  return { lines, strong: ranked.filter((r) => rotationLabel(r.won, r.lost) === 'Vahva').slice(0, top), weak: ranked.filter((r) => rotationLabel(r.won, r.lost) === 'Heikko').slice(-top).reverse(), games }
 }
 
 /** Baselines from fewer games than this are 'alustava' (preliminary). */
@@ -184,7 +193,7 @@ export const basedOn = (games: number) => `perustuu ${games} otteluun`
 export function analysisMd(title: string, a: RotationAnalysis | null): string[] {
   if (!a) return [`### ${title}`, '_ei tietoa: ei pisteitä ja syöttövuoroja kierroittain_', '']
   const f = (r: RotationScore) => `kierto ${r.rotation}: ${r.won}–${r.lost} (${r.net >= 0 ? '+' : ''}${r.net})`
-  return [`### ${title} (${basedOn(a.games)}${isPreliminary(a.games) ? ', alustava' : ''})`, `- Vahvat kierrot: ${a.strong.length ? a.strong.map(f).join('; ') : 'ei yhtään plussalla'}`, `- Haastavat kierrot: ${a.weak.length ? a.weak.map(f).join('; ') : 'ei yhtään miinuksella'}`, `- Kaikki: ${a.lines.map(f).join('; ')}`, '']
+  return [`### ${title} (${basedOn(a.games)}${isPreliminary(a.games) ? ', alustava' : ''})`, `- Vahvat kierrot: ${a.strong.length ? a.strong.map(f).join('; ') : 'ei yhtään (vaatii ≥+3, ≥6 palloa)'}`, `- Haastavat kierrot: ${a.weak.length ? a.weak.map(f).join('; ') : 'ei yhtään (vaatii ≤−3, ≥6 palloa)'}`, `- Kaikki: ${a.lines.map(f).join('; ')}`, '']
 }
 
 export function flowMd(raw: Row, home: string, away: string): string[] {

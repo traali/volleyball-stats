@@ -2,14 +2,14 @@
  * Valmentajan näkymä + aika pisteiden välillä — counted only, from getMatch piste/pelipaikat/aikalisa events.
  * wall_time is the scorer's entry clock (HH:MM:SS, 1 s). It is NOT rally duration: a gap = rally + downtime + entry lag.
  */
-import { setFlows, type RotationAnalysis } from './gameFlow'
+import { rotationLabel, setFlows, type RotationAnalysis } from './gameFlow'
 
 type Row = Record<string, unknown>
 type Side = 'A' | 'B'
 const s = (v: unknown) => (v == null ? '' : String(v).trim())
 const evs = (raw: Row): Row[] => (Array.isArray(raw.events) ? (raw.events as Row[]).filter((e) => e && typeof e === 'object') : [])
 
-export const MIN_COACH_RALLIES = 6
+export { MIN_COACH_RALLIES, MIN_LABEL_NET, rotationLabel } from './gameFlow'
 
 export interface CoachRotation {
   rotation: number; rallies: number; won: number; lost: number; net: number
@@ -46,7 +46,7 @@ export function coachView(raw: Row): { teams: CoachTeam[]; period: number | null
       return {
         rotation, rallies, won: c.w, lost: c.l, net,
         sideOut: c.rn ? c.rw / c.rn : null, sideOutN: c.rn, breakPct: c.sn ? c.sw / c.sn : null, breakN: c.sn,
-        label: rallies < MIN_COACH_RALLIES ? 'liian vähän' : net > 0 ? 'Vahva' : net < 0 ? 'Heikko' : 'tasainen',
+        label: rotationLabel(c.w, c.l),
       }
     })
     return { side, current, serving: Boolean(lp && lp.winner === side), next: current ? [(current % 6) + 1, ((current + 1) % 6) + 1] : [], lines }

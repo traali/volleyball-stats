@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import m816600 from './fixtures/match-816600.json'
-import { analysisMd, basedOn, playerRotations, playerRotationText, courtNow, flowMd, matchupMd, rotationAnalysis, setFlows, hotPlayers, serveStats, matchups, playerMatchStats } from './gameFlow'
+import m816603 from './fixtures/match-816603.json'
+import { rotationLabel, analysisMd, basedOn, playerRotations, playerRotationText, courtNow, flowMd, matchupMd, rotationAnalysis, setFlows, hotPlayers, serveStats, matchups, playerMatchStats } from './gameFlow'
 
 const pt = (team: string, a: number, b: number, t = '18:00:00', period = '1') => ({ code: 'piste', team, ps_A: a, ps_B: b, wall_time: t, period })
 const raw = {
@@ -26,7 +27,7 @@ describe('game flow', () => {
     const a = rotationAnalysis([raw], 'h', 1)!
     expect(a.games).toBe(1)
     expect(a.lines.find((l) => l.rotation === 2)).toEqual({ rotation: 2, won: 3, lost: 1, net: 2 })
-    expect(a.strong[0].rotation).toBe(2)
+    expect(a.strong).toEqual([]) // +2 over 4 rallies: below |net|>=3, >=6 rallies
     expect(rotationAnalysis([raw], 'zzz')).toBeNull()
   })
   it('md explicit when missing', () => {
@@ -66,8 +67,8 @@ describe('serve / hot / annotated runs', () => {
 })
 
 describe('matchups', () => {
-  const raw = m816600 as unknown as Record<string, unknown>
   it('pairs strong vs weak and labels live', () => {
+    const raw = m816603 as unknown as Record<string, unknown>
     const teams = [{ id: String(raw.team_A_id), name: 'A', games: [raw] }, { id: String(raw.team_B_id), name: 'B', games: [raw] }]
     const pre = matchups(teams, null)
     expect(pre).toHaveLength(2)
@@ -102,8 +103,8 @@ describe('baseline honesty (816603 bug: kierto 6 -2 labelled vahva)', () => {
     const lose = { team_A_id: 'h', team_B_id: 'v', p1_start_team: 'h', events: [{ code: 'pelipaikat', team: 'A', period: '1', description: '1=1,2=2,3=3,4=4,5=5,6=6' }, { code: 'piste', team: 'B', ps_A: 0, ps_B: 1, period: '1' }, { code: 'piste', team: 'B', ps_A: 0, ps_B: 2, period: '1' }] }
     const a = rotationAnalysis([lose], 'h')!
     expect(a.strong).toEqual([])
-    expect(a.weak.length).toBeGreaterThan(0)
-    expect(analysisMd('X', a).join('\n')).toContain('ei yhtään plussalla')
+    expect(a.weak).toEqual([]) // -2 over 2 rallies: too small to call Heikko
+    expect(analysisMd('X', a).join('\n')).toContain('ei yhtään (vaatii ≥+3')
   })
   it('sample size shown and <3 games is alustava', () => {
     expect(basedOn(1)).toBe('perustuu 1 otteluun')
@@ -136,5 +137,15 @@ describe('playerRotations (on-court +/- per team rotation)', () => {
     const two = playerRotations([m, { ...m, match_id: 'z' }], String(m.team_A_id))
     expect(two[0].rallies).toBe(one.find((x) => x.shirt === two[0].shirt)!.rallies * 2)
     expect(two[0].games).toBe(2)
+  })
+})
+
+describe('label rule |net|>=3 and >=6 rallies', () => {
+  it('rotationLabel', () => {
+    expect(rotationLabel(5, 2)).toBe('Vahva')
+    expect(rotationLabel(4, 2)).toBe('tasainen')
+    expect(rotationLabel(19, 18)).toBe('tasainen')
+    expect(rotationLabel(1, 4)).toBe('liian vähän')
+    expect(rotationLabel(10, 13)).toBe('Heikko')
   })
 })

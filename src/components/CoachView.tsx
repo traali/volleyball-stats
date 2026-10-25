@@ -40,10 +40,11 @@ export function CoachView({ raw, home, away, live, usual }: { raw: Row; home: st
   const court = courtNow(raw)
   const tp = tempo(raw)
   const [ai, setAi] = useState('')
+  const hasData = teams[0].lines.length > 0
   const facts = teams.map((t, i) => `${i ? away : home}: ${nextRotationLine(t, usual?.[i])}`).join('. ')
   useEffect(() => {
     const L = (globalThis as unknown as { LanguageModel?: LM }).LanguageModel
-    if (!L || typeof L.create !== 'function' || !teams[0].lines.length) return
+    if (!L || typeof L.create !== 'function' || !hasData) return
     let gone = false
     void (async () => {
       try {
@@ -55,8 +56,8 @@ export function CoachView({ raw, home, away, live, usual }: { raw: Row; home: st
       } catch { /* no local model */ }
     })()
     return () => { gone = true }
-  }, [facts]) // eslint-disable-line react-hooks/exhaustive-deps
-  if (!teams[0].lines.length) return null
+  }, [facts, hasData])
+  if (!hasData) return null
   const names = [home, away]
   return (
     <section className="space-y-2 rounded-2xl border border-sky-500/30 bg-sky-500/5 p-3" data-testid="coach-view">
