@@ -84,7 +84,7 @@ function MatchBody({ matchId }: { matchId: string }) {
       {view.phase !== 'upcoming' && preview && <Matchups teams={tacTeams} raw={raw} />}
       {view.phase !== 'upcoming' && <MatchRotationAnalysis raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} usual={preview?.teams.map((t) => t.rotationStats)} />}
       {view.phase !== 'upcoming' && raw && <InGameTactics raw={raw} teams={tacTeams} part="serve" />}
-      {view.phase !== 'upcoming' && <PlayerMatchStats raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />}
+      {view.phase !== 'upcoming' && <PlayerMatchStats raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} history={tacTeams.map((t) => t.games)} />}
       {view.phase !== 'upcoming' && raw && <InGameTactics raw={raw} teams={tacTeams} part="runs" />}
       {view.phase !== 'upcoming' && <PointTimeline raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} />}
       {view.phase !== 'upcoming' && (

@@ -171,13 +171,20 @@ export function rotationAnalysis(raws: Row[], teamId: string, top = 2): Rotation
   if (!games) return null
   const lines = [...t.values()].sort((a, b) => a.rotation - b.rotation)
   const ranked = [...lines].sort((a, b) => b.net - a.net || b.won - a.won)
-  return { lines, strong: ranked.slice(0, top), weak: ranked.slice(-top).reverse(), games }
+  // 'Vahvat' only with a positive net, 'Haastavat' only with a negative net — never label a minus rotation strong.
+  return { lines, strong: ranked.filter((r) => r.net > 0).slice(0, top), weak: ranked.filter((r) => r.net < 0).slice(-top).reverse(), games }
 }
+
+/** Baselines from fewer games than this are 'alustava' (preliminary). */
+export const MIN_BASELINE_GAMES = 3
+export const isPreliminary = (games: number) => games < MIN_BASELINE_GAMES
+/** 'perustuu 1 otteluun' — sample size shown next to every baseline. */
+export const basedOn = (games: number) => `perustuu ${games} otteluun`
 
 export function analysisMd(title: string, a: RotationAnalysis | null): string[] {
   if (!a) return [`### ${title}`, '_ei tietoa: ei pisteitä ja syöttövuoroja kierroittain_', '']
   const f = (r: RotationScore) => `kierto ${r.rotation}: ${r.won}–${r.lost} (${r.net >= 0 ? '+' : ''}${r.net})`
-  return [`### ${title} (${a.games} ott.)`, `- Vahvat kierrot: ${a.strong.map(f).join('; ')}`, `- Haastavat kierrot: ${a.weak.map(f).join('; ')}`, `- Kaikki: ${a.lines.map(f).join('; ')}`, '']
+  return [`### ${title} (${basedOn(a.games)}${isPreliminary(a.games) ? ', alustava' : ''})`, `- Vahvat kierrot: ${a.strong.length ? a.strong.map(f).join('; ') : 'ei yhtään plussalla'}`, `- Haastavat kierrot: ${a.weak.length ? a.weak.map(f).join('; ') : 'ei yhtään miinuksella'}`, `- Kaikki: ${a.lines.map(f).join('; ')}`, '']
 }
 
 export function flowMd(raw: Row, home: string, away: string): string[] {
@@ -205,7 +212,7 @@ export function serveMd(title: string, rows: ServeLine[]): string[] {
 }
 
 export interface MatchupLine { team: string; rotation: number; kind: 'vahva' | 'heikko'; base: number; live: number | null; status: 'pysyy' | 'muuttunut' | null }
-export interface Matchup { title: string; lines: MatchupLine[] }
+export interface Matchup { title: string; lines: MatchupLine[]; games: [number, number]; preliminary: boolean }
 
 /**
  * Kohtaamisvertailu: each team's strong rotations (baseline net per game, recent games) paired with the opponent's weak ones,
@@ -224,7 +231,8 @@ export function matchups(teams: { id: string; name: string; games: Row[] }[], ra
   const out: Matchup[] = []
   for (const [x, y] of [[0, 1], [1, 0]]) {
     if (!base[x] || !base[y]) continue
-    out.push({ title: `${teams[x].name}: vahvat kierrot vs ${teams[y].name}: heikot kierrot`, lines: [...base[x]!.strong.map((r) => line(x, r, 'vahva')), ...base[y]!.weak.map((r) => line(y, r, 'heikko'))] })
+    const games: [number, number] = [base[x]!.games, base[y]!.games]
+    out.push({ title: `${teams[x].name}: vahvat kierrot vs ${teams[y].name}: heikot kierrot`, lines: [...base[x]!.strong.map((r) => line(x, r, 'vahva')), ...base[y]!.weak.map((r) => line(y, r, 'heikko'))], games, preliminary: isPreliminary(Math.min(...games)) })
   }
   return out
 }
@@ -236,7 +244,7 @@ export function matchupText(l: MatchupLine): string {
 
 export function matchupMd(m: Matchup[]): string[] {
   if (!m.length) return []
-  return ['## Kohtaamisvertailu', ...m.flatMap((x) => [`### ${x.title}`, ...x.lines.map((l) => `- ${matchupText(l)}`), '']), '']
+  return ['## Kohtaamisvertailu', ...m.flatMap((x) => [`### ${x.title} (${basedOn(x.games[0])} / ${basedOn(x.games[1])}${x.preliminary ? ', alustava' : ''})`, ...x.lines.map((l) => `- ${matchupText(l)}`), '']), '']
 }
 
 export interface PlayerMatchLine { side: Side; shirt: string; name: string; p: number; bp: number; pm: number | null; aces: number; attack: number; block: number; serves: number; serveErrors: number }
@@ -285,4 +293,69 @@ export function playerStatsMd(raw: Row, home: string, away: string): string[] {
   const rows = playerMatchStats(raw)
   if (!rows.length) return []
   return ['## Pelaajatilastot (P, BP, +/-, Ä, HY, TO, syötöt, syöttövirheet)', ...(['A', 'B'] as Side[]).flatMap((sd) => [`### ${sd === 'A' ? home : away}`, ...rows.filter((r) => r.side === sd).map((r) => `- #${r.shirt} ${r.name}: P ${r.p}, BP ${r.bp}, +/- ${r.pm ?? r.p}, Ä ${r.aces}, HY ${r.attack}, TO ${r.block}, syötöt ${r.serves}, syöttövirheet ${r.serveErrors}`), '']), '']
+}
+
+export interface PlayerRotationCell { rotation: number; won: number; lost: number; net: number; rallies: number }
+export interface PlayerRotationLine { shirt: string; games: number; rallies: number; cells: PlayerRotationCell[]; best: PlayerRotationCell | null; worst: PlayerRotationCell | null }
+/** Rotations with fewer rallies than this are 'alustava'. */
+export const MIN_ROTATION_RALLIES = 10
+
+/**
+ * Per player: points won–lost while the player was on court (latest pelipaikat, positions I–VI; libero excluded),
+ * split by the team's rotation (K1 = set's starting setup, +1 on each side-out). Best only if net > 0, worst only if net < 0.
+ * Works on one match (live or played) or aggregated over several.
+ */
+export function playerRotations(raws: Row[], teamId: string): PlayerRotationLine[] {
+  const acc = new Map<string, { games: Set<string>; cells: Map<number, PlayerRotationCell> }>()
+  raws.forEach((raw, gi) => {
+    const side = sideFor(raw, teamId)
+    if (!side) return
+    const other: Side = side === 'A' ? 'B' : 'A'
+    let lineup: string[] = []
+    let period = 0
+    let rot = 1
+    let server: Side | '' = ''
+    for (const e of evs(raw)) {
+      const p = Number(e.period) || 1
+      if (p !== period) { period = p; rot = 1; server = startSide(raw, p); lineup = [] }
+      const code = s(e.code)
+      if (code === 'pelipaikat') {
+        if (s(e.team) !== side) continue
+        const shirts = s(e.description).split(',').map((x) => s(x.split('=')[1])).filter(Boolean)
+        if (shirts.length >= 6) lineup = shirts.slice(0, 6)
+        continue
+      }
+      if (code !== 'piste') continue
+      const w = s(e.team)
+      if (w !== side && w !== other) continue
+      if (lineup.length === 6) {
+        for (const shirt of lineup) {
+          const a = acc.get(shirt) || { games: new Set<string>(), cells: new Map() }
+          a.games.add(`${gi}`)
+          const c = a.cells.get(rot) || { rotation: rot, won: 0, lost: 0, net: 0, rallies: 0 }
+          if (w === side) c.won++
+          else c.lost++
+          c.net = c.won - c.lost; c.rallies = c.won + c.lost
+          a.cells.set(rot, c)
+          acc.set(shirt, a)
+        }
+      }
+      if (w === side && server && server !== side) rot = (rot % 6) + 1
+      server = w as Side
+    }
+  })
+  return [...acc.entries()].map(([shirt, a]) => {
+    const cells = [...a.cells.values()].sort((x, y) => x.rotation - y.rotation)
+    const byNet = [...cells].sort((x, y) => y.net - x.net || y.rallies - x.rallies)
+    const best = byNet.find((c) => c.net > 0) || null
+    const worst = [...byNet].reverse().find((c) => c.net < 0) || null
+    return { shirt, games: a.games.size, rallies: cells.reduce((x, c) => x + c.rallies, 0), cells, best, worst }
+  })
+}
+
+/** 'Paras: K2 +6 (14 r.) / Heikoin: K5 −4 (9 r., alustava)'. */
+export function playerRotationText(l: PlayerRotationLine | undefined): string {
+  if (!l) return 'Kiertotieto puuttuu'
+  const c = (x: PlayerRotationCell) => `K${x.rotation} ${x.net > 0 ? '+' : '−'}${Math.abs(x.net)} (${x.rallies} r.${x.rallies < MIN_ROTATION_RALLIES ? ', alustava' : ''})`
+  return `Paras: ${l.best ? c(l.best) : '–'} / Heikoin: ${l.worst ? c(l.worst) : '–'}`
 }

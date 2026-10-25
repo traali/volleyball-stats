@@ -71,7 +71,7 @@ export function buildVolleyballPreviewMd(opts: {
   rotations?: Array<{ team: string; rotation: LikelyRotation | null | undefined }>
   /** Full getMatch row: point timeline, court now, rotations of this match (live or played). */
   raw?: Row
-  insights?: { pre: string[] | null; live: Finding[] | null }
+  insights?: { pre: string[] | null; live: Finding[] | null; liveBase?: number | null }
   matchups?: Matchup[]
   /** Recent-games rotation analysis per team. */
   rotationStats?: Array<{ team: string; analysis: RotationAnalysis | null }>
@@ -122,7 +122,7 @@ export function buildVolleyballPreviewMd(opts: {
       ...(r.players.length ? r.players.map((p) => `- ${p.number ? `#${p.number} ` : ''}${p.name} · ${p.points == null ? 'ei kauden tilastoa' : `${p.points}p / ${p.matches} ott`}${prevMd(p)}${gamesMd(p)}${p.inLineup ? '' : ' (ei kokoonpanossa)'}`) : ['_ei tietoa_']),
       '',
     ]),
-    ...(opts.insights ? insightsMd(opts.insights.pre, opts.insights.live) : []),
+    ...(opts.insights ? insightsMd(opts.insights.pre, opts.insights.live, opts.insights.liveBase ?? undefined) : []),
     ...(opts.matchups ? matchupMd(opts.matchups) : []),
     ...(opts.raw ? playerStatsMd(opts.raw, m.homeTeamName, m.awayTeamName) : []),
     ...(opts.raw ? flowMd(opts.raw, m.homeTeamName, m.awayTeamName) : []),

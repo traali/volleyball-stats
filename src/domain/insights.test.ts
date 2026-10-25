@@ -24,3 +24,11 @@ describe('insights', () => {
     expect(insightsMd(null, []).join('\n')).toContain('ei tietoa')
   })
 })
+
+describe('Pysyy/Poikkeaa sample size', () => {
+  it('marks alustava under 3 baseline games', async () => {
+    const { insightsMd: md } = await import('./insights')
+    expect(md(null, [], 1).join('\n')).toContain('perustuu 1 otteluun, alustava')
+    expect(md(null, [], 4).join('\n')).not.toContain('alustava')
+  })
+})
