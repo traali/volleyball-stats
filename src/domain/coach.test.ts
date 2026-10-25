@@ -18,6 +18,7 @@ describe('coach view', () => {
     expect(rallies).toBe(teams[1].lines.reduce((n, l) => n + l.rallies, 0))
     for (const l of teams[0].lines) expect(l.sideOutN + l.breakN).toBe(l.rallies)
     expect(teams[0].lines.find((l) => l.rotation === 2)?.label).toBe('Vahva')
+    expect(teams[0].lines.find((l) => l.rotation === 4)?.label).toBe('tasainen') // 19–18
   })
   it('gaps: seconds, timeout flagged, tempo from real game', () => {
     expect(pointGaps(small).map((g) => [g.sec, g.afterTimeout])).toEqual([[20, false], [70, true]])

@@ -1,4 +1,4 @@
-import { basedOn, isPreliminary, playerRotations, playerRotationText, courtNow, hotPlayers, playerMatchStats, matchups, matchupText, rotationAnalysis, serveStats, setFlows, type RotationAnalysis, type RotationScore } from '../domain/gameFlow'
+import { rotationLabel, basedOn, isPreliminary, playerRotations, playerRotationText, courtNow, hotPlayers, playerMatchStats, matchups, matchupText, rotationAnalysis, serveStats, setFlows, type RotationAnalysis, type RotationScore } from '../domain/gameFlow'
 
 type Row = Record<string, unknown>
 const NONE = 'text-sm text-zinc-500'
@@ -71,10 +71,10 @@ export function RotationAnalysisView({ title, a, baseline = false }: { title: st
       <p className="font-bold text-zinc-200">{title}{a ? ` · ${basedOn(a.games)}` : ''}{a && baseline && isPreliminary(a.games) && <Prelim />}</p>
       {!a ? <p className={NONE}>Ei tietoa: pisteitä ja syöttövuoroja ei ole kirjattu.</p> : (
         <>
-          <p><span className="text-emerald-400 font-bold">Vahvat kierrot:</span> {a.strong.length ? a.strong.map((r) => `kierto ${r.rotation} ${fmt(r)}`).join(' · ') : 'ei yhtään plussalla'}</p>
-          <p><span className="text-rose-400 font-bold">Haastavat kierrot:</span> {a.weak.length ? a.weak.map((r) => `kierto ${r.rotation} ${fmt(r)}`).join(' · ') : 'ei yhtään miinuksella'}</p>
+          <p><span className="text-emerald-400 font-bold">Vahvat kierrot:</span> {a.strong.length ? a.strong.map((r) => `kierto ${r.rotation} ${fmt(r)}`).join(' · ') : 'ei yhtään (vaatii ≥+3, ≥6 palloa)'}</p>
+          <p><span className="text-rose-400 font-bold">Haastavat kierrot:</span> {a.weak.length ? a.weak.map((r) => `kierto ${r.rotation} ${fmt(r)}`).join(' · ') : 'ei yhtään (vaatii ≤−3, ≥6 palloa)'}</p>
           <div className="grid grid-cols-6 gap-1 text-center">
-            {a.lines.map((r) => <div key={r.rotation} className={`rounded p-1 ${r.net > 0 ? 'bg-emerald-500/15' : r.net < 0 ? 'bg-rose-500/15' : 'bg-zinc-800'}`}><div className="text-[10px] text-zinc-500">{r.rotation}</div><div className="font-mono">{r.net >= 0 ? '+' : ''}{r.net}</div></div>)}
+            {a.lines.map((r) => <div key={r.rotation} className={`rounded p-1 ${rotationLabel(r.won, r.lost) === 'Vahva' ? 'bg-emerald-500/15' : rotationLabel(r.won, r.lost) === 'Heikko' ? 'bg-rose-500/15' : 'bg-zinc-800'}`}><div className="text-[10px] text-zinc-500">{r.rotation}</div><div className="font-mono">{r.net >= 0 ? '+' : ''}{r.net}</div></div>)}
           </div>
         </>
       )}
