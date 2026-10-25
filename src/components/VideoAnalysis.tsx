@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { BALL_LABEL, CONF_LABEL, STAT_LABEL, clock, fetchAnalysis, teamStats, youtubeLink, type BallField, type MatchAnalysis } from '../domain/videoAnalysis'
+import { BALL_LABEL, CONF_LABEL, STAT_LABEL, TAG_LABEL, clock, fetchAnalysis, rallyMatches, teamStats, youtubeLink, type AnalysisRally, type BallField, type MatchAnalysis } from '../domain/videoAnalysis'
 
 interface YTPlayer { seekTo(s: number, allow: boolean): void; playVideo(): void; destroy(): void }
 interface YTNamespace { Player: new (el: HTMLElement, opts: Record<string, unknown>) => YTPlayer }
@@ -46,6 +46,7 @@ function VideoAnalysisView({ data }: { data: MatchAnalysis }) {
   const setKeys = Object.keys(data.sets).sort()
   const [set, setSet] = useState(setKeys[0] ?? '1')
   const [current, setCurrent] = useState<string | null>(null)
+  const [query, setQuery] = useState('')
   const name = (side: 'home' | 'away') => (side === 'home' ? data.home : data.away)
 
   useEffect(() => {
@@ -77,7 +78,10 @@ function VideoAnalysisView({ data }: { data: MatchAnalysis }) {
   }
 
   const stats = teamStats(data)
-  const rallies = data.sets[set] ?? []
+  const searching = query.trim().length > 0
+  const rallies: { setKey: string; r: AnalysisRally }[] = searching
+    ? setKeys.flatMap((k) => (data.sets[k] ?? []).filter((r) => rallyMatches(r, query)).map((r) => ({ setKey: k, r })))
+    : (data.sets[set] ?? []).map((r) => ({ setKey: set, r }))
   const analysed = data.analysedSets.includes(Number(set))
 
   return (
@@ -87,6 +91,16 @@ function VideoAnalysisView({ data }: { data: MatchAnalysis }) {
       <p className="text-xs text-zinc-500">
         Napauta pallorallia tai tapahtumaa, niin video siirtyy kohtaan.{data.video.endsAt ? ` Video päättyy: ${data.video.endsAt}.` : ''}
       </p>
+
+      <div className="flex gap-2">
+        <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} data-testid="va-search"
+          aria-label="Hae pallorallia" placeholder="Hae: esim. kolmen hengen torjunta, ässä, 12-7"
+          className="min-h-[44px] flex-1 rounded-lg border border-zinc-700 bg-zinc-950 px-3 text-xs text-white placeholder:text-zinc-500" />
+        {searching && (
+          <button onClick={() => setQuery('')} className="min-h-[44px] rounded-lg bg-zinc-800 px-3 text-xs text-zinc-300">Tyhjennä</button>
+        )}
+      </div>
+      {searching && <p className="text-xs text-zinc-400" data-testid="va-search-count">{rallies.length} osumaa kaikista eristä</p>}
 
       <div role="tablist" className="flex flex-wrap gap-1">
         {setKeys.map((k) => (
@@ -99,14 +113,15 @@ function VideoAnalysisView({ data }: { data: MatchAnalysis }) {
       {!analysed && <p className="text-xs text-zinc-500">Tämän erän videoanalyysi on kesken; viralliset pisteet ja videoajat näytetään.</p>}
 
       <ol className="divide-y divide-zinc-800 text-xs">
-        {rallies.map((r) => {
-          const key = `${set}:${r.score}`
+        {rallies.map(({ setKey, r }) => {
+          const key = `${setKey}:${r.score}`
           const t = r.youtubeS
           return (
             <li key={key} className={current === key ? 'bg-amber-400/10' : ''}>
               <div className="flex items-start gap-2 py-1">
                 <button disabled={t == null} onClick={() => t != null && seek(t, key)}
                   className="min-h-[44px] flex-1 text-left disabled:opacity-60">
+                  {searching && <span className="mr-2 text-zinc-500">{setKey}. erä</span>}
                   <span className="font-mono font-bold text-amber-300">{r.score}</span>
                   <span className="ml-2 text-zinc-200">{name(r.officialWinner)}</span>
                   {r.torneopalType && <span className="ml-2 text-zinc-500">{TYPE_LABEL[r.torneopalType] ?? r.torneopalType}</span>}
@@ -118,6 +133,14 @@ function VideoAnalysisView({ data }: { data: MatchAnalysis }) {
                     <span className="block text-zinc-400">
                       {(Object.entries(r.ball) as [BallField, { text: string; confidence: keyof typeof CONF_LABEL }][])
                         .map(([f, v]) => `${BALL_LABEL[f]}: ${v.text} (${CONF_LABEL[v.confidence]})`).join(' · ')}
+                    </span>
+                  )}
+                  {r.desc && <span className="block text-zinc-400">Kuvaus: {r.desc.text} · {CONF_LABEL[r.desc.confidence]}</span>}
+                  {r.desc && r.desc.tags.length > 0 && (
+                    <span className="mt-1 flex flex-wrap gap-1">
+                      {r.desc.tags.map((tg) => (
+                        <span key={tg} className="rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] text-amber-200">{TAG_LABEL[tg] ?? tg}</span>
+                      ))}
                     </span>
                   )}
                   {r.note && <span className="block italic text-zinc-500">{r.note}</span>}

@@ -9,7 +9,10 @@ export interface AnalysisRally {
   finding?: Rated
   note?: string
   ball?: Partial<Record<BallField, Rated>>
+  /** Per-rally video description with search tags (additive). */
+  desc?: RallyDesc
 }
+export interface RallyDesc { text: string; tags: string[]; confidence: Confidence }
 export interface AnalysisEvent { set: number; score: string; kind: string; text: string; youtubeS: number | null }
 export interface MatchAnalysis {
   matchId: string
@@ -93,4 +96,44 @@ export async function fetchAnalysis(matchId: string): Promise<MatchAnalysis | nu
   } catch {
     return null
   }
+}
+
+export const TAG_LABEL: Record<string, string> = {
+  'ace': 'ässä', 'serve error': 'syöttövirhe', 'serve long': 'syöttö pitkä', 'serve net': 'syöttö verkkoon',
+  'kill': 'hyökkäyspiste', 'block point': 'torjuntapiste', 'two-person block': 'kahden hengen torjunta',
+  'three-person block': 'kolmen hengen torjunta', 'block-out': 'torjunnasta ulos', 'tip': 'kärki',
+  'long rally': 'pitkä pallo', 'attack error': 'hyökkäysvirhe', 'net fault': 'verkkovirhe',
+  'rotation fault': 'kiertovirhe', 'positional fault': 'paikkavirhe', 'timeout': 'aikalisä', 'substitution': 'vaihto',
+}
+
+/** Extra search phrases per tag (normalised: lowercase, no hyphens). */
+const TAG_SYNONYMS: Record<string, string[]> = {
+  'three-person block': ['three person block', 'three man block', '3 man block', '3 block', '3-block', 'triple block',
+    'kolmoispari', 'kolmoistorjunta', 'kolmen hengen torjunta', 'kolmen torjunta', 'monster block'],
+  'two-person block': ['two person block', 'two man block', '2 block', 'double block', 'kaksoistorjunta', 'kahden hengen torjunta', 'pari'],
+  'block point': ['block', 'stuff', 'torjunta', 'torjuntapiste'],
+  'ace': ['ässä', 'assa'], 'kill': ['hyökkäyspiste', 'smash', 'spike', 'lyönti'],
+  'serve error': ['syöttövirhe'], 'attack error': ['hyökkäysvirhe'], 'timeout': ['aikalisä'], 'substitution': ['vaihto'],
+}
+
+export function norm(q: string): string {
+  return q.toLowerCase().replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
+/** Tags whose name, Finnish label or synonym matches the query. */
+export function tagsForQuery(q: string): string[] {
+  const n = norm(q)
+  if (!n) return []
+  return Object.keys(TAG_LABEL).filter((t) => [t, TAG_LABEL[t], ...(TAG_SYNONYMS[t] ?? [])].some((x) => norm(x) === n || (n.length >= 4 && norm(x).includes(n))))
+}
+
+export function rallyMatches(r: AnalysisRally, q: string): boolean {
+  const n = norm(q)
+  if (!n) return true
+  const tags = r.desc?.tags ?? []
+  const wanted = tagsForQuery(q)
+  if (wanted.some((t) => tags.includes(t))) return true
+  if (wanted.length > 0) return false
+  const hay = norm([r.score, r.desc?.text, r.finding?.text, r.note, ...tags, ...tags.map((t) => TAG_LABEL[t] ?? '')].filter(Boolean).join(' '))
+  return hay.includes(n)
 }
