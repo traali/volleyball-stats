@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { CoachView } from '../components/CoachView'
 import { CourtNowBoard, PlayerMatchStats, InGameTactics, Matchups, MatchRotationAnalysis, PointTimeline } from '../components/GameFlow'
+import { VideoAnalysisSection } from '../components/VideoAnalysis'
 import { Insights } from '../components/Insights'
 import { insightInputs } from '../domain/insights'
 import { PointTape } from '../components/PointTape'
@@ -62,6 +63,7 @@ function MatchBody({ matchId }: { matchId: string }) {
         {view.detail.courtName ? ` · ${view.detail.courtName}` : ''}
       </p>
       <a href={federationUrl.match(matchId)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center text-xs text-zinc-400 underline">Tulospalvelu ↗</a>
+      {view.phase !== 'upcoming' && <VideoAnalysisSection matchId={matchId} />}
       {view.phase === 'live' && <LiveBox raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} updatedAt={live.at} failed={live.failed} sets={view.detail.sets} />}
       {view.phase !== 'upcoming' && raw && <CoachView raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} live={view.phase === 'live'} usual={preview?.teams.map((t) => t.rotationStats)} />}
       {view.forfeit && (
