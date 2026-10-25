@@ -13,8 +13,14 @@ export interface RosterPlayer {
   /** Games with recorded stats in this group (season), null when TASO has no stat row. */
   matches: number | null
   points: number | null
-  /** Sets played this season in this group (TASO 'periods'). */
+  /** Sets on court this season in this group, counted from match position data and substitutions. null = not known. */
   sets?: number | null
+  /** Sets on the match roster but never on court ("vaihdossa"). */
+  setsBench?: number | null
+  /** Sets in matches without per-set lineup data (not counted either way). */
+  setsUnknown?: number
+  /** TASO's own group 'periods' (counts every set of a match the player was listed for). */
+  tasoSets?: number | null
   inLineup: boolean
   /** Previous season from getPlayer, undefined = not fetched, null = no games that season. */
   prev?: PrevSeason | null
@@ -51,7 +57,9 @@ export function rosterWithStats(match: Row, teamId: string, teamPlayers: Row[], 
       number: s(p.shirt_number) === '0' ? '' : s(p.shirt_number),
       matches: st ? n(st.matches) : null,
       points: st ? n(st.points) : null,
-      sets: st && s(st.periods) !== '' ? n(st.periods) : null,
+      sets: null,
+      setsBench: null,
+      tasoSets: st && s(st.periods) !== '' ? n(st.periods) : null,
       inLineup: !published || inLineup.has(id),
     })
   }

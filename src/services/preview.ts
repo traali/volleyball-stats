@@ -2,6 +2,7 @@ import type { PreviewData } from '../components/MatchPreview'
 import { clubHeadToHead, likelyRotation, playerGames, headToHead, previousSeasonId, seasonFromPlayer, lineupPublished, recentGames, rosterWithStats, teamSeason } from '../domain/preview'
 import { asList, tasoData } from './taso'
 import { rotationAnalysis } from '../domain/gameFlow'
+import { sumSets } from '../domain/setParticipation'
 import { fetchMatchRaw, fetchMatches, fetchPlayer, fetchTeam } from './discovery'
 
 const s = (v: unknown) => (v == null ? '' : String(v).trim())
@@ -32,6 +33,21 @@ export async function fetchPreview(match: Record<string, unknown>): Promise<Prev
   })))
   const prevSeason = previousSeasonId(s(match.competition_season))
   const rosters = ids.map((id, i) => (teams[i] ? rosterWithStats(match, id, asList(teams[i], 'players'), stats) : null))
+  // Sets on court / on the bench: every played match of the team in this group, from its own position data.
+  await Promise.all(ids.map(async (_id, i) => {
+    const list = matches[i]
+    if (!list || !rosters[i]) return
+    const groupGames = list.filter((m) => s(m.group_id) === s(match.group_id) && s(m.status) === 'Played')
+    const raws = await Promise.all(groupGames.map((m) => ok(fetchMatchRaw(s(m.match_id)))))
+    if (raws.some((r) => !r)) return // one match missing: leave sets unknown rather than undercount
+    const totals = sumSets(raws as Record<string, unknown>[])
+    for (const p of rosters[i]!) {
+      const t = totals.get(p.id)
+      p.sets = t ? t.onCourt : 0
+      p.setsBench = t ? t.bench : 0
+      p.setsUnknown = t ? t.unknown : 0
+    }
+  }))
   const players = new Map<string, Record<string, unknown> | null | undefined>()
   await Promise.all(rosters.flat().filter(Boolean).map(async (p) => { players.set(p!.id, await ok(fetchPlayer(p!.id))) }))
   for (const r of rosters) for (const p of r || []) {
