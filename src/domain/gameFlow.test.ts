@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import m816600 from './fixtures/match-816600.json'
-import { courtNow, flowMd, rotationAnalysis, setFlows, hotPlayers, serveStats, matchups, playerMatchStats } from './gameFlow'
+import { analysisMd, basedOn, playerRotations, playerRotationText, courtNow, flowMd, matchupMd, rotationAnalysis, setFlows, hotPlayers, serveStats, matchups, playerMatchStats } from './gameFlow'
 
 const pt = (team: string, a: number, b: number, t = '18:00:00', period = '1') => ({ code: 'piste', team, ps_A: a, ps_B: b, wall_time: t, period })
 const raw = {
@@ -86,5 +86,55 @@ describe('playerMatchStats matches official Tilastot (816600)', () => {
     expect(g('A', '8')).toMatchObject({ p: 4, bp: 1, aces: 1, attack: 2, block: 1 })
     expect(g('B', '3')).toMatchObject({ p: 7, bp: 4, aces: 1, attack: 5, block: 1 })
     expect(g('A', '41')).toMatchObject({ p: 6, bp: 2, aces: 0, attack: 6, block: 0 })
+  })
+})
+
+describe('baseline honesty (816603 bug: kierto 6 -2 labelled vahva)', () => {
+  const raw = m816600 as unknown as Record<string, unknown>
+  it('Vahvat only net > 0, Haastavat only net < 0', () => {
+    for (const id of [String(raw.team_A_id), String(raw.team_B_id)]) {
+      const a = rotationAnalysis([raw], id, 6)!
+      expect(a.strong.every((r) => r.net > 0)).toBe(true)
+      expect(a.weak.every((r) => r.net < 0)).toBe(true)
+    }
+  })
+  it('all-negative team has no Vahvat', () => {
+    const lose = { team_A_id: 'h', team_B_id: 'v', p1_start_team: 'h', events: [{ code: 'pelipaikat', team: 'A', period: '1', description: '1=1,2=2,3=3,4=4,5=5,6=6' }, { code: 'piste', team: 'B', ps_A: 0, ps_B: 1, period: '1' }, { code: 'piste', team: 'B', ps_A: 0, ps_B: 2, period: '1' }] }
+    const a = rotationAnalysis([lose], 'h')!
+    expect(a.strong).toEqual([])
+    expect(a.weak.length).toBeGreaterThan(0)
+    expect(analysisMd('X', a).join('\n')).toContain('ei yhtään plussalla')
+  })
+  it('sample size shown and <3 games is alustava', () => {
+    expect(basedOn(1)).toBe('perustuu 1 otteluun')
+    const teams = [{ id: String(raw.team_A_id), name: 'A', games: [raw] }, { id: String(raw.team_B_id), name: 'B', games: [raw, { ...raw, match_id: 'y' }, { ...raw, match_id: 'z' }] }]
+    const m = matchups(teams, null)
+    expect(m[0].games).toEqual([1, 3])
+    expect(m[0].preliminary).toBe(true)
+    expect(matchupMd(m).join('\n')).toContain('perustuu 1 otteluun')
+    const full = matchups(teams.map((t) => ({ ...t, games: [raw, { ...raw, match_id: 'y' }, { ...raw, match_id: 'z' }] })), null)
+    expect(full.every((x) => !x.preliminary)).toBe(true)
+  })
+})
+
+describe('playerRotations (on-court +/- per team rotation)', () => {
+  it('counts rallies for the 6 on court, best only >0, worst only <0', () => {
+    const r = playerRotations([raw], 'h')
+    const p5 = r.find((x) => x.shirt === '5')!
+    expect(p5.cells.find((c) => c.rotation === 1)).toMatchObject({ won: 1, lost: 0 })
+    expect(p5.cells.find((c) => c.rotation === 2)).toMatchObject({ won: 3, lost: 1, net: 2 })
+    expect(p5.best!.rotation).toBe(2)
+    expect(p5.worst).toBeNull()
+    expect(r.find((x) => x.shirt === '4')).toBeUndefined() // libero excluded
+    expect(playerRotationText(p5)).toBe('Paras: K2 +2 (4 r., alustava) / Heikoin: –')
+  })
+  it('real 816600: every player cell sums to team rallies, aggregates over games', () => {
+    const m = m816600 as unknown as Record<string, unknown>
+    const one = playerRotations([m], String(m.team_A_id))
+    expect(one.length).toBeGreaterThanOrEqual(6)
+    for (const l of one) { if (l.best) expect(l.best.net).toBeGreaterThan(0); if (l.worst) expect(l.worst.net).toBeLessThan(0) }
+    const two = playerRotations([m, { ...m, match_id: 'z' }], String(m.team_A_id))
+    expect(two[0].rallies).toBe(one.find((x) => x.shirt === two[0].shirt)!.rallies * 2)
+    expect(two[0].games).toBe(2)
   })
 })

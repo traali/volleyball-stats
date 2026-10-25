@@ -3,7 +3,7 @@
  * Pre-game: form, standings, rotation strengths, key scorers, rough win likelihood with its basis.
  * In-game: "Pysyy / Poikkeaa" — live numbers vs recent-game baselines.
  */
-import { hotPlayers, matchups, matchupText, rotationAnalysis, serveStats, setFlows, type RotationAnalysis } from './gameFlow'
+import { basedOn, hotPlayers, isPreliminary, matchups, matchupText, rotationAnalysis, serveStats, setFlows, type RotationAnalysis } from './gameFlow'
 import type { GameLine, RosterPlayer, TeamSeason } from './preview'
 
 type Row = Record<string, unknown>
@@ -47,7 +47,10 @@ export function pregameInsights(home: TeamFacts, away: TeamFacts): string[] {
     else out.push(`${t.name}: ei tietoa viime otteluista.`)
     if (t.season) out.push(`${t.name}: sarjassa ${t.season.standing}. (${t.season.won}–${t.season.lost}, ${t.season.points} p).`)
     const a = t.rotationStats
-    if (a) out.push(`${t.name}: vahvin kierto ${a.strong[0].rotation} (${a.strong[0].net >= 0 ? '+' : ''}${a.strong[0].net}), haastavin ${a.weak[0].rotation} (${a.weak[0].net >= 0 ? '+' : ''}${a.weak[0].net}) ${a.games} ottelussa.`)
+    if (a) {
+      const parts = [a.strong[0] ? `vahvin kierto ${a.strong[0].rotation} (+${a.strong[0].net})` : 'ei plussakiertoa', a.weak[0] ? `haastavin ${a.weak[0].rotation} (${a.weak[0].net})` : 'ei miinuskiertoa']
+      out.push(`${t.name}: ${parts.join(', ')} (${basedOn(a.games)}${isPreliminary(a.games) ? ', alustava' : ''}).`)
+    }
     const top = (t.roster || []).filter((p) => p.points != null).sort((x, y) => (y.points || 0) - (x.points || 0)).slice(0, 3)
     if (top.length) out.push(`${t.name}: kärkipisteet ${top.map((p) => `#${p.number} ${p.name.split(' ').slice(-1)[0]} ${p.points} p / ${p.matches} ott`).join(', ')}.`)
   }
@@ -80,6 +83,12 @@ function longestRun(raws: Row[], teamId: string): number[] {
 
 export interface Finding { holds: boolean; text: string }
 
+/** Fewest baseline games behind Pysyy/Poikkeaa (games with rotation data, this match excluded). */
+export function baselineGames(raw: Row, baseline: Array<{ id: string; games: Row[] }>): number {
+  const n = baseline.map((t) => rotationAnalysis(t.games.filter((g) => s(g.match_id) !== s(raw.match_id)), t.id)?.games ?? 0)
+  return n.length ? Math.min(...n) : 0
+}
+
 /** Live/played match vs the team's recent games. */
 export function liveFindings(raw: Row, baseline: Array<{ id: string; name: string; games: Row[]; roster: RosterPlayer[] | null }>): Finding[] {
   const out: Finding[] = []
@@ -99,8 +108,8 @@ export function liveFindings(raw: Row, baseline: Array<{ id: string; name: strin
         if (!b || r.won + r.lost < 4) continue
         const avg = b.net / rb.games
         const diff = r.net - avg
-        if (Math.abs(diff) >= 3) out.push({ holds: false, text: `${t.name}: kierto ${r.rotation} ${r.net >= 0 ? '+' : ''}${r.net}, tavallisesti ${avg >= 0 ? '+' : ''}${avg.toFixed(1)} / ottelu.` })
-        else if (rb.strong.some((x) => x.rotation === r.rotation) || rb.weak.some((x) => x.rotation === r.rotation)) out.push({ holds: true, text: `${t.name}: kierto ${r.rotation} ${r.net >= 0 ? '+' : ''}${r.net}, tavallisesti ${avg >= 0 ? '+' : ''}${avg.toFixed(1)} / ottelu.` })
+        if (Math.abs(diff) >= 3) out.push({ holds: false, text: `${t.name}: kierto ${r.rotation} ${r.net >= 0 ? '+' : ''}${r.net}, tavallisesti ${avg >= 0 ? '+' : ''}${avg.toFixed(1)} / ottelu, ${basedOn(rb.games)}.` })
+        else if (rb.strong.some((x) => x.rotation === r.rotation) || rb.weak.some((x) => x.rotation === r.rotation)) out.push({ holds: true, text: `${t.name}: kierto ${r.rotation} ${r.net >= 0 ? '+' : ''}${r.net}, tavallisesti ${avg >= 0 ? '+' : ''}${avg.toFixed(1)} / ottelu, ${basedOn(rb.games)}.` })
       }
     }
     const runsNow = longestRun([raw], t.id), runsBase = longestRun(games, t.id)
@@ -124,11 +133,11 @@ export function liveFindings(raw: Row, baseline: Array<{ id: string; name: strin
   return out
 }
 
-export function insightsMd(pre: string[] | null, live: Finding[] | null): string[] {
+export function insightsMd(pre: string[] | null, live: Finding[] | null, liveBase?: number): string[] {
   const out = ['## Ennuste ja havainnot', '_Johdettu TASO-datasta laskemalla, ei tekoälyä._']
   if (pre) out.push(...pre.map((x) => `- ${x}`))
   if (live) {
-    out.push('', '### Pysyy / Poikkeaa')
+    out.push('', `### Pysyy / Poikkeaa${liveBase != null ? ` (${basedOn(liveBase)}${isPreliminary(liveBase) ? ', alustava' : ''})` : ''}`)
     out.push(...(live.length ? live.map((f) => `- ${f.holds ? 'Pysyy' : 'Poikkeaa'}: ${f.text}`) : ['_ei tietoa: ottelussa ei vielä tarpeeksi pisteitä vertailuun_']))
   }
   return [...out, '']
@@ -137,10 +146,10 @@ export function insightsMd(pre: string[] | null, live: Finding[] | null): string
 export function insightInputs(preview: { teams: TeamFacts[]; previousGames?: Array<{ games: Row[] }> }, raw: Row | null, phase: string) {
   const [h, a] = preview.teams
   const pre = phase === 'upcoming' ? pregameInsights(h, a) : null
-  const live = phase !== 'upcoming' && raw
-    ? liveFindings(raw, preview.teams.map((t, i) => ({ id: t.id, name: t.name, roster: t.roster, games: preview.previousGames?.[i]?.games || [] })))
-    : null
-  return { pre, live }
+  const base = preview.teams.map((t, i) => ({ id: t.id, name: t.name, roster: t.roster, games: preview.previousGames?.[i]?.games || [] }))
+  const live = phase !== 'upcoming' && raw ? liveFindings(raw, base) : null
+  const liveBase = phase !== 'upcoming' && raw ? baselineGames(raw, base) : null
+  return { pre, live, liveBase }
 }
 
 
@@ -156,7 +165,7 @@ export function countedFacts(preview: { teams: TeamFacts[]; previousGames?: Arra
     const nm = (shirt: string) => { const p = t.roster?.find((x) => x.number === shirt); return `#${shirt}${p ? ` ${p.name.split(' ').slice(-1)[0]}` : ''}` }
     const games = inGame ? [raw!] : base
     const ra = rotationAnalysis(games, t.id)
-    if (ra) out.push(`${t.name}${inGame ? '' : ` (viime ${ra.games} ott.)`}: vahvat kierrot ${ra.strong.map((r) => `${r.rotation} ${sgn(r.net)}`).join(', ')}; haastavat ${ra.weak.map((r) => `${r.rotation} ${sgn(r.net)}`).join(', ')}.`)
+    if (ra) out.push(`${t.name}${inGame ? '' : ` (${basedOn(ra.games)}${isPreliminary(ra.games) ? ', alustava' : ''})`}: vahvat kierrot ${ra.strong.map((r) => `${r.rotation} ${sgn(r.net)}`).join(', ')}; haastavat ${ra.weak.map((r) => `${r.rotation} ${sgn(r.net)}`).join(', ')}.`)
     const sv = serveStats(games, t.id).slice(0, 3)
     if (sv.length) out.push(`${t.name} syöttäjät: ${sv.map((x) => `${nm(x.shirt)} ${x.serves} syöttöä, ${x.won} p, ässät ${x.aces}, virheet ${x.errors}, putki ${x.bestRun}`).join('; ')}.`)
     if (inGame) {
@@ -167,7 +176,7 @@ export function countedFacts(preview: { teams: TeamFacts[]; previousGames?: Arra
       for (const r of runs) out.push(`${t.name} putki ${r.length} p ${r.period}. erässä (${r.from} → ${r.to}), kierto ${r.rotation}${r.servers.length ? `, syötti ${r.servers.map(nm).join(', ')}` : ''}.`)
     }
   })
-  for (const m of matchups(preview.teams.map((t, i) => ({ id: t.id, name: t.name, games: preview.previousGames?.[i]?.games || [] })), inGame ? raw : null)) for (const l of m.lines) out.push(`Kohtaamisvertailu: ${matchupText(l)}.`)
+  for (const m of matchups(preview.teams.map((t, i) => ({ id: t.id, name: t.name, games: preview.previousGames?.[i]?.games || [] })), inGame ? raw : null)) for (const l of m.lines) out.push(`Kohtaamisvertailu${m.preliminary ? ' (alustava)' : ''}: ${matchupText(l)}.`)
   if (inGame) for (const f of liveFindings(raw!, preview.teams.map((t, i) => ({ id: t.id, name: t.name, roster: t.roster, games: preview.previousGames?.[i]?.games || [] })))) out.push(`${f.holds ? 'Pysyy' : 'Poikkeaa'}: ${f.text}`)
   else out.push(...pregameInsights(preview.teams[0], preview.teams[1]))
   return out

@@ -1,4 +1,4 @@
-import { courtNow, hotPlayers, playerMatchStats, matchups, matchupText, rotationAnalysis, serveStats, setFlows, type RotationAnalysis, type RotationScore } from '../domain/gameFlow'
+import { basedOn, isPreliminary, playerRotations, playerRotationText, courtNow, hotPlayers, playerMatchStats, matchups, matchupText, rotationAnalysis, serveStats, setFlows, type RotationAnalysis, type RotationScore } from '../domain/gameFlow'
 
 type Row = Record<string, unknown>
 const NONE = 'text-sm text-zinc-500'
@@ -63,14 +63,16 @@ export function CourtNowBoard({ raw, home, away, live }: { raw: Row; home: strin
 
 const fmt = (r: RotationScore) => `${r.won}–${r.lost} (${r.net >= 0 ? '+' : ''}${r.net})`
 
-export function RotationAnalysisView({ title, a }: { title: string; a: RotationAnalysis | null }) {
+const Prelim = () => <span className="ml-1 rounded bg-amber-900 px-1 text-[10px] font-bold text-amber-200" data-testid="alustava">alustava</span>
+
+export function RotationAnalysisView({ title, a, baseline = false }: { title: string; a: RotationAnalysis | null; baseline?: boolean }) {
   return (
     <div className="space-y-1 text-xs" data-testid="rotation-analysis">
-      <p className="font-bold text-zinc-200">{title}{a ? ` · ${a.games} ott.` : ''}</p>
+      <p className="font-bold text-zinc-200">{title}{a ? ` · ${basedOn(a.games)}` : ''}{a && baseline && isPreliminary(a.games) && <Prelim />}</p>
       {!a ? <p className={NONE}>Ei tietoa: pisteitä ja syöttövuoroja ei ole kirjattu.</p> : (
         <>
-          <p><span className="text-emerald-400 font-bold">Vahvat kierrot:</span> {a.strong.map((r) => `kierto ${r.rotation} ${fmt(r)}`).join(' · ')}</p>
-          <p><span className="text-rose-400 font-bold">Haastavat kierrot:</span> {a.weak.map((r) => `kierto ${r.rotation} ${fmt(r)}`).join(' · ')}</p>
+          <p><span className="text-emerald-400 font-bold">Vahvat kierrot:</span> {a.strong.length ? a.strong.map((r) => `kierto ${r.rotation} ${fmt(r)}`).join(' · ') : 'ei yhtään plussalla'}</p>
+          <p><span className="text-rose-400 font-bold">Haastavat kierrot:</span> {a.weak.length ? a.weak.map((r) => `kierto ${r.rotation} ${fmt(r)}`).join(' · ') : 'ei yhtään miinuksella'}</p>
           <div className="grid grid-cols-6 gap-1 text-center">
             {a.lines.map((r) => <div key={r.rotation} className={`rounded p-1 ${r.net > 0 ? 'bg-emerald-500/15' : r.net < 0 ? 'bg-rose-500/15' : 'bg-zinc-800'}`}><div className="text-[10px] text-zinc-500">{r.rotation}</div><div className="font-mono">{r.net >= 0 ? '+' : ''}{r.net}</div></div>)}
           </div>
@@ -86,9 +88,9 @@ export function MatchRotationAnalysis({ raw, home, away, usual }: { raw: Row; ho
       <h2 className="text-sm font-bold text-white">Kierrot tässä ottelussa</h2>
       <p className="text-[11px] text-zinc-500">Kierto 1 = erän aloitusasetelma; joukkue kiertää voittaessaan pisteen vastustajan syötöstä. Pisteet voitettu–menetetty kunkin kierron aikana.</p>
       <RotationAnalysisView title={home} a={rotationAnalysis([raw], s(raw.team_A_id))} />
-      {usual?.[0] && <RotationAnalysisView title={`${home}: tavallisesti (viime ${usual[0].games} ott.)`} a={usual[0]} />}
+      {usual?.[0] && <RotationAnalysisView title={`${home}: tavallisesti`} a={usual[0]} baseline />}
       <RotationAnalysisView title={away} a={rotationAnalysis([raw], s(raw.team_B_id))} />
-      {usual?.[1] && <RotationAnalysisView title={`${away}: tavallisesti (viime ${usual[1].games} ott.)`} a={usual[1]} />}
+      {usual?.[1] && <RotationAnalysisView title={`${away}: tavallisesti`} a={usual[1]} baseline />}
     </section>
   )
 }
@@ -136,11 +138,12 @@ export function Matchups({ teams, raw }: { teams: { id: string; name: string; ga
   const m = matchups(teams, raw)
   return (
     <section className="space-y-2" data-testid="kohtaamisvertailu">
-      <h2 className="text-sm font-bold text-white">Kohtaamisvertailu</h2>
+      <h2 className="text-sm font-bold text-white">Kohtaamisvertailu{m.some((x) => x.preliminary) && <Prelim />}</h2>
       <p className="text-[11px] text-zinc-500">Vahvat ja heikot kierrot viimeisistä otteluista (netto per ottelu){raw ? '; nyt = tämän ottelun netto, pysyy = sama suunta kuin tavallisesti' : ''}.</p>
       {m.length ? m.map((x) => (
         <div key={x.title} className="rounded-xl bg-zinc-900 p-3 space-y-1">
-          <h3 className="text-xs font-bold text-white">{x.title}</h3>
+          <h3 className="text-xs font-bold text-white">{x.title}{x.preliminary && <Prelim />}</h3>
+          <p className="text-[10px] text-zinc-500">{basedOn(x.games[0])} / {basedOn(x.games[1])}{x.preliminary ? ' — alle 3 ottelua, alustava' : ''}</p>
           {x.lines.map((l) => <p key={l.team + l.rotation + l.kind} className="text-xs">{l.status && <span className={`mr-1 rounded px-1 font-bold ${l.status === 'pysyy' ? 'bg-emerald-900 text-emerald-200' : 'bg-amber-900 text-amber-200'}`}>{l.status}</span>}{matchupText(l)}</p>)}
         </div>
       )) : <p className={NONE}>Ei tietoa: aiemmista otteluista ei löytynyt kiertotietoja.</p>}
@@ -148,18 +151,22 @@ export function Matchups({ teams, raw }: { teams: { id: string; name: string; ga
   )
 }
 
-export function PlayerMatchStats({ raw, home, away }: { raw: Row; home: string; away: string }) {
+export function PlayerMatchStats({ raw, home, away, history }: { raw: Row; home: string; away: string; history?: Row[][] }) {
   const rows = playerMatchStats(raw)
+  const ids = [s(raw.team_A_id), s(raw.team_B_id)]
+  const now = ids.map((id) => playerRotations([raw], id))
+  const past = ids.map((id, i) => playerRotations((history?.[i] || []).filter((g) => s(g.match_id) !== s(raw.match_id)), id))
   return (
     <section className="space-y-2" data-testid="player-match-stats">
       <h2 className="text-sm font-bold text-white">Pelaajatilastot</h2>
-      <p className="text-[11px] text-zinc-500">P pisteet, BP pisteet oman joukkueen syötöllä (päätelty, voi poiketa virallisesta 1–2), +/- (TASO), Ä ässät, HY hyökkäyspisteet, TO torjunnat, Sy syötöt, SV syöttövirheet. Lasketaan tapahtumista, päivittyy livenä.</p>
+      <p className="text-[11px] text-zinc-500">P pisteet, BP pisteet oman joukkueen syötöllä (päätelty, voi poiketa virallisesta 1–2), +/- (TASO), Ä ässät, HY hyökkäyspisteet, TO torjunnat, Sy syötöt, SV syöttövirheet. Lasketaan tapahtumista, päivittyy livenä. Kierrot: pisteet voitettu–menetetty pelaajan ollessa kentällä joukkueen kierrossa K1–K6 (r. = palloja; alle 10 = alustava).</p>
       {rows.length ? (['A', 'B'] as const).map((sd) => (
         <div key={sd} className="overflow-x-auto">
           <h3 className="text-xs font-bold text-white">{sd === 'A' ? home : away}</h3>
           <table className="w-full text-xs">
             <thead className="text-zinc-500"><tr><th className="text-left">#</th><th className="text-left">Pelaaja</th><th>P</th><th>BP</th><th>+/-</th><th>Ä</th><th>HY</th><th>TO</th><th>Sy</th><th>SV</th></tr></thead>
-            <tbody>{rows.filter((r) => r.side === sd).map((r) => <tr key={r.shirt} className="border-t border-zinc-800"><td className="font-mono text-zinc-400">{r.shirt}</td><td className="truncate max-w-[110px]">{r.name || '–'}</td><td className="text-center font-bold">{r.p}</td><td className="text-center">{r.bp}</td><td className="text-center">{r.pm ?? r.p}</td><td className="text-center">{r.aces}</td><td className="text-center">{r.attack}</td><td className="text-center">{r.block}</td><td className="text-center">{r.serves}</td><td className="text-center">{r.serveErrors}</td></tr>)}</tbody>
+            <tbody>{rows.filter((r) => r.side === sd).map((r) => { const i = sd === 'A' ? 0 : 1; const pr = past[i].find((x) => x.shirt === r.shirt); return [<tr key={r.shirt} className="border-t border-zinc-800"><td className="font-mono text-zinc-400">{r.shirt}</td><td className="truncate max-w-[110px]">{r.name || '–'}</td><td className="text-center font-bold">{r.p}</td><td className="text-center">{r.bp}</td><td className="text-center">{r.pm ?? r.p}</td><td className="text-center">{r.aces}</td><td className="text-center">{r.attack}</td><td className="text-center">{r.block}</td><td className="text-center">{r.serves}</td><td className="text-center">{r.serveErrors}</td></tr>,
+              <tr key={r.shirt + 'k'} data-testid="player-rotation"><td /><td colSpan={9} className="pb-1 text-[11px] text-zinc-400 whitespace-normal">{playerRotationText(now[i].find((x) => x.shirt === r.shirt))}{pr && <span className="block text-zinc-500">Viime {pr.games} ott.: {playerRotationText(pr).replace('Kiertotieto puuttuu', '–')}</span>}</td></tr>] })}</tbody>
           </table>
         </div>
       )) : <p className={NONE}>Ei pelaajakohtaisia pisteitä.</p>}
