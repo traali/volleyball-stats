@@ -62,7 +62,7 @@ export function CoachView({ raw, home, away, live, usual }: { raw: Row; home: st
   return (
     <section className="space-y-2 rounded-2xl border border-sky-500/30 bg-sky-500/5 p-3" data-testid="coach-view">
       <h2 className="text-sm font-bold text-white">Valmentajan näkymä{!live ? ' (jälkikatselu)' : ''}{period ? <span className="font-normal text-zinc-400"> · {period}. erä</span> : null}</h2>
-      <p className="text-[11px] text-zinc-500">Tämän ottelun pallot kierroittain (K1 = erän aloitusasetelma): netto, voitettu–menetetty, side-out % / break %. Vahva/Heikko vasta ≥6 pallosta, muuten "vähän".</p>
+      <p className="text-[11px] text-zinc-500">Tämän ottelun pallot kierroittain (K1 = erän aloitusasetelma): netto, voitettu–menetetty, side-out % / break %. Vahva/Heikko vain kun netto ≥ ±3 ja ≥6 palloa; muuten ± tai "vähän".</p>
       {teams.map((t, i) => <TeamCard key={t.side} t={t} name={names[i]} other={teams[1 - i]} otherName={names[1 - i]} usual={usual?.[i]} shirts={court.find((c) => c.side === t.side)?.shirts} />)}
       {ai && <p className="text-xs text-sky-200" data-testid="coach-ai">Paikallinen tekoäly: {ai}</p>}
       {tp && (
