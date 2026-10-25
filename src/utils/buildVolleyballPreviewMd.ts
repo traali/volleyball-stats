@@ -2,6 +2,7 @@ import type { VolleyballMatchDetail, VolleyballPlayerStat, VolleyballStandingRow
 import { pointsPerRotation, startingLineups } from '../domain/rotationStats'
 import { insightsMd, type Finding } from '../domain/insights'
 import { analysisMd, flowMd, playerStatsMd, matchupMd, serveMd, serveStats, type Matchup, type RotationAnalysis } from '../domain/gameFlow'
+import { LIBERO_NOTE, type LiberoCheck } from '../domain/libero'
 import type { GameLine, LikelyRotation, RosterPlayer, TeamSeason } from '../domain/preview'
 
 function gamesMd(p: RosterPlayer): string {
@@ -19,6 +20,7 @@ function rotationMd(team: string, r: LikelyRotation | null | undefined, players:
 }
 
 function setsMd(p: RosterPlayer): string {
+  if (p.libero) return ` · erät: Libero (${LIBERO_NOTE})`
   if (p.sets == null) return ''
   return ` · erät kentällä ${p.sets}${p.setsUnknown ? '+?' : ''}, vaihdossa ${p.setsBench ?? 0}`
 }
@@ -83,6 +85,8 @@ export function buildVolleyballPreviewMd(opts: {
   h2hPrev?: { season: string; games: GameLine[] }
   rosters?: Array<{ team: string; players: RosterPlayer[]; lineupPublished: boolean }>
   teamStats?: TeamSeason[]
+  /** Libero marks (team, player) from this phone. */
+  isLibero?: LiberoCheck
 }): string {
   const m = opts.match
   const sets = m.sets
@@ -129,7 +133,7 @@ export function buildVolleyballPreviewMd(opts: {
     ]),
     ...(opts.insights ? insightsMd(opts.insights.pre, opts.insights.live, opts.insights.liveBase ?? undefined) : []),
     ...(opts.matchups ? matchupMd(opts.matchups) : []),
-    ...(opts.raw ? playerStatsMd(opts.raw, m.homeTeamName, m.awayTeamName) : []),
+    ...(opts.raw ? playerStatsMd(opts.raw, m.homeTeamName, m.awayTeamName, opts.isLibero) : []),
     ...(opts.raw ? flowMd(opts.raw, m.homeTeamName, m.awayTeamName) : []),
     ...(opts.raw ? ['## Syötöt tässä ottelussa', ...serveMd(m.homeTeamName, serveStats([opts.raw], String(opts.raw.team_A_id))), ...serveMd(m.awayTeamName, serveStats([opts.raw], String(opts.raw.team_B_id)))] : []),
     ...(opts.rotationStats?.length ? ['## Kierrot viimeisissä otteluissa', ...opts.rotationStats.flatMap((x) => analysisMd(x.team, x.analysis))] : []),

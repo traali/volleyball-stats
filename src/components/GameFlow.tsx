@@ -1,4 +1,6 @@
 import { setParticipation } from '../domain/setParticipation'
+import { LIBERO_NOTE } from '../domain/libero'
+import { useLiberos } from '../hooks/useLiberos'
 import { rotationLabel, basedOn, isPreliminary, playerRotations, playerRotationText, courtNow, hotPlayers, playerMatchStats, matchups, matchupText, rotationAnalysis, serveStats, setFlows, type RotationAnalysis, type RotationScore } from '../domain/gameFlow'
 
 type Row = Record<string, unknown>
@@ -154,6 +156,7 @@ export function Matchups({ teams, raw }: { teams: { id: string; name: string; ga
 
 export function PlayerMatchStats({ raw, home, away, history }: { raw: Row; home: string; away: string; history?: Row[][] }) {
   const part = setParticipation(raw)
+  const { isLibero } = useLiberos()
   const ids0 = [s(raw.team_A_id), s(raw.team_B_id)]
   const base = playerMatchStats(raw)
   // Every roster player gets a row, so bench-only players show their sets too.
@@ -161,13 +164,13 @@ export function PlayerMatchStats({ raw, home, away, history }: { raw: Row; home:
     .map((p) => ({ side: (p.teamId === ids0[0] ? 'A' : 'B') as 'A' | 'B', shirt: p.shirt, name: p.name, p: 0, bp: 0, pm: null, aces: 0, attack: 0, block: 0, serves: 0, serveErrors: 0 }))]
   const ids = [s(raw.team_A_id), s(raw.team_B_id)]
   const sets = new Map(part.map((p) => [`${p.teamId}|${p.shirt}`, p]))
-  const setCell = (sd: 'A' | 'B', shirt: string, k: 'onCourt' | 'bench') => { const p = sets.get(`${ids[sd === 'A' ? 0 : 1]}|${shirt}`); return !p ? '–' : p.unknown.length && !p.onCourt.length && !p.bench.length ? '?' : `${p[k].length}${p.unknown.length ? '+?' : ''}` }
+  const setCell = (sd: 'A' | 'B', shirt: string, k: 'onCourt' | 'bench') => { const p = sets.get(`${ids[sd === 'A' ? 0 : 1]}|${shirt}`); if (p && isLibero(p.teamId, p.playerId)) return k === 'onCourt' ? 'Libero' : '–'; return !p ? '–' : p.unknown.length && !p.onCourt.length && !p.bench.length ? '?' : `${p[k].length}${p.unknown.length ? '+?' : ''}` }
   const now = ids.map((id) => playerRotations([raw], id))
   const past = ids.map((id, i) => playerRotations((history?.[i] || []).filter((g) => s(g.match_id) !== s(raw.match_id)), id))
   return (
     <section className="space-y-2" data-testid="player-match-stats">
       <h2 className="text-sm font-bold text-white">Pelaajatilastot</h2>
-      <p className="text-[11px] text-zinc-500">P pisteet, BP pisteet oman joukkueen syötöllä (päätelty, voi poiketa virallisesta 1–2), +/- (TASO), Ä ässät, HY hyökkäyspisteet, TO torjunnat, Sy syötöt, SV syöttövirheet, E erät kentällä (aloituskokoonpanossa tai vaihdettu sisään erässä), Vai erät vaihdossa (kokoonpanossa, ei kentällä; libero näkyy kentällä vain, jos TASO on kirjannut sen). Lasketaan tapahtumista, päivittyy livenä. Kierrot: pisteet voitettu–menetetty pelaajan ollessa kentällä joukkueen kierrossa K1–K6 (r. = palloja; alle 10 = alustava).</p>
+      <p className="text-[11px] text-zinc-500">P pisteet, BP pisteet oman joukkueen syötöllä (päätelty, voi poiketa virallisesta 1–2), +/- (TASO), Ä ässät, HY hyökkäyspisteet, TO torjunnat, Sy syötöt, SV syöttövirheet, E erät kentällä (aloituskokoonpanossa tai vaihdettu sisään erässä), Vai erät vaihdossa (kokoonpanossa, ei kentällä; libero näkyy kentällä vain, jos TASO on kirjannut sen). Libero = merkitty liberoksi tässä puhelimessa (pelaajasivulla): {LIBERO_NOTE}. Lasketaan tapahtumista, päivittyy livenä. Kierrot: pisteet voitettu–menetetty pelaajan ollessa kentällä joukkueen kierrossa K1–K6 (r. = palloja; alle 10 = alustava).</p>
       {rows.length ? (['A', 'B'] as const).map((sd) => (
         <div key={sd} className="overflow-x-auto">
           <h3 className="text-xs font-bold text-white">{sd === 'A' ? home : away}</h3>
