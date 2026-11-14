@@ -12,6 +12,7 @@ import { VolleyballSetGrid } from '../components/VolleyballSetGrid'
 import { forfeitingSide, isForfeit, liveState, phaseForDisplay, pointsFromEvents, resultIsTrusted, rotationsFromMatch, setsFromMatch, setsWonRecorded, setWasPlayed } from '../domain/rally'
 import { formatLabel, isTie, setPointsLabel, matchFormat, setWentToExtraPoints } from '../domain/tournament'
 import { LoadFailed } from '../components/LoadState'
+import { VenueBlock } from '../components/VenueBlock'
 import { useTaso } from '../hooks/useTaso'
 import { actualRotation } from '../domain/preview'
 import { matchups } from '../domain/gameFlow'
@@ -19,6 +20,7 @@ import { MatchPreview, type PreviewData } from '../components/MatchPreview'
 import { fetchPreview } from '../services/preview'
 import { useLiberos } from '../hooks/useLiberos'
 import { fetchMatchRaw, federationUrl } from '../services/discovery'
+import { venueFromMatch } from '../lib/parking/parkkisLink'
 import type { VolleyballMatchDetail, VolleyballSet } from '../types/volleyball'
 
 
@@ -65,6 +67,7 @@ function MatchBody({ matchId }: { matchId: string }) {
         {view.detail.courtName ? ` · ${view.detail.courtName}` : ''}
       </p>
       <a href={federationUrl.match(matchId)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center text-xs text-zinc-400 underline">Tulospalvelu ↗</a>
+      <VenueBlock venue={venueFromMatch(raw)} />
       {view.phase !== 'upcoming' && <VideoAnalysisSection matchId={matchId} />}
       {view.phase === 'live' && <LiveBox raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} updatedAt={live.at} failed={live.failed} sets={view.detail.sets} />}
       {view.phase !== 'upcoming' && raw && <CoachView raw={raw} home={view.detail.homeTeamName} away={view.detail.awayTeamName} live={view.phase === 'live'} usual={preview?.teams.map((t) => t.rotationStats)} />}
